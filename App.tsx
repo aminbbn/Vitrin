@@ -9,7 +9,7 @@ import {
   Globe, 
   User, 
   Power,
-  Zap,
+  ConciergeBell,
   CheckCircle2
 } from 'lucide-react';
 import { ViewState } from './types';
@@ -18,13 +18,32 @@ import Dashboard from './components/Dashboard';
 import CanvasDesigner from './components/CanvasDesigner';
 import ProductManager from './components/ProductManager';
 import OrderBoard from './components/OrderBoard';
+import LoginPage from './components/LoginPage';
 
 const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeView, setActiveView] = useState<ViewState>('designer');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPublishSuccess, setShowPublishSuccess] = useState(false);
+
+  useEffect(() => {
+    const auth = localStorage.getItem('vitrin_auth');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    localStorage.setItem('vitrin_auth', 'true');
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('vitrin_auth');
+    setIsAuthenticated(false);
+  };
 
   const handlePublish = () => {
     setIsPublishing(true);
@@ -49,6 +68,10 @@ const App: React.FC = () => {
     }
   };
 
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-['Vazirmatn']">
       {/* Global Sidebar */}
@@ -65,14 +88,14 @@ const App: React.FC = () => {
               className="flex items-center gap-2"
             >
               <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
-                <Zap className="w-6 h-6 fill-current" />
+                <ConciergeBell className="w-6 h-6" />
               </div>
               <span className="text-xl font-black text-emerald-900 tracking-tight">ویترین</span>
             </motion.div>
           )}
           {isSidebarCollapsed && (
              <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 mx-auto">
-              <Zap className="w-6 h-6 fill-current" />
+              <ConciergeBell className="w-6 h-6" />
             </div>
           )}
         </div>
@@ -183,7 +206,11 @@ const App: React.FC = () => {
               <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full">
                 <Globe className="w-5 h-5" />
               </button>
-              <div className="h-10 w-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
+              <div 
+                className="h-10 w-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all"
+                onClick={handleLogout}
+                title="خروج از حساب"
+              >
                 <User className="w-6 h-6 text-slate-400" />
               </div>
             </div>

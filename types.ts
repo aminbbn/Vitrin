@@ -3,7 +3,7 @@ export type ViewState = 'dashboard' | 'designer' | 'products' | 'orders' | 'anal
 
 export interface ComponentItem {
   id: string;
-  type: 'hero' | 'product-grid' | 'product-list' | 'featured' | 'action-btn' | 'footer-cart' | 'spin-win' | 'countdown';
+  type: 'hero' | 'product-grid' | 'product-list' | 'featured' | 'action-btn';
   label: string;
   settings: ComponentSettings;
 }
@@ -17,6 +17,7 @@ export interface ComponentSettings {
   margin?: number;
   animation?: 'fade' | 'slide' | 'bounce';
   imageUrl?: string;
+  style?: 'overlay' | 'stack' | 'split';
 }
 
 export interface ProductModifier {
