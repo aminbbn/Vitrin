@@ -21,65 +21,98 @@ import {
   X,
   Minus,
   Check,
-  ChevronDown
+  ChevronDown,
+  Clock,
+  ChefHat,
+  MessageCircle,
+  Send,
+  User
 } from 'lucide-react';
 import { COMPONENT_LIBRARY } from '../constants';
-import { ComponentItem } from '../types';
+import { ComponentItem, Product } from '../types';
 
 // --- Enhanced Mock Data ---
-const MOCK_PRODUCTS = [
+const MOCK_PRODUCTS: Product[] = [
   { 
-    id: 1, 
+    id: '1', 
     name: 'پیتزا پپرونی', 
+    category: 'پیتزا',
     price: 245000, 
-    description: 'پیتزای کلاسیک با پپرونی تند، پنیر موزارلا و سس گوجه‌فرنگی مخصوص',
+    description: 'پیتزای کلاسیک با پپرونی تند، پنیر موزارلا و سس گوجه‌فرنگی مخصوص. نان این پیتزا با خمیر ترش ۲۴ ساعته تهیه می‌شود.',
     image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=1000&auto=format&fit=crop',
+    rawMaterials: ['پپرونی ۹۰٪', 'پنیر موزارلا', 'سس مارینارا', 'خمیر دست‌ساز', 'فلفل هالوپینو'],
+    estimatedTime: '۲۰ دقیقه',
+    rating: 4.8,
+    reviews: [
+      { id: 'r1', user: 'محمد امینی', comment: 'بهترین پپرونی که تا حالا خوردم!', rating: 5, date: '۲ روز پیش' },
+      { id: 'r2', user: 'سارا', comment: 'کمی تند بود ولی خوشمزه', rating: 4, date: 'هفته پیش' }
+    ],
     modifiers: [
-      { name: 'سایز', options: [{ label: 'متوسط', price: 0 }, { label: 'بزرگ', price: 85000 }] },
-      { name: 'نان', options: [{ label: 'ایتالیایی', price: 0 }, { label: 'آمریکایی', price: 15000 }] }
+      { id: 'm1', name: 'سایز', type: 'mandatory', options: [{ id: 'o1', name: 'متوسط', price: 0 }, { id: 'o2', name: 'بزرگ', price: 85000 }] },
+      { id: 'm2', name: 'نان', type: 'mandatory', options: [{ id: 'o3', name: 'ایتالیایی', price: 0 }, { id: 'o4', name: 'آمریکایی', price: 15000 }] }
     ]
   },
   { 
-    id: 2, 
+    id: '2', 
     name: 'برگر کلاسیک', 
+    category: 'برگر',
     price: 185000, 
     description: 'گوشت گوساله ۱۰۰٪ خالص، کاهو، گوجه، خیارشور و سس مخصوص',
     image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop',
+    rawMaterials: ['گوشت گوساله ۱۵۰ گرم', 'نان بریوش', 'کاهو فرانسوی', 'گوجه فرنگی', 'سس مخصوص'],
+    estimatedTime: '۱۵ دقیقه',
+    rating: 4.5,
+    reviews: [
+      { id: 'r3', user: 'علی', comment: 'خیلی آبدار و عالی بود', rating: 5, date: 'دیروز' }
+    ],
     modifiers: [
-      { name: 'پخت', options: [{ label: 'مدیوم', price: 0 }, { label: 'ول‌دان', price: 0 }] },
-      { name: 'پنیر اضافه', options: [{ label: 'خیر', price: 0 }, { label: 'بله', price: 25000 }] }
+      { id: 'm3', name: 'پخت', type: 'mandatory', options: [{ id: 'o5', name: 'مدیوم', price: 0 }, { id: 'o6', name: 'ول‌دان', price: 0 }] },
+      { id: 'm4', name: 'پنیر اضافه', type: 'optional', options: [{ id: 'o7', name: 'خیر', price: 0 }, { id: 'o8', name: 'بله', price: 25000 }] }
     ]
   },
   { 
-    id: 3, 
+    id: '3', 
     name: 'سالاد سزار', 
+    category: 'سالاد',
     price: 120000, 
     description: 'کاهو رسمی، فیله مرغ گریل، نان سیر، پنیر پارمزان و سس سزار',
     image: 'https://images.unsplash.com/photo-1550304999-8f69611339bf?q=80&w=1000&auto=format&fit=crop',
+    rawMaterials: ['کاهو', 'مرغ گریل', 'نان کروتان', 'پنیر پارمزان', 'سس سزار دست‌ساز'],
+    estimatedTime: '۱۰ دقیقه',
+    rating: 4.9,
+    reviews: [],
     modifiers: []
   },
   { 
-    id: 4, 
+    id: '4', 
     name: 'پاستا آلفردو', 
+    category: 'پاستا',
     price: 190000, 
     description: 'پنه، سس آلفردو خامه ای، قارچ، مرغ و جعفری تازه',
     image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=1000&auto=format&fit=crop',
+    rawMaterials: ['پاستا پنه', 'خامه', 'شیر', 'قارچ', 'سینه مرغ'],
+    estimatedTime: '۲۵ دقیقه',
+    rating: 4.2,
+    reviews: [],
     modifiers: []
   },
 ];
 
 // --- Types for Local State ---
 interface CartItem {
-  id: number;
+  id: string;
   qty: number;
 }
+
+type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
 interface CommonRendererProps {
   element: ComponentItem;
   isSelected: boolean;
   onClick: () => void;
-  onProductClick: (product: any) => void;
+  onProductClick: (product: Product) => void;
   cart: CartItem[];
+  device: DeviceType;
 }
 
 // --- Helper Components ---
@@ -99,7 +132,7 @@ const HandleBar = ({ isExpanded, onToggle }: { isExpanded: boolean, onToggle: (e
 
 // --- Renderers ---
 
-const HeroRenderer: React.FC<{ element: ComponentItem, isSelected: boolean, onClick: () => void }> = ({ element, isSelected, onClick }) => {
+const HeroRenderer: React.FC<Omit<CommonRendererProps, 'onProductClick' | 'cart'> & { device: DeviceType }> = ({ element, isSelected, onClick, device }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { settings } = element;
   const { style, imageUrl, title, subtitle, color, fontSize } = settings;
@@ -110,11 +143,13 @@ const HeroRenderer: React.FC<{ element: ComponentItem, isSelected: boolean, onCl
   };
 
   const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 ${isSelected ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 'border-transparent hover:border-emerald-200'}`;
+  
+  // Responsive aspect ratio
+  const aspectClass = device === 'mobile' ? 'aspect-square' : 'aspect-[21/9] h-[400px]';
 
-  // STYLE 1: Overlay
   if (style === 'overlay') {
     return (
-      <motion.div layoutId={element.id} onClick={onClick} className={`${containerClasses} aspect-square`}>
+      <motion.div layoutId={element.id} onClick={onClick} className={`${containerClasses} ${aspectClass}`}>
         <div className="absolute inset-0">
           <img src={imageUrl} alt="Hero" className="w-full h-full object-cover" />
           <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
@@ -127,11 +162,10 @@ const HeroRenderer: React.FC<{ element: ComponentItem, isSelected: boolean, onCl
     );
   }
 
-  // STYLE 2: Stack
   if (style === 'stack') {
     return (
       <motion.div layoutId={element.id} onClick={onClick} className={`${containerClasses} bg-white flex flex-col`}>
-        <div className="aspect-square w-full relative overflow-hidden">
+        <div className={`${device === 'mobile' ? 'aspect-square' : 'h-[300px]'} w-full relative overflow-hidden`}>
           <img src={imageUrl} alt="Hero" className="w-full h-full object-cover" />
         </div>
         <div className="p-6 text-center">
@@ -142,14 +176,13 @@ const HeroRenderer: React.FC<{ element: ComponentItem, isSelected: boolean, onCl
     );
   }
 
-  // STYLE 3: Split (Interactive)
   if (style === 'split') {
     return (
       <motion.div 
         layout
         layoutId={element.id} 
         onClick={onClick}
-        className={`${containerClasses} bg-white aspect-square`}
+        className={`${containerClasses} bg-white ${device === 'mobile' ? 'aspect-square' : 'h-[400px]'}`}
       >
         <div className="w-full h-full relative">
           <motion.div
@@ -196,10 +229,12 @@ const HeroRenderer: React.FC<{ element: ComponentItem, isSelected: boolean, onCl
   return null;
 };
 
-const ProductGridRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart }) => {
+const ProductGridRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart, device }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 'border-transparent hover:border-emerald-200'}`;
   
+  const gridCols = device === 'mobile' ? 'grid-cols-2' : device === 'tablet' ? 'grid-cols-3' : 'grid-cols-4';
+
   return (
     <div onClick={onClick} className={containerClasses}>
       <HandleBar isExpanded={!isCollapsed} onToggle={(e) => { e.stopPropagation(); setIsCollapsed(!isCollapsed); }} />
@@ -216,7 +251,7 @@ const ProductGridRenderer: React.FC<CommonRendererProps> = ({ element, isSelecte
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="grid grid-cols-2 gap-3 overflow-hidden"
+              className={`grid ${gridCols} gap-3 overflow-hidden`}
             >
               {MOCK_PRODUCTS.map(product => {
                 const inCart = cart.some(item => item.id === product.id);
@@ -254,9 +289,12 @@ const ProductGridRenderer: React.FC<CommonRendererProps> = ({ element, isSelecte
   );
 };
 
-const ProductListRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart }) => {
+const ProductListRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart, device }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 'border-transparent hover:border-emerald-200'}`;
+  
+  // On Desktop/Tablet, use a grid for list items to fill space better
+  const layoutClass = device === 'mobile' ? 'flex flex-col space-y-3' : 'grid grid-cols-2 gap-4';
 
   return (
     <div onClick={onClick} className={containerClasses}>
@@ -274,7 +312,7 @@ const ProductListRenderer: React.FC<CommonRendererProps> = ({ element, isSelecte
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="space-y-3 overflow-hidden"
+              className={`${layoutClass} overflow-hidden`}
             >
               {MOCK_PRODUCTS.map(product => {
                 const inCart = cart.some(item => item.id === product.id);
@@ -317,15 +355,16 @@ const ProductListRenderer: React.FC<CommonRendererProps> = ({ element, isSelecte
   );
 };
 
-const FeaturedRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart }) => {
+const FeaturedRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart, device }) => {
   const containerClasses = `relative w-full rounded-3xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 'border-transparent hover:border-emerald-200'}`;
-  // Use the first mock product as the "featured" item for data simulation
   const featuredProduct = { ...MOCK_PRODUCTS[0], name: element.settings.title || MOCK_PRODUCTS[0].name, image: element.settings.imageUrl || MOCK_PRODUCTS[0].image };
   const inCart = cart.some(item => item.id === featuredProduct.id);
+  
+  const heightClass = device === 'mobile' ? 'h-72' : 'h-96';
 
   return (
     <div onClick={onClick} className={containerClasses}>
-      <div className="relative h-72 group">
+      <div className={`relative ${heightClass} group`}>
         <img src={element.settings.imageUrl} alt="Featured" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
         
@@ -361,12 +400,16 @@ const FeaturedRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, 
   );
 };
 
-// --- Product Detail Bottom Sheet ---
+// --- Product Detail Bottom Sheet / Modal ---
 
-const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, initialQty = 0 }: any) => {
+const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, initialQty = 0, device }: any) => {
   const [qty, setQty] = useState(initialQty || 1);
+  const [activeTab, setActiveTab] = useState<'details' | 'reviews'>('details');
+  const [newComment, setNewComment] = useState('');
 
   if (!isOpen || !product) return null;
+  
+  const isMobile = device === 'mobile';
 
   return (
     <AnimatePresence>
@@ -380,64 +423,163 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, initialQty 
             className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40"
           />
           <motion.div 
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
+            initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.9 }}
+            animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
+            exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.9 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] z-50 max-h-[85%] flex flex-col shadow-[0_-10px_40px_rgba(0,0,0,0.2)]"
+            className={`absolute z-50 bg-white shadow-2xl overflow-hidden flex flex-col ${
+              isMobile 
+                ? 'bottom-0 left-0 right-0 rounded-t-[2.5rem] h-[90%]' 
+                : 'top-[10%] left-[10%] right-[10%] bottom-[10%] rounded-[2rem] max-w-4xl mx-auto'
+            }`}
           >
-            {/* Handle */}
-            <div className="w-full flex justify-center pt-3 pb-1" onClick={onClose}>
-              <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+            {/* Header / Image */}
+            <div className={`relative shrink-0 ${isMobile ? 'h-64' : 'h-72'}`}>
+              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 bg-black/40 backdrop-blur text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors z-10">
+                <X className="w-5 h-5" />
+              </button>
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
             </div>
 
-            {/* Content Scrollable */}
-            <div className="flex-1 overflow-y-auto p-6 pb-24">
-              <div className="relative h-56 rounded-3xl overflow-hidden mb-6 shadow-sm">
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 bg-black/30 backdrop-blur text-white rounded-full flex items-center justify-center">
-                  <X className="w-5 h-5" />
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-6 pb-28 -mt-10 relative z-0">
+              <div className="flex items-start justify-between mb-2">
+                <h2 className={`font-black text-slate-900 ${isMobile ? 'text-2xl' : 'text-3xl'}`}>{product.name}</h2>
+                <span className="text-xl font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl">{product.price.toLocaleString()}</span>
+              </div>
+              
+              {/* Meta Info */}
+              <div className="flex items-center gap-4 mb-6 text-slate-500 text-xs font-bold">
+                 <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg">
+                    <Clock className="w-3.5 h-3.5 text-orange-500" />
+                    {product.estimatedTime || '۱۵ دقیقه'}
+                 </div>
+                 <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg">
+                    <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
+                    {product.rating || 4.5}
+                 </div>
+              </div>
+
+              {/* Tabs */}
+              <div className="flex border-b border-slate-100 mb-6 sticky top-0 bg-white z-10">
+                <button 
+                  onClick={() => setActiveTab('details')}
+                  className={`flex-1 pb-3 text-sm font-bold transition-colors border-b-2 ${activeTab === 'details' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-slate-400'}`}
+                >
+                  جزئیات محصول
+                </button>
+                <button 
+                  onClick={() => setActiveTab('reviews')}
+                  className={`flex-1 pb-3 text-sm font-bold transition-colors border-b-2 ${activeTab === 'reviews' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-slate-400'}`}
+                >
+                  نظرات کاربران
                 </button>
               </div>
 
-              <div className="flex items-start justify-between mb-2">
-                <h2 className="text-xl font-black text-slate-900">{product.name}</h2>
-                <span className="text-lg font-black text-emerald-600">{product.price.toLocaleString()}</span>
-              </div>
-              <p className="text-sm text-slate-500 leading-relaxed mb-6">{product.description}</p>
-
-              {/* Modifiers */}
-              {product.modifiers && product.modifiers.length > 0 && (
+              {activeTab === 'details' ? (
                 <div className="space-y-6">
-                  {product.modifiers.map((mod: any, idx: number) => (
-                    <div key={idx} className="space-y-3">
-                      <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                        {mod.name}
+                  <p className="text-sm text-slate-600 leading-relaxed">{product.description}</p>
+                  
+                  {/* Raw Materials */}
+                  {product.rawMaterials && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                        <ChefHat className="w-4 h-4 text-emerald-600" />
+                        مواد اولیه
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {mod.options.map((opt: any, oIdx: number) => (
-                          <label key={oIdx} className="cursor-pointer">
-                            <input type="radio" name={`mod-${idx}`} className="peer sr-only" />
-                            <div className="px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-500 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all shadow-sm">
-                              {opt.label} {opt.price > 0 && `(+${opt.price/1000})`}
-                            </div>
-                          </label>
+                        {product.rawMaterials.map((item: string, i: number) => (
+                           <span key={i} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold border border-slate-200">{item}</span>
                         ))}
                       </div>
                     </div>
-                  ))}
+                  )}
+
+                  {/* Modifiers */}
+                  {product.modifiers && product.modifiers.length > 0 && (
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                      {product.modifiers.map((mod: any, idx: number) => (
+                        <div key={idx} className="space-y-3">
+                          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                            {mod.name}
+                          </h3>
+                          <div className="flex flex-wrap gap-2">
+                            {mod.options.map((opt: any, oIdx: number) => (
+                              <label key={oIdx} className="cursor-pointer">
+                                <input type="radio" name={`mod-${idx}`} className="peer sr-only" />
+                                <div className="px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-500 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all shadow-sm">
+                                  {opt.name} {opt.price > 0 && `(+${opt.price/1000})`}
+                                </div>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                   {/* Comment Input */}
+                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                      <div className="flex gap-2 mb-2">
+                         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
+                            <User className="w-4 h-4 text-slate-500" />
+                         </div>
+                         <div className="flex-1">
+                            <textarea 
+                               placeholder="نظر خود را بنویسید..." 
+                               value={newComment}
+                               onChange={(e) => setNewComment(e.target.value)}
+                               className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs outline-none focus:border-emerald-400 min-h-[80px]"
+                            />
+                         </div>
+                      </div>
+                      <div className="flex justify-end">
+                         <button className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                            <Send className="w-3 h-3" /> ثبت نظر
+                         </button>
+                      </div>
+                   </div>
+
+                   {/* Reviews List */}
+                   {product.reviews && product.reviews.length > 0 ? (
+                      <div className="space-y-4">
+                         {product.reviews.map((review: any) => (
+                            <div key={review.id} className="border-b border-slate-100 pb-4 last:border-0">
+                               <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                     <span className="text-xs font-bold text-slate-800">{review.user}</span>
+                                     <div className="flex text-yellow-400">
+                                        {[...Array(5)].map((_, i) => (
+                                           <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-current' : 'text-slate-200'}`} />
+                                        ))}
+                                     </div>
+                                  </div>
+                                  <span className="text-[10px] text-slate-400">{review.date}</span>
+                               </div>
+                               <p className="text-xs text-slate-600 leading-relaxed">{review.comment}</p>
+                            </div>
+                         ))}
+                      </div>
+                   ) : (
+                      <div className="text-center py-8 text-slate-400 text-xs">
+                         هنوز نظری ثبت نشده است. اولین نفر باشید!
+                      </div>
+                   )}
                 </div>
               )}
             </div>
 
             {/* Sticky Action Bar */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 flex items-center gap-4">
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-slate-100 flex items-center gap-4 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
               <div className="flex items-center gap-4 bg-slate-100 px-4 py-3 rounded-2xl">
                 <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-1 hover:bg-white rounded-lg transition-colors">
                   <Minus className="w-4 h-4 text-slate-600" />
                 </button>
-                <span className="font-black text-lg text-slate-800 w-4 text-center">{qty}</span>
+                <span className="font-black text-lg text-slate-800 w-6 text-center">{qty}</span>
                 <button onClick={() => setQty(qty + 1)} className="p-1 hover:bg-white rounded-lg transition-colors">
                   <Plus className="w-4 h-4 text-slate-600" />
                 </button>
@@ -450,7 +592,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, initialQty 
                 className="flex-1 bg-emerald-600 text-white py-3.5 rounded-2xl font-black text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center gap-2"
               >
                 <ShoppingBag className="w-5 h-5" />
-                افزودن به سبد {(product.price * qty).toLocaleString()}
+                افزودن {(product.price * qty).toLocaleString()}
               </button>
             </div>
           </motion.div>
@@ -460,14 +602,112 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, initialQty 
   );
 };
 
+// --- Cart Drawer Component ---
+const CartDrawer = ({ isOpen, onClose, cart, products, onRemoveItem, onUpdateQty, device }: any) => {
+  if (!isOpen) return null;
+
+  const total = cart.reduce((acc: number, item: CartItem) => {
+    const p = products.find((prod: Product) => prod.id === item.id);
+    return acc + (p ? p.price * item.qty : 0);
+  }, 0);
+  
+  const isMobile = device === 'mobile';
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40"
+          />
+          <motion.div 
+            initial={isMobile ? { y: '100%' } : { x: '100%' }}
+            animate={isMobile ? { y: 0 } : { x: 0 }}
+            exit={isMobile ? { y: '100%' } : { x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className={`absolute z-50 bg-white shadow-2xl flex flex-col ${
+               isMobile 
+                ? 'bottom-0 left-0 right-0 rounded-t-[2.5rem] h-[70%]' 
+                : 'top-0 right-0 bottom-0 w-[400px] border-l border-slate-100'
+            }`}
+          >
+            <div className={`w-full flex justify-center pt-3 pb-1 ${!isMobile && 'hidden'}`} onClick={onClose}>
+              <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
+            </div>
+            
+            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+               <h2 className="text-lg font-black text-slate-800">سبد خرید شما</h2>
+               <div className="flex items-center gap-2">
+                 <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold">{cart.length} قلم</span>
+                 {!isMobile && (
+                   <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-full">
+                     <X className="w-5 h-5 text-slate-500" />
+                   </button>
+                 )}
+               </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {cart.map((item: CartItem) => {
+                const product = products.find((p: Product) => p.id === item.id);
+                if (!product) return null;
+                return (
+                  <div key={item.id} className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <img src={product.image} alt={product.name} className="w-20 h-20 rounded-xl object-cover bg-white" />
+                    <div className="flex-1 flex flex-col justify-between">
+                       <div className="flex justify-between items-start">
+                          <h3 className="font-bold text-slate-800 text-sm">{product.name}</h3>
+                          <button onClick={() => onRemoveItem(item.id)} className="text-slate-400 hover:text-red-500">
+                             <Trash2 className="w-4 h-4" />
+                          </button>
+                       </div>
+                       <div className="flex justify-between items-end">
+                          <span className="text-sm font-black text-emerald-600">{(product.price * item.qty).toLocaleString()}</span>
+                          <div className="flex items-center gap-3 bg-white px-2 py-1 rounded-lg border border-slate-200">
+                             <button onClick={() => onUpdateQty(item.id, Math.max(1, item.qty - 1))} className="p-0.5"><Minus className="w-3 h-3 text-slate-600" /></button>
+                             <span className="text-xs font-bold w-4 text-center">{item.qty}</span>
+                             <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="p-0.5"><Plus className="w-3 h-3 text-slate-600" /></button>
+                          </div>
+                       </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {cart.length === 0 && (
+                 <div className="text-center py-10 text-slate-400 text-sm">سبد خرید خالی است</div>
+              )}
+            </div>
+
+            <div className="p-6 bg-slate-900 text-white rounded-t-3xl md:rounded-none">
+               <div className="flex justify-between items-center mb-4">
+                  <span className="text-slate-400 text-sm">مبلغ قابل پرداخت</span>
+                  <span className="text-xl font-black text-emerald-400">{total.toLocaleString()} تومان</span>
+               </div>
+               <button className="w-full bg-emerald-500 text-white py-4 rounded-2xl font-black text-lg hover:bg-emerald-400 transition-colors">
+                  تکمیل و پرداخت
+               </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // --- Floating Cart Bar ---
 
-const CartFloatingBar = ({ cart, products }: { cart: CartItem[], products: any[] }) => {
+const CartFloatingBar = ({ cart, products, onClick, device }: { cart: CartItem[], products: any[], onClick: () => void, device: DeviceType }) => {
   const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
   const totalPrice = cart.reduce((acc, item) => {
     const prod = products.find(p => p.id === item.id);
     return acc + (prod ? prod.price * item.qty : 0);
   }, 0);
+  
+  const widthClass = device === 'mobile' ? 'left-6 right-6' : 'left-1/2 -translate-x-1/2 w-[400px]';
 
   return (
     <AnimatePresence>
@@ -476,15 +716,20 @@ const CartFloatingBar = ({ cart, products }: { cart: CartItem[], products: any[]
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="absolute bottom-6 left-6 right-6 z-30"
+          className={`absolute bottom-6 z-30 cursor-pointer ${widthClass}`}
+          onClick={onClick}
         >
-          <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-white/10 backdrop-blur-xl">
+          {/* Using #0a0a0a hex code as requested */}
+          <div className="bg-[#0a0a0a] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-white/10 backdrop-blur-xl hover:scale-[1.02] transition-transform">
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 font-bold mb-0.5">مبلغ قابل پرداخت</span>
+              <span className="text-[10px] text-slate-400 font-bold mb-0.5 flex items-center gap-1">
+                 <ShoppingBag className="w-3 h-3" />
+                 {totalItems} آیتم در سبد
+              </span>
               <span className="text-lg font-black text-emerald-400">{totalPrice.toLocaleString()} تومان</span>
             </div>
-            <button className="bg-emerald-500 text-white px-6 py-2.5 rounded-xl text-xs font-black hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-900/50 flex items-center gap-2">
-              تکمیل سفارش <ArrowLeft className="w-4 h-4" />
+            <button className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-xs font-black hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/50 flex items-center gap-2">
+              مشاهده و پرداخت <ArrowLeft className="w-4 h-4" />
             </button>
           </div>
         </motion.div>
@@ -497,16 +742,17 @@ const CartFloatingBar = ({ cart, products }: { cart: CartItem[], products: any[]
 // --- Main Designer Component ---
 
 const CanvasDesigner: React.FC = () => {
-  const [device, setDevice] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
+  const [device, setDevice] = useState<DeviceType>('mobile');
   const [zoom, setZoom] = useState(100);
   const [canvasElements, setCanvasElements] = useState<ComponentItem[]>([]);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   
   // Preview State
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [activeProduct, setActiveProduct] = useState<any | null>(null);
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const addToCart = (id: number, qty: number) => {
+  const addToCart = (id: string, qty: number) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === id);
       if (existing) {
@@ -514,6 +760,14 @@ const CanvasDesigner: React.FC = () => {
       }
       return [...prev, { id, qty }];
     });
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateCartQty = (id: string, qty: number) => {
+    setCart(prev => prev.map(item => item.id === id ? { ...item, qty } : item));
   };
 
   const addElement = (item: any) => {
@@ -538,6 +792,32 @@ const CanvasDesigner: React.FC = () => {
   };
 
   const selectedElement = canvasElements.find(el => el.id === selectedElementId);
+
+  // Dynamic Styles based on Device
+  const getDeviceFrameStyles = () => {
+    switch (device) {
+      case 'mobile':
+        return {
+           width: 375,
+           height: 812,
+           className: "bg-white rounded-[3rem] border-[8px] border-slate-900"
+        };
+      case 'tablet':
+        return {
+           width: 768,
+           height: '100%',
+           className: "bg-white rounded-[2rem] border-[8px] border-slate-900"
+        };
+      case 'desktop':
+        return {
+           width: '100%',
+           height: '100%',
+           className: "bg-white rounded-xl border-[4px] border-slate-800 shadow-2xl"
+        };
+    }
+  };
+
+  const frameStyle = getDeviceFrameStyles();
 
   return (
     <div className="flex h-full bg-slate-50 overflow-hidden select-none">
@@ -598,14 +878,14 @@ const CanvasDesigner: React.FC = () => {
           <motion.div 
             layout
             style={{ 
-              width: device === 'mobile' ? 375 : device === 'tablet' ? 768 : '100%', 
-              height: device === 'mobile' ? 812 : '100%',
+              width: frameStyle.width, 
+              height: frameStyle.height,
               scale: zoom / 100,
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
             }}
-            className="bg-white rounded-[3rem] border-[8px] border-slate-900 overflow-hidden relative group"
+            className={`${frameStyle.className} overflow-hidden relative group`}
           >
-            {/* Notch */}
+            {/* Notch - Only for Mobile */}
             {device === 'mobile' && (
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-900 rounded-b-2xl z-20" />
             )}
@@ -632,11 +912,12 @@ const CanvasDesigner: React.FC = () => {
                     isSelected: selectedElementId === el.id,
                     onClick: () => setSelectedElementId(el.id),
                     onProductClick: setActiveProduct,
-                    cart: cart
+                    cart: cart,
+                    device: device
                   };
 
                   if (el.type === 'hero') {
-                    return <HeroRenderer key={el.id} element={el} isSelected={selectedElementId === el.id} onClick={() => setSelectedElementId(el.id)} />;
+                    return <HeroRenderer key={el.id} element={el} isSelected={selectedElementId === el.id} onClick={() => setSelectedElementId(el.id)} device={device} />;
                   }
 
                   if (el.type === 'product-grid') {
@@ -682,12 +963,24 @@ const CanvasDesigner: React.FC = () => {
             </div>
 
             {/* Overlays for Interaction */}
-            <CartFloatingBar cart={cart} products={MOCK_PRODUCTS} />
+            <CartFloatingBar cart={cart} products={MOCK_PRODUCTS} onClick={() => setIsCartOpen(true)} device={device} />
+            
             <ProductDetailModal 
               product={activeProduct} 
               isOpen={!!activeProduct} 
               onClose={() => setActiveProduct(null)} 
               onAddToCart={addToCart}
+              device={device}
+            />
+
+            <CartDrawer 
+               isOpen={isCartOpen}
+               onClose={() => setIsCartOpen(false)}
+               cart={cart}
+               products={MOCK_PRODUCTS}
+               onRemoveItem={removeFromCart}
+               onUpdateQty={updateCartQty}
+               device={device}
             />
 
           </motion.div>

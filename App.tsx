@@ -18,6 +18,8 @@ import Dashboard from './components/Dashboard';
 import CanvasDesigner from './components/CanvasDesigner';
 import ProductManager from './components/ProductManager';
 import OrderBoard from './components/OrderBoard';
+import Analytics from './components/Analytics';
+import Settings from './components/Settings';
 import LoginPage from './components/LoginPage';
 
 const App: React.FC = () => {
@@ -60,6 +62,8 @@ const App: React.FC = () => {
       case 'designer': return <CanvasDesigner />;
       case 'products': return <ProductManager />;
       case 'orders': return <OrderBoard />;
+      case 'analytics': return <Analytics />;
+      case 'settings': return <Settings />;
       default: return (
         <div className="flex items-center justify-center h-full text-slate-400 bg-white m-6 rounded-2xl border border-dashed border-slate-200">
           این بخش در حال توسعه است

@@ -21,7 +21,7 @@ export const SIDEBAR_LINKS = [
   { id: 'dashboard', label: 'داشبورد', icon: <LayoutDashboard className="w-5 h-5" /> },
   { id: 'designer', label: 'طراحی منو', icon: <Palette className="w-5 h-5" /> },
   { id: 'products', label: 'محصولات', icon: <Package className="w-5 h-5" /> },
-  { id: 'orders', label: 'سفارشات زنده', icon: <ClipboardList className="w-5 h-5" /> },
+  { id: 'orders', label: 'سفارشات', icon: <ClipboardList className="w-5 h-5" /> },
   { id: 'analytics', label: 'تحلیل و آمار', icon: <BarChart3 className="w-5 h-5" /> },
   { id: 'settings', label: 'تنظیمات', icon: <Settings className="w-5 h-5" /> },
 ];
@@ -110,22 +110,6 @@ export const COMPONENT_LIBRARY = [
           imageUrl: 'https://images.unsplash.com/photo-1546964124-0cce460f38ef?q=80&w=1000&auto=format&fit=crop',
           color: '#ffffff',
           fontSize: 24
-        }
-      },
-    ]
-  },
-  { 
-    category: 'اکشن‌ها',
-    items: [
-      { 
-        id: 'act-btn', 
-        type: 'action-btn', 
-        label: 'دکمه خرید', 
-        icon: <MousePointerClick className="w-4 h-4" />,
-        defaults: {
-          title: 'مشاهده منوی کامل',
-          color: '#ffffff',
-          fontSize: 16
         }
       },
     ]

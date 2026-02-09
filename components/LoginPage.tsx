@@ -107,7 +107,6 @@ const AnimatedInput = ({ label, icon: Icon, type, value, onChange, placeholder }
         <AnimatePresence>
           {showPlaceholder && (
             <motion.span
-              /* Placeholder on the Left */
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 0.4, x: 0 }}
               exit={{ opacity: 0, x: 20, transition: { duration: 0.2 } }}
@@ -126,7 +125,6 @@ const AnimatedInput = ({ label, icon: Icon, type, value, onChange, placeholder }
           onChange={onChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          /* pr-14 to clear icon on right, pl-6 for text starting on left */
           className="w-full bg-slate-50 border-2 border-slate-100 text-slate-900 text-lg font-medium rounded-[1.25rem] py-4 pr-14 pl-6 outline-none focus:ring-8 focus:ring-emerald-500/5 focus:border-emerald-500 transition-all text-left shadow-sm relative z-10"
           required
         />
