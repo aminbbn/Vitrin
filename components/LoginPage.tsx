@@ -98,9 +98,9 @@ const AnimatedInput = ({ label, icon: Icon, type, value, onChange, placeholder }
   const showPlaceholder = !value && !isFocused;
 
   return (
-    <div className="space-y-2">
-      <label className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] px-1">{label}</label>
-      <div className="relative group">
+    <div className="flex flex-col items-start w-full space-y-2" dir="rtl">
+      <label className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] px-1 select-none">{label}</label>
+      <div className="relative group w-full">
         {/* Icon on the Right */}
         <Icon className="w-5 h-5 absolute top-1/2 right-5 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors z-20 pointer-events-none" />
         
@@ -109,9 +109,9 @@ const AnimatedInput = ({ label, icon: Icon, type, value, onChange, placeholder }
             <motion.span
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 0.4, x: 0 }}
-              exit={{ opacity: 0, x: 20, transition: { duration: 0.2 } }}
-              className="absolute top-1/2 left-6 -translate-y-1/2 text-slate-400 text-lg font-medium pointer-events-none z-20"
-              dir="ltr"
+              exit={{ opacity: 0, x: -10, transition: { duration: 0.2 } }}
+              // Placeholder: Left aligned physically
+              className="absolute top-1/2 left-6 -translate-y-1/2 text-slate-400 text-lg font-medium pointer-events-none z-20 text-left"
             >
               {placeholder}
             </motion.span>
@@ -125,6 +125,7 @@ const AnimatedInput = ({ label, icon: Icon, type, value, onChange, placeholder }
           onChange={onChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          // Input styles: text-left, pr-14 (for icon), pl-6 (for text start)
           className="w-full bg-slate-50 border-2 border-slate-100 text-slate-900 text-lg font-medium rounded-[1.25rem] py-4 pr-14 pl-6 outline-none focus:ring-8 focus:ring-emerald-500/5 focus:border-emerald-500 transition-all text-left shadow-sm relative z-10"
           required
         />

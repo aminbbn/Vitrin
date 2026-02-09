@@ -1,5 +1,5 @@
 
-export type ViewState = 'dashboard' | 'designer' | 'products' | 'orders' | 'analytics' | 'settings';
+export type ViewState = 'dashboard' | 'designer' | 'products' | 'orders' | 'analytics' | 'settings' | 'search-results' | 'notification-archive' | 'customer-menu';
 
 export interface ComponentItem {
   id: string;
@@ -66,4 +66,14 @@ export interface Order {
   totalPrice: number;
   status: OrderStatus;
   timestamp: string;
+}
+
+export interface Notification {
+  id: string;
+  type: 'order' | 'inventory' | 'system';
+  title: string;
+  message: string;
+  time: string;
+  read: boolean;
+  link: ViewState;
 }

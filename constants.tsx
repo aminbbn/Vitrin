@@ -14,7 +14,8 @@ import {
   MousePointerClick,
   Layers,
   SplitSquareHorizontal,
-  AlignVerticalSpaceAround
+  AlignVerticalSpaceAround,
+  Smartphone
 } from 'lucide-react';
 
 export const SIDEBAR_LINKS = [
@@ -23,6 +24,7 @@ export const SIDEBAR_LINKS = [
   { id: 'products', label: 'محصولات', icon: <Package className="w-5 h-5" /> },
   { id: 'orders', label: 'سفارشات', icon: <ClipboardList className="w-5 h-5" /> },
   { id: 'analytics', label: 'تحلیل و آمار', icon: <BarChart3 className="w-5 h-5" /> },
+  { id: 'customer-menu', label: 'نمای مشتری', icon: <Smartphone className="w-5 h-5" /> },
   { id: 'settings', label: 'تنظیمات', icon: <Settings className="w-5 h-5" /> },
 ];
 
@@ -114,4 +116,19 @@ export const COMPONENT_LIBRARY = [
       },
     ]
   }
+];
+
+export const SEARCH_ITEMS = [
+  { id: 'p1', type: 'product', title: 'پیتزا پپرونی', subtitle: 'پیتزا', detail: '245,000 تومان', icon: 'pizza' },
+  { id: 'p2', type: 'product', title: 'برگر کلاسیک', subtitle: 'برگر', detail: '185,000 تومان', icon: 'burger' },
+  { id: 'p3', type: 'product', title: 'سالاد سزار', subtitle: 'سالاد', detail: '120,000 تومان', icon: 'salad' },
+  { id: 'p4', type: 'product', title: 'سیب‌زمینی سرخ‌کرده', subtitle: 'پیش‌غذا', detail: '85,000 تومان', icon: 'fries' },
+  { id: 'p5', type: 'product', title: 'پاستا آلفردو', subtitle: 'پاستا', detail: '190,000 تومان', icon: 'pasta' },
+  { id: 'p6', type: 'product', title: 'نوشابه کوکا', subtitle: 'نوشیدنی', detail: '25,000 تومان', icon: 'drink' },
+  { id: 'o1', type: 'order', title: 'سفارش #12890', subtitle: 'میز ۵', detail: 'در انتظار', status: 'new' },
+  { id: 'o2', type: 'order', title: 'سفارش #12891', subtitle: 'میز ۱۲', detail: 'در حال آماده‌سازی', status: 'preparing' },
+  { id: 'o3', type: 'order', title: 'سفارش #12888', subtitle: 'میز ۸', detail: 'آماده تحویل', status: 'ready' },
+  { id: 'c1', type: 'customer', title: 'محمد رضایی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۳۴۵۶۷۸۹', visits: 15 },
+  { id: 'c2', type: 'customer', title: 'سارا احمدی', subtitle: 'مشتری جدید', detail: '۰۹۳۵۰۰۰۰۰۰۰', visits: 1 },
+  { id: 'c3', type: 'customer', title: 'علی کمالی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۹۹۹۸۸۷۷', visits: 24 },
 ];
