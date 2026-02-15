@@ -84,7 +84,7 @@ const itemVariants = {
   show: { 
     opacity: 1, 
     y: 0,
-    transition: { type: 'spring', stiffness: 300, damping: 24 }
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 }
   },
   exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
 };
@@ -492,7 +492,7 @@ const ProductManager: React.FC = () => {
                        <button 
                          onClick={addModifierGroup}
                          className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors flex items-center gap-1"
-                       >
+                         >
                          <Plus className="w-3.5 h-3.5" /> گروه جدید
                        </button>
                     </div>

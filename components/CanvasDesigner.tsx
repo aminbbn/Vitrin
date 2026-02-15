@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Smartphone, 
   Tablet, 
-  Monitor, 
   Plus, 
   Trash2, 
   Settings2, 
@@ -24,7 +23,6 @@ import {
   ChevronDown,
   Clock,
   ChefHat,
-  MessageCircle,
   Send,
   User
 } from 'lucide-react';
@@ -104,7 +102,7 @@ interface CartItem {
   qty: number;
 }
 
-type DeviceType = 'mobile' | 'tablet' | 'desktop';
+type DeviceType = 'mobile' | 'tablet';
 
 interface CommonRendererProps {
   element: ComponentItem;
@@ -233,7 +231,7 @@ const ProductGridRenderer: React.FC<CommonRendererProps> = ({ element, isSelecte
   const [isCollapsed, setIsCollapsed] = useState(false);
   const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 'border-transparent hover:border-emerald-200'}`;
   
-  const gridCols = device === 'mobile' ? 'grid-cols-2' : device === 'tablet' ? 'grid-cols-3' : 'grid-cols-4';
+  const gridCols = device === 'mobile' ? 'grid-cols-2' : 'grid-cols-3';
 
   return (
     <div onClick={onClick} className={containerClasses}>
@@ -293,7 +291,7 @@ const ProductListRenderer: React.FC<CommonRendererProps> = ({ element, isSelecte
   const [isCollapsed, setIsCollapsed] = useState(false);
   const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? 'border-emerald-500 ring-4 ring-emerald-500/10' : 'border-transparent hover:border-emerald-200'}`;
   
-  // On Desktop/Tablet, use a grid for list items to fill space better
+  // On Tablet, use a grid for list items to fill space better
   const layoutClass = device === 'mobile' ? 'flex flex-col space-y-3' : 'grid grid-cols-2 gap-4';
 
   return (
@@ -539,7 +537,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, initialQty 
                       </div>
                       <div className="flex justify-end">
                          <button className="bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                            <Send className="w-3 h-3" /> ثبت نظر
+                            <Send className="w-3 h-3" /> ارسال نظر
                          </button>
                       </div>
                    </div>
@@ -741,10 +739,15 @@ const CartFloatingBar = ({ cart, products, onClick, device }: { cart: CartItem[]
 
 // --- Main Designer Component ---
 
-const CanvasDesigner: React.FC = () => {
+// Added props interface for CanvasDesigner to receive state from App
+interface CanvasDesignerProps {
+  elements: ComponentItem[];
+  onElementsChange: React.Dispatch<React.SetStateAction<ComponentItem[]>>;
+}
+
+const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElements, onElementsChange: setCanvasElements }) => {
   const [device, setDevice] = useState<DeviceType>('mobile');
   const [zoom, setZoom] = useState(100);
-  const [canvasElements, setCanvasElements] = useState<ComponentItem[]>([]);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   
   // Preview State
@@ -808,12 +811,6 @@ const CanvasDesigner: React.FC = () => {
            height: '100%',
            className: "bg-white rounded-[2rem] border-[8px] border-slate-900"
         };
-      case 'desktop':
-        return {
-           width: '100%',
-           height: '100%',
-           className: "bg-white rounded-xl border-[4px] border-slate-800 shadow-2xl"
-        };
     }
   };
 
@@ -860,7 +857,6 @@ const CanvasDesigner: React.FC = () => {
           <div className="flex items-center gap-2 bg-slate-200/50 p-1 rounded-lg">
             <button onClick={() => setDevice('mobile')} className={`p-1.5 rounded ${device === 'mobile' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500'}`}><Smartphone className="w-4 h-4" /></button>
             <button onClick={() => setDevice('tablet')} className={`p-1.5 rounded ${device === 'tablet' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500'}`}><Tablet className="w-4 h-4" /></button>
-            <button onClick={() => setDevice('desktop')} className={`p-1.5 rounded ${device === 'desktop' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-500'}`}><Monitor className="w-4 h-4" /></button>
           </div>
 
           <div className="flex items-center gap-4 text-xs font-medium text-slate-500">

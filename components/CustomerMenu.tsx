@@ -10,6 +10,7 @@ import {
   Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ComponentItem } from '../types';
 
 // --- Types ---
 interface MenuItem {
@@ -93,7 +94,12 @@ const INITIAL_CART = {
   ]
 };
 
-const CustomerMenu: React.FC = () => {
+// Added props interface to accept liveElements from App
+interface CustomerMenuProps {
+  liveElements?: ComponentItem[];
+}
+
+const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements }) => {
   const [activeCategory, setActiveCategory] = useState('kebabs');
   const [cartItems, setCartItems] = useState(INITIAL_CART.items);
 
@@ -174,7 +180,7 @@ const CustomerMenu: React.FC = () => {
                </div>
                <div>
                   <h1 className="text-xl font-black mb-1">رستوران شاندیز</h1>
-                  <div className="flex items-center gap-1 text-xs text-white/80 font-bold">
+                  <div className="flex items-center gap-1 text-white/80 font-bold">
                      <MapPin className="w-3.5 h-3.5" />
                      تهران، جردن
                   </div>

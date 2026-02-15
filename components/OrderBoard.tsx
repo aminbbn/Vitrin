@@ -36,7 +36,7 @@ const COLUMNS: { id: OrderStatus, label: string, color: string, bg: string, icon
 
 // Optimized Transition: High stiffness + High damping = Snappy but NO bounce
 const SMOOTH_TRANSITION = {
-  type: "spring",
+  type: "spring" as const,
   stiffness: 400,
   damping: 40,
   mass: 1

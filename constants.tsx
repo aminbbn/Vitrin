@@ -24,60 +24,59 @@ export const SIDEBAR_LINKS = [
   { id: 'products', label: 'محصولات', icon: <Package className="w-5 h-5" /> },
   { id: 'orders', label: 'سفارشات', icon: <ClipboardList className="w-5 h-5" /> },
   { id: 'analytics', label: 'تحلیل و آمار', icon: <BarChart3 className="w-5 h-5" /> },
-  { id: 'customer-menu', label: 'نمای مشتری', icon: <Smartphone className="w-5 h-5" /> },
   { id: 'settings', label: 'تنظیمات', icon: <Settings className="w-5 h-5" /> },
 ];
 
 export const COMPONENT_LIBRARY = [
   { 
-    category: 'هیرو (Hero Styles)',
+    category: 'هیرو (بخش معرفی رستوران)',
     items: [
       { 
         id: 'hero-overlay', 
         type: 'hero', 
-        label: 'متن روی تصویر', 
+        label: 'معرفی بصری (Ambiance)', 
         icon: <Layers className="w-4 h-4" />,
         defaults: {
           style: 'overlay',
-          title: 'بهترین برگر شهر',
-          subtitle: 'طعم واقعی گوشت تازه گریل شده',
-          imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop',
+          title: 'تجربه‌ای فراتر از یک طعم',
+          subtitle: 'به دنیای اصالت و کیفیت رستوران لیمو خوش آمدید',
+          imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop',
           color: '#ffffff',
-          fontSize: 24
+          fontSize: 32
         }
       },
       { 
         id: 'hero-stack', 
         type: 'hero', 
-        label: 'متن زیر تصویر', 
+        label: 'اصالت و تاریخچه (Legacy)', 
         icon: <AlignVerticalSpaceAround className="w-4 h-4" />,
         defaults: {
           style: 'stack',
-          title: 'پیتزاهای ایتالیایی',
-          subtitle: 'پخت در تنور سنگی با رسپی اصیل',
-          imageUrl: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?q=80&w=1000&auto=format&fit=crop',
+          title: 'میراثی از طعم‌های ماندگار',
+          subtitle: 'بیش از دو دهه همراهی و میزبانی صمیمانه از ذائقه‌ی شما',
+          imageUrl: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1000&auto=format&fit=crop',
           color: '#0f172a',
-          fontSize: 20
+          fontSize: 24
         }
       },
       { 
         id: 'hero-split', 
         type: 'hero', 
-        label: 'هیرو تعاملی (Split)', 
+        label: 'فضا و اتمسفر (Vibe)', 
         icon: <SplitSquareHorizontal className="w-4 h-4" />,
         defaults: {
           style: 'split',
-          title: 'پیشنهاد سرآشپز',
-          subtitle: 'یک تجربه متفاوت برای شام امشب',
-          imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1000&auto=format&fit=crop',
+          title: 'فضایی آرام و دلنشین',
+          subtitle: 'طراحی مدرن در کنار اصالت، مناسب برای دورهمی‌های خاص شما',
+          imageUrl: 'https://images.unsplash.com/photo-1550966841-3ee32386e885?q=80&w=1000&auto=format&fit=crop',
           color: '#0f172a',
-          fontSize: 22
+          fontSize: 28
         }
       },
     ]
   },
   { 
-    category: 'چیدمان (Layout)',
+    category: 'چیدمان محصولات (Menu Layout)',
     items: [
       { 
         id: 'prod-grid', 
@@ -85,31 +84,31 @@ export const COMPONENT_LIBRARY = [
         label: 'نمای شبکه‌ای', 
         icon: <LayoutGrid className="w-4 h-4" />,
         defaults: {
-          title: 'پیتزاها',
-          subtitle: 'انتخاب مشتریان',
+          title: 'پیشنهادات ویژه',
+          subtitle: 'انتخاب‌های محبوب مشتریان ما',
           fontSize: 18
         }
       },
       { 
         id: 'prod-list', 
         type: 'product-list', 
-        label: 'نمای لیستی', 
+        label: 'نمای لیستی (کلاسیک)', 
         icon: <ListIcon className="w-4 h-4" />,
         defaults: {
-          title: 'نوشیدنی‌ها',
-          subtitle: 'خنک بنوشید',
+          title: 'نوشیدنی‌های سرد و گرم',
+          subtitle: 'طعم‌های تازه و طبیعی',
           fontSize: 18
         }
       },
       { 
         id: 'prod-feat', 
         type: 'featured', 
-        label: 'محصول ویژه', 
+        label: 'محصول ویژه (Spotlight)', 
         icon: <Star className="w-4 h-4" />,
         defaults: {
-          title: 'استیک ریب‌آی مخصوص',
-          subtitle: 'گریل شده با سس قارچ',
-          imageUrl: 'https://images.unsplash.com/photo-1546964124-0cce460f38ef?q=80&w=1000&auto=format&fit=crop',
+          title: 'امضای سرآشپز',
+          subtitle: 'هنری از ترکیب طعم‌های اصیل و مدرن',
+          imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1000&auto=format&fit=crop',
           color: '#ffffff',
           fontSize: 24
         }

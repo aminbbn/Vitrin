@@ -42,7 +42,7 @@ import {
 type DateRange = '7days' | '30days' | '1year';
 
 // --- ANIMATION CONFIG ---
-const SPRING_TRANSITION = { type: "spring", stiffness: 350, damping: 30 };
+const SPRING_TRANSITION = { type: "spring" as const, stiffness: 350, damping: 30 };
 
 // --- MOCK DATA ---
 
@@ -715,7 +715,7 @@ const Analytics: React.FC = () => {
                              <span className="text-sm font-black text-yellow-700">{product.rating}</span>
                              <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
                           </div>
-                          <span className="text-[10px] font-bold text-emerald-500">{product.positive}٪ رضایت</span>
+                          <span className="text-xs font-bold text-emerald-500">{product.positive}٪ رضایت</span>
                        </div>
                     </div>
                  ))}
