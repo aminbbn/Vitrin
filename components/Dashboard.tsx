@@ -10,9 +10,18 @@ import {
   ChevronLeft, 
   X, 
   Timer, 
-  Receipt, 
   UserPlus, 
-  UserCheck 
+  UserCheck,
+  Activity,
+  Zap,
+  BarChart2,
+  Calendar as CalendarIcon,
+  Download,
+  Loader2,
+  FileText,
+  Filter,
+  Star,
+  Search
 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,38 +46,14 @@ const DAILY_DATA = [
   { name: '۲۲:۰۰', revenue: 24400000 },
 ];
 
-const MOCK_PREP_ORDERS = [
-  { id: '#12888', items: ['پیتزا سبزیجات', 'سیب‌زمینی'], timeElapsed: '۱۲ دقیقه', progress: 75 },
-  { id: '#12889', items: ['پاستا آلفردو'], timeElapsed: '۸ دقیقه', progress: 45 },
-  { id: '#12890', items: ['استیک ریب‌آی', 'سالاد سزار'], timeElapsed: '۵ دقیقه', progress: 20 },
-];
-
-const MOCK_CUSTOMERS = [
-  { name: 'علی رضایی', type: 'new', visits: 1, lastOrder: '۲ دقیقه پیش' },
-  { name: 'سارا محمدی', type: 'loyal', visits: 15, lastOrder: '۱۵ دقیقه پیش' },
-  { name: 'رضا کمالی', type: 'new', visits: 1, lastOrder: '۳۴ دقیقه پیش' },
-  { name: 'مریم حسینی', type: 'loyal', visits: 8, lastOrder: '۱ ساعت پیش' },
-];
-
-const MOCK_NEW_ORDERS = [
-  { id: '#12892', table: 5, items: ['پیتزا پپرونی', 'نوشابه'], total: '۲۴۵,۰۰۰' },
-  { id: '#12893', table: 12, items: ['برگر ذغالی', 'سیب‌زمینی'], total: '۳۱۰,۰۰۰' },
-  { id: '#12894', table: 3, items: ['سالاد فصل'], total: '۸۵,۰۰۰' },
-];
-
-const MOCK_COMPLETED_ORDERS = [
-  { id: '#12880', time: '۱۲:۳۰', items: 'چلوکباب کوبیده (۲ پرس)', amount: 450000 },
-  { id: '#12881', time: '۱۲:۴۵', items: 'خورشت قورمه‌سبزی', amount: 180000 },
-  { id: '#12882', time: '۱۳:۱۰', items: 'پیتزا مخصوص', amount: 290000 },
-  { id: '#12883', time: '۱۳:۱۵', items: 'نوشیدنی‌های خنک', amount: 120000 },
-  { id: '#12884', time: '۱۳:۳۰', items: 'سالاد سزار، سوپ جو', amount: 210000 },
-];
-
 const MOCK_POPULAR_PRODUCTS = [
   { name: 'پیتزا پپرونی', category: 'پیتزا', price: '۲۴۵,۰۰۰', count: 128, color: 'emerald' },
   { name: 'چیزبرگر مخصوص', category: 'همبرگر', price: '۱۶۵,۰۰۰', count: 95, color: 'blue' },
   { name: 'سالاد سزار', category: 'سالاد', price: '۱۲۰,۰۰۰', count: 84, color: 'purple' },
   { name: 'سیب‌زمینی ویژه', category: 'پیش‌غذا', price: '۸۵,۰۰۰', count: 76, color: 'orange' },
+  { name: 'پاستا آلفردو', category: 'پاستا', price: '۱۹۰,۰۰۰', count: 65, color: 'emerald' },
+  { name: 'نوشابه کوکا', category: 'نوشیدنی', price: '۲۵,۰۰۰', count: 210, color: 'red' },
+  { name: 'نان سیر', category: 'پیش‌غذا', price: '۶۵,۰۰۰', count: 45, color: 'orange' },
 ];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -90,117 +75,548 @@ interface DashboardProps {
   restaurantName: string;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
-  const [selectedStat, setSelectedStat] = useState<string | null>(null);
-  const [showPopularModal, setShowPopularModal] = useState(false);
-  const [chartView, setChartView] = useState<'weekly' | 'daily'>('weekly');
+// --- NEW STATS DATA STRUCTURE ---
+const STATS = [
+  { 
+    id: 'revenue', 
+    label: 'کل فروش', 
+    value: '۳۸,۴۵۰,۰۰۰', 
+    unit: 'تومان', 
+    trend: '+۱۲٪', 
+    up: true, 
+    icon: TrendingUp, 
+    color: 'emerald',
+    insights: [
+      { label: 'میانگین فاکتور', value: '۴۵۰,۰۰۰ تومان' },
+      { label: 'فروش سالن', value: '۲۸,۴۵۰,۰۰۰' },
+      { label: 'بیرون‌بر', value: '۱۰,۰۰۰,۰۰۰' }
+    ]
+  },
+  { 
+    id: 'orders', 
+    label: 'سفارشات جدید', 
+    value: '۴۸', 
+    unit: 'سفارش امروز', 
+    trend: '+۵٪', 
+    up: true, 
+    icon: ShoppingBag, 
+    color: 'blue',
+    insights: [
+       { label: 'تکمیل شده', value: '۲۴' },
+       { label: 'در انتظار', value: '۱۲' },
+       { label: 'لغو شده', value: '۲' }
+    ]
+  },
+  { 
+    id: 'customers', 
+    label: 'مشتریان جدید', 
+    value: '۱۲', 
+    unit: 'نفر', 
+    trend: '-۲٪', 
+    up: false, 
+    icon: Users, 
+    color: 'purple',
+    insights: [
+       { label: 'مشتریان وفادار', value: '۱۰۵' },
+       { label: 'مشتریان جدید', value: '۱۲' }
+    ]
+  },
+  { 
+    id: 'prep', 
+    label: 'زمان آماده‌سازی', 
+    value: '۱۸', 
+    unit: 'دقیقه میانگین', 
+    trend: '-۳ دقیقه', 
+    up: true, 
+    icon: Clock, 
+    color: 'orange',
+    insights: [
+       { label: 'پیش‌غذا', value: '۸ دقیقه' },
+       { label: 'غذای اصلی', value: '۲۰ دقیقه' }
+    ]
+  },
+];
 
-  const STATS = [
-    { id: 'revenue', label: 'کل فروش امروز', value: '۳۸,۴۵۰,۰۰۰ تومان', trend: '+۱۲٪', up: true, icon: <TrendingUp />, color: 'emerald', popupTitle: 'گزارش فروش تکمیل شده' },
-    { id: 'orders', label: 'سفارشات جدید', value: '۴۸ سفارش', trend: '+۵٪', up: true, icon: <ShoppingBag />, color: 'blue', popupTitle: 'پیش‌نمایش سفارشات جدید' },
-    { id: 'customers', label: 'مشتریان جدید', value: '۱۲ نفر', trend: '-۲٪', up: false, icon: <Users />, color: 'purple', popupTitle: 'لیست مشتریان اخیر' },
-    { id: 'prep', label: 'زمان آماده‌سازی', value: '۱۸ دقیقه', trend: '-۳ دقیقه', up: true, icon: <Clock />, color: 'orange', popupTitle: 'سفارشات در حال آماده‌سازی' },
+// --- SUMMARY CARD COMPONENT ---
+const SummaryCard = ({ 
+  id, 
+  label, 
+  value, 
+  unit, 
+  trend, 
+  up, 
+  icon: Icon, 
+  color, 
+  onClick, 
+  index 
+}: any) => {
+  
+  const colorStyles: any = {
+    emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200' },
+    blue: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' },
+    purple: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200' },
+    orange: { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200' },
+  };
+
+  const theme = colorStyles[color] || colorStyles.emerald;
+
+  return (
+    <motion.div 
+      layoutId={`card-container-${id}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, type: "spring", stiffness: 200, damping: 20 }}
+      onClick={onClick}
+      className="bg-white/90 backdrop-blur-md border border-slate-100 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all cursor-pointer group h-[180px] flex flex-col justify-between relative overflow-hidden"
+    >
+      {/* Header: Icon Right, Title Left (Flex-Row in RTL puts first item on Right) */}
+      <div className="flex items-start justify-between">
+         <div className={`p-2.5 rounded-2xl ${theme.bg} ${theme.text} transition-transform group-hover:scale-110 shadow-sm`}>
+            <Icon className="w-6 h-6" />
+         </div>
+         <span className="text-xs font-bold text-slate-500 mt-1.5">{label}</span>
+      </div>
+
+      {/* Main Metric: Center */}
+      <div className="flex flex-col items-center justify-center flex-1 py-2">
+         <motion.h3 
+            layoutId={`value-${id}`}
+            className="text-4xl font-black text-slate-900 tracking-tight"
+         >
+           {value}
+         </motion.h3>
+      </div>
+
+      {/* Footer: Badges */}
+      <div className="flex items-center justify-between gap-4">
+         <div className={`flex items-center gap-1.5 text-[10px] font-black px-3 py-1.5 rounded-full border ${up ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-rose-600 bg-rose-50 border-rose-100'}`}>
+            {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+            {trend}
+         </div>
+         <span className="text-[10px] text-slate-400 font-bold bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-full">
+           {unit}
+         </span>
+      </div>
+
+      {/* Ambient Glow */}
+      <div className={`absolute -right-12 -bottom-12 w-32 h-32 bg-${color}-500/5 blur-[60px] rounded-full group-hover:bg-${color}-500/10 transition-colors pointer-events-none`} />
+    </motion.div>
+  );
+};
+
+// --- EXPANDED CARD (MODAL) ---
+const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => {
+  const colorStyles: any = {
+    emerald: { text: 'text-emerald-600', bg: 'bg-emerald-50' },
+    blue: { text: 'text-blue-600', bg: 'bg-blue-50' },
+    purple: { text: 'text-purple-600', bg: 'bg-purple-50' },
+    orange: { text: 'text-orange-600', bg: 'bg-orange-50' },
+  };
+  const theme = colorStyles[stat.color] || colorStyles.emerald;
+  const Icon = stat.icon;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"
+      />
+      <motion.div 
+        layoutId={`card-container-${stat.id}`}
+        initial={{ height: 120, opacity: 0 }}
+        animate={{ height: 'auto', opacity: 1 }}
+        exit={{ height: 120, opacity: 0, scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 250, damping: 30 }}
+        className="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden border border-slate-100 flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 relative">
+           <button onClick={onClose} className="absolute top-5 left-5 p-1 hover:bg-slate-100 rounded-full transition-colors text-slate-400 z-20">
+              <X className="w-5 h-5" />
+           </button>
+
+           <div className="flex items-center justify-between mb-8 mt-2">
+               <div className={`p-3 rounded-2xl ${theme.bg} ${theme.text}`}>
+                 <Icon className="w-7 h-7" />
+              </div>
+              <div className="flex flex-col items-end">
+                 <span className="text-xs font-bold text-slate-400 mb-1">{stat.label}</span>
+                 <motion.h2 layoutId={`value-${stat.id}`} className="text-3xl font-black text-slate-900">{stat.value}</motion.h2>
+              </div>
+           </div>
+
+           <div className="flex items-center gap-3 mb-8">
+               <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                  {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
+                  {stat.trend}
+               </span>
+               <span className="text-xs text-slate-500 font-bold bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{stat.unit}</span>
+           </div>
+
+           {/* Quick Insights Section */}
+           <div className="space-y-4">
+              <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                 <BarChart2 className="w-3 h-3" />
+                 جزئیات سریع
+              </h4>
+              <div className="space-y-3">
+                 {stat.insights.map((detail: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
+                       <span className="text-xs font-bold text-slate-600">{detail.label}</span>
+                       <span className="text-sm font-black text-slate-800">{detail.value}</span>
+                    </div>
+                 ))}
+              </div>
+           </div>
+           
+           <div className="mt-6 pt-4 border-t border-slate-100 text-center">
+             <button className="text-xs font-bold text-slate-400 hover:text-emerald-600 transition-colors flex items-center justify-center gap-1 mx-auto">
+               مشاهده گزارش کامل <ChevronLeft className="w-3 h-3" />
+             </button>
+           </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// --- DATE RANGE PICKER COMPONENT ---
+const DateRangePicker = ({ isOpen, onClose, onSelect, currentRange }: any) => {
+  if (!isOpen) return null;
+
+  const ranges = [
+    { label: 'امروز', value: 'today' },
+    { label: 'دیروز', value: 'yesterday' },
+    { label: '۷ روز گذشته', value: '7days' },
+    { label: '۳۰ روز گذشته', value: '30days' },
+    { label: 'این ماه', value: 'thisMonth' },
+    { label: 'ماه گذشته', value: 'lastMonth' },
   ];
 
-  const renderPopupContent = () => {
-    switch (selectedStat) {
-      case 'prep':
-        return (
-          <div className="space-y-4">
-            {MOCK_PREP_ORDERS.map((order) => (
-              <div key={order.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-bold text-slate-800">{order.id}</span>
-                  <div className="flex items-center gap-1 text-orange-600 text-xs font-bold"><Timer className="w-3 h-3" />{order.timeElapsed} گذشته</div>
-                </div>
-                <div className="text-sm text-slate-600 mb-3">{order.items.join('، ')}</div>
-                <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-orange-500 rounded-full transition-all duration-1000" style={{ width: `${order.progress}%` }} />
-                </div>
+  // Mock Calendar Grid (6 weeks, 7 days)
+  const days = Array.from({ length: 35 }, (_, i) => i + 1);
+
+  return (
+    <div className="absolute top-full right-0 mt-2 z-50">
+      <motion.div
+        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+        className="bg-white rounded-2xl shadow-xl border border-slate-200 p-4 w-[320px] flex flex-col gap-4"
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+           <span className="font-bold text-slate-800 text-sm">انتخاب بازه زمانی</span>
+           <button onClick={onClose}><X className="w-4 h-4 text-slate-400 hover:text-slate-600" /></button>
+        </div>
+        
+        <div className="flex flex-wrap gap-2">
+           {ranges.map(r => (
+             <button 
+                key={r.value} 
+                onClick={() => onSelect(r.label)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${currentRange === r.label ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-50 text-slate-600 border border-slate-100 hover:bg-slate-100'}`}
+             >
+                {r.label}
+             </button>
+           ))}
+        </div>
+
+        {/* Visual Mock Calendar */}
+        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+           <div className="flex justify-between items-center mb-2 px-1">
+              <span className="text-xs font-bold text-slate-700">مهر ۱۴۰۲</span>
+              <div className="flex gap-1">
+                 <ChevronLeft className="w-4 h-4 text-slate-400 rotate-180" />
+                 <ChevronLeft className="w-4 h-4 text-slate-400" />
               </div>
-            ))}
-          </div>
-        );
-      case 'customers':
-        return (
-          <div className="space-y-3">
-            {MOCK_CUSTOMERS.map((cust, i) => (
-              <div key={i} className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors border border-transparent hover:border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${cust.type === 'new' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
-                    {cust.type === 'new' ? <UserPlus className="w-5 h-5" /> : <UserCheck className="w-5 h-5" />}
+           </div>
+           <div className="grid grid-cols-7 gap-1 text-center mb-1">
+              {['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'].map(d => <span key={d} className="text-[10px] text-slate-400">{d}</span>)}
+           </div>
+           <div className="grid grid-cols-7 gap-1">
+              {days.map(d => (
+                 <button key={d} className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-medium transition-colors ${d === 15 || d === 22 ? 'bg-emerald-500 text-white shadow-sm' : (d > 15 && d < 22) ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-white'}`}>
+                    {d > 30 ? d - 30 : d}
+                 </button>
+              ))}
+           </div>
+        </div>
+
+        <button onClick={onClose} className="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
+           تایید و اعمال
+        </button>
+      </motion.div>
+    </div>
+  );
+};
+
+// --- ALL PRODUCTS MODAL ---
+const AllProductsModal = ({ isOpen, onClose }: any) => {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
+          >
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-20">
+              <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5 text-emerald-600" />
+                لیست کامل محصولات
+              </h3>
+              <button 
+                onClick={onClose}
+                className="p-2 bg-slate-50 rounded-full border border-slate-200 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto">
+               <div className="flex gap-4 mb-6">
+                  <div className="relative flex-1">
+                     <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                     <input type="text" placeholder="جستجو در محصولات..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-emerald-500 outline-none" />
                   </div>
-                  <div><h4 className="font-bold text-slate-800 text-sm">{cust.name}</h4><span className="text-[10px] text-slate-400">{cust.lastOrder}</span></div>
-                </div>
-                <span className={`text-[10px] px-2 py-1 rounded-full font-bold ${cust.type === 'new' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>{cust.type === 'new' ? 'مشتری جدید' : 'مشتری وفادار'}</span>
-              </div>
-            ))}
-          </div>
-        );
-      default: return null;
-    }
+                  <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-200">
+                     <Filter className="w-4 h-4" /> فیلتر
+                  </button>
+               </div>
+
+               <div className="border border-slate-100 rounded-2xl overflow-hidden">
+                  <table className="w-full text-right">
+                     <thead className="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                           <th className="px-6 py-4 text-xs font-black text-slate-500">نام محصول</th>
+                           <th className="px-6 py-4 text-xs font-black text-slate-500">دسته‌بندی</th>
+                           <th className="px-6 py-4 text-xs font-black text-slate-500">قیمت</th>
+                           <th className="px-6 py-4 text-xs font-black text-slate-500">تعداد فروش</th>
+                           <th className="px-6 py-4 text-xs font-black text-slate-500">وضعیت</th>
+                        </tr>
+                     </thead>
+                     <tbody className="divide-y divide-slate-100">
+                        {MOCK_POPULAR_PRODUCTS.map((prod, idx) => (
+                           <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="px-6 py-4">
+                                 <div className="flex items-center gap-3">
+                                    <div className={`w-8 h-8 rounded-lg bg-${prod.color}-100 flex items-center justify-center text-${prod.color}-600 font-bold text-xs`}>
+                                       {prod.name.charAt(0)}
+                                    </div>
+                                    <span className="text-sm font-bold text-slate-800">{prod.name}</span>
+                                 </div>
+                              </td>
+                              <td className="px-6 py-4 text-xs font-medium text-slate-500">
+                                 <span className="bg-slate-100 px-2 py-1 rounded-md">{prod.category}</span>
+                              </td>
+                              <td className="px-6 py-4 text-sm font-black text-emerald-600">{prod.price}</td>
+                              <td className="px-6 py-4 text-sm font-bold text-slate-700">{prod.count}</td>
+                              <td className="px-6 py-4">
+                                 <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">موجود</span>
+                              </td>
+                           </tr>
+                        ))}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+
+const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
+  const [selectedStatId, setSelectedStatId] = useState<string | null>(null);
+  const [showAllProductsModal, setShowAllProductsModal] = useState(false);
+  const [chartView, setChartView] = useState<'weekly' | 'daily'>('weekly');
+  
+  // Date Picker State
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateRangeLabel, setDateRangeLabel] = useState('۷ روز گذشته');
+
+  // Report State
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
+  const selectedStat = STATS.find(s => s.id === selectedStatId);
+
+  const handleDateSelect = (label: string) => {
+    setDateRangeLabel(label);
+    setShowDatePicker(false);
+  };
+
+  const handleDownloadReport = () => {
+    setIsGeneratingReport(true);
+    setTimeout(() => {
+      // 1. Prepare CSV Content
+      const headers = ['Metric', 'Value', 'Unit', 'Trend'];
+      const rows = STATS.map(s => [s.label, s.value, s.unit, s.trend]);
+      
+      const chartHeaders = ['Day/Time', 'Revenue'];
+      const chartRows = (chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA).map(d => [d.name, d.revenue]);
+
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM for Excel
+      
+      csvContent += "--- SUMMARY STATISTICS ---\n";
+      csvContent += headers.join(",") + "\n";
+      rows.forEach(r => csvContent += r.join(",") + "\n");
+      
+      csvContent += "\n--- SALES DATA ---\n";
+      csvContent += chartHeaders.join(",") + "\n";
+      chartRows.forEach(r => csvContent += r.join(",") + "\n");
+
+      // 2. Create Download Link
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "dashboard-report.csv");
+      document.body.appendChild(link);
+      
+      // 3. Trigger Download
+      link.click();
+      document.body.removeChild(link);
+      
+      setIsGeneratingReport(false);
+    }, 1200); // 1.2s delay for visual feedback
   };
 
   return (
-    <div className="p-8 h-full overflow-y-auto space-y-8 bg-slate-50 relative font-['Vazirmatn']">
+    <div className="p-8 h-full overflow-y-auto space-y-8 bg-[#F8FAFC] relative font-['Vazirmatn']">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900">سلام، {restaurantName} 👋</h1>
           <p className="text-sm text-slate-400 mt-1">امروز تا الان وضعیت فروش شما فوق‌العاده بوده است!</p>
         </div>
-        <div className="flex gap-4">
-          <div className="px-4 py-2 bg-white border border-slate-200 rounded-xl flex items-center gap-2 text-xs font-bold text-slate-500 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors"><Clock className="w-4 h-4 text-emerald-600" /> ۷ روز گذشته</div>
-          <button className="px-6 py-2 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-colors">دریافت گزارش</button>
+        <div className="flex gap-4 relative">
+          
+          {/* DATE PICKER BUTTON */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2 text-xs font-bold text-slate-600 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors min-w-[140px] justify-between"
+            >
+              <div className="flex items-center gap-2">
+                 <CalendarIcon className="w-4 h-4 text-emerald-600" /> 
+                 <span>{dateRangeLabel}</span>
+              </div>
+              <ChevronLeft className={`w-3 h-3 transition-transform ${showDatePicker ? '-rotate-90' : ''}`} />
+            </button>
+            <AnimatePresence>
+               {showDatePicker && (
+                  <DateRangePicker 
+                     isOpen={showDatePicker} 
+                     onClose={() => setShowDatePicker(false)}
+                     onSelect={handleDateSelect}
+                     currentRange={dateRangeLabel}
+                  />
+               )}
+            </AnimatePresence>
+          </div>
+
+          {/* REPORT BUTTON */}
+          <button 
+            onClick={handleDownloadReport}
+            disabled={isGeneratingReport}
+            className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed min-w-[160px] justify-center"
+          >
+            {isGeneratingReport ? (
+               <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  در حال ساخت...
+               </>
+            ) : (
+               <>
+                  <Download className="w-4 h-4" />
+                  دریافت گزارش
+               </>
+            )}
+          </button>
         </div>
       </div>
 
+      {/* STATS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-0">
-        {STATS.map((stat) => (
-          <motion.div key={stat.id} layoutId={`container-${stat.id}`} onClick={() => setSelectedStat(stat.id)} className="bg-white p-6 shadow-sm border border-slate-100 cursor-pointer group relative overflow-hidden rounded-[1.5rem]" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}>
-            <motion.div animate={{ opacity: selectedStat === stat.id ? 0 : 1 }} transition={{ duration: 0.2 }}>
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-2xl bg-${stat.color}-50 text-${stat.color}-600 group-hover:scale-110 transition-transform`}>{stat.icon}</div>
-                <div className={`flex items-center gap-1 text-xs font-black ${stat.up ? 'text-emerald-500' : 'text-red-500'}`}>{stat.trend}{stat.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}</div>
-              </div>
-              <h3 className="text-sm font-bold text-slate-400 mb-1">{stat.label}</h3>
-              <p className="text-xl font-black text-slate-900">{stat.value}</p>
-            </motion.div>
-          </motion.div>
+        {STATS.map((stat, index) => (
+          <SummaryCard 
+            key={stat.id} 
+            {...stat} 
+            index={index}
+            onClick={() => setSelectedStatId(stat.id)} 
+          />
         ))}
       </div>
 
+      {/* EXPANDED STAT MODAL */}
       <AnimatePresence>
         {selectedStat && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedStat(null)} className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm" />
-            <motion.div layoutId={`container-${selectedStat}`} className="bg-white w-full max-w-lg shadow-2xl relative z-10 overflow-hidden flex flex-col rounded-[2rem]" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}>
-               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, delay: 0.1 }} className="h-full relative isolate">
-                  <div className="absolute top-0 left-0 right-0 z-20 p-6 border-b border-slate-100/50 bg-white/60 backdrop-blur-xl flex items-center justify-between rounded-t-[2rem]">
-                    <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">{STATS.find(s => s.id === selectedStat)?.icon}{STATS.find(s => s.id === selectedStat)?.popupTitle}</h3>
-                    <button onClick={() => setSelectedStat(null)} className="p-2 bg-white/50 hover:bg-white rounded-full border border-slate-200 hover:border-slate-300 transition-colors shadow-sm"><X className="w-5 h-5 text-slate-500" /></button>
-                  </div>
-                  <div className="h-full max-h-[60vh] overflow-y-auto p-6 pt-28">{renderPopupContent()}</div>
-               </motion.div>
-            </motion.div>
-          </div>
+           <ExpandedCard stat={selectedStat} onClose={() => setSelectedStatId(null)} />
         )}
       </AnimatePresence>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col">
-          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800">آمار فروش</h2><div className="flex gap-2 bg-slate-100 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>روزانه</button></div></div>
+        <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col">
+          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800">آمار فروش</h2><div className="flex gap-2 bg-slate-100 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>روزانه</button></div></div>
           <div className="h-80 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA}><defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" /><XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} /><YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => `${value / 1000000} م`} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} /><Tooltip content={<CustomTooltip />} /><Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" /></AreaChart>
+              <AreaChart data={chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA}>
+                 <defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient></defs>
+                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
+                 <YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => `${value / 1000000} م`} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
+                 <Tooltip content={<CustomTooltip />} />
+                 <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-          <h2 className="text-lg font-black text-slate-800 mb-6">پرطرفدارترین‌ها</h2>
-          <div className="space-y-6">{MOCK_POPULAR_PRODUCTS.map((prod, i) => (<div key={i} className="flex items-center justify-between group cursor-pointer"><div className="flex items-center gap-4"><div className={`w-12 h-12 rounded-2xl bg-${prod.color}-50 flex items-center justify-center text-${prod.color}-600 group-hover:scale-110 transition-transform`}><ShoppingBag className="w-6 h-6" /></div><div><h4 className="text-sm font-bold text-slate-800">{prod.name}</h4><span className="text-[10px] font-medium text-slate-400">{prod.category}</span></div></div><div className="text-left"><p className="text-sm font-black text-slate-700">{prod.price}</p><span className="text-[10px] text-emerald-500 font-bold">{prod.count}</span></div></div>))}</div>
-          <button onClick={() => setShowPopularModal(true)} className="w-full mt-8 py-3 bg-slate-50 text-slate-500 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors">مشاهده کل لیست <ChevronLeft className="w-4 h-4" /></button>
+        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+          <h2 className="text-lg font-black text-slate-800 mb-6">پرفروش‌ترین‌ها</h2>
+          <div className="space-y-6">
+            {MOCK_POPULAR_PRODUCTS.slice(0, 4).map((prod, i) => (
+              <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 p-2 rounded-xl transition-colors -mx-2">
+                 <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-2xl bg-${prod.color}-50 flex items-center justify-center text-${prod.color}-600 group-hover:scale-110 transition-transform`}>
+                       <ShoppingBag className="w-6 h-6" />
+                    </div>
+                    <div>
+                       <h4 className="text-sm font-bold text-slate-800">{prod.name}</h4>
+                       <span className="text-[10px] font-medium text-slate-400">{prod.category}</span>
+                    </div>
+                 </div>
+                 <div className="text-left">
+                    <p className="text-sm font-black text-slate-700">{prod.price}</p>
+                    <span className="text-[10px] text-emerald-500 font-bold">{prod.count} فروش</span>
+                 </div>
+              </div>
+            ))}
+          </div>
+          <button 
+             onClick={() => setShowAllProductsModal(true)}
+             className="w-full mt-8 py-3 bg-slate-50 text-slate-500 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors"
+          >
+             مشاهده کل لیست <ChevronLeft className="w-4 h-4" />
+          </button>
         </div>
       </div>
+
+      <AllProductsModal 
+         isOpen={showAllProductsModal} 
+         onClose={() => setShowAllProductsModal(false)} 
+      />
     </div>
   );
 };

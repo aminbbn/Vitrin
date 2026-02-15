@@ -8,7 +8,8 @@ import {
   ArrowLeft, 
   Eye, 
   EyeOff, 
-  Store 
+  Store,
+  Check
 } from 'lucide-react';
 
 const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, showPasswordToggle, error }: any) => {
@@ -114,6 +115,7 @@ interface AuthFormProps {
 const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   
   // Form State
   const [email, setEmail] = useState('');
@@ -244,15 +246,26 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
           />
 
           {authMode === 'login' && (
-            <div className="flex items-center justify-between">
-               <label className="flex items-center gap-2 cursor-pointer">
-                  <div className="relative flex items-center">
-                     {/* Added bg-white to ensure checkbox background is white when unchecked */}
-                     <input type="checkbox" className="peer w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 bg-white" />
+            <div className="flex items-center justify-between mt-2">
+               <label className="flex items-center gap-2 cursor-pointer group select-none">
+                  <div className="relative">
+                     <input 
+                        type="checkbox" 
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="sr-only"
+                     />
+                     <div className={`w-5 h-5 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                        rememberMe 
+                           ? 'bg-emerald-500 border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]' 
+                           : 'bg-white border-slate-200 group-hover:border-emerald-200'
+                     }`}>
+                        <Check className={`w-3.5 h-3.5 text-white transition-all duration-200 ${rememberMe ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`} strokeWidth={3} />
+                     </div>
                   </div>
-                  <span className="text-xs font-bold text-slate-500">مرا به خاطر بسپار</span>
+                  <span className={`text-xs font-bold transition-colors ${rememberMe ? 'text-slate-800' : 'text-slate-500'}`}>مرا به خاطر بسپار</span>
                </label>
-               <a href="#" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">رمز عبور را فراموش کردید؟</a>
+               <a href="#" className="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors">رمز عبور را فراموش کردید؟</a>
             </div>
           )}
 
