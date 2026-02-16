@@ -9,18 +9,11 @@ import {
   ArrowDownRight, 
   ChevronLeft, 
   X, 
-  Timer, 
-  UserPlus, 
-  UserCheck,
-  Activity,
-  Zap,
   BarChart2,
   Calendar as CalendarIcon,
   Download,
   Loader2,
-  FileText,
   Filter,
-  Star,
   Search
 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
@@ -56,6 +49,95 @@ const MOCK_POPULAR_PRODUCTS = [
   { name: 'نان سیر', category: 'پیش‌غذا', price: '۶۵,۰۰۰', count: 45, color: 'orange' },
 ];
 
+// Helper to generate mock stats based on range
+const getMockStats = (range: string) => {
+  const baseStats = [
+    { 
+      id: 'revenue', 
+      label: 'کل فروش', 
+      value: '۳۸,۴۵۰,۰۰۰', 
+      unit: 'تومان', 
+      trend: '+۱۲٪', 
+      up: true, 
+      icon: TrendingUp, 
+      color: 'emerald',
+      insights: [
+        { label: 'میانگین فاکتور', value: '۴۵۰,۰۰۰ تومان' },
+        { label: 'فروش سالن', value: '۲۸,۴۵۰,۰۰۰' },
+        { label: 'بیرون‌بر', value: '۱۰,۰۰۰,۰۰۰' }
+      ]
+    },
+    { 
+      id: 'orders', 
+      label: 'سفارشات جدید', 
+      value: '۴۸', 
+      unit: 'سفارش امروز', 
+      trend: '+۵٪', 
+      up: true, 
+      icon: ShoppingBag, 
+      color: 'blue',
+      insights: [
+         { label: 'تکمیل شده', value: '۲۴' },
+         { label: 'در انتظار', value: '۱۲' },
+         { label: 'لغو شده', value: '۲' }
+      ]
+    },
+    { 
+      id: 'customers', 
+      label: 'مشتریان جدید', 
+      value: '۱۲', 
+      unit: 'نفر', 
+      trend: '-۲٪', 
+      up: false, 
+      icon: Users, 
+      color: 'purple',
+      insights: [
+         { label: 'مشتریان وفادار', value: '۱۰۵' },
+         { label: 'مشتریان جدید', value: '۱۲' }
+      ]
+    },
+    { 
+      id: 'prep', 
+      label: 'زمان آماده‌سازی', 
+      value: '۱۸', 
+      unit: 'دقیقه میانگین', 
+      trend: '-۳ دقیقه', 
+      up: true, 
+      icon: Clock, 
+      color: 'orange',
+      insights: [
+         { label: 'پیش‌غذا', value: '۸ دقیقه' },
+         { label: 'غذای اصلی', value: '۲۰ دقیقه' }
+      ]
+    },
+  ];
+
+  if (range === 'today' || range === 'امروز') {
+    return baseStats.map(s => {
+      if (s.id === 'revenue') return { ...s, value: '۳,۸۵۰,۰۰۰', trend: '+۲٪' };
+      if (s.id === 'orders') return { ...s, value: '۱۲', trend: '۰٪' };
+      return s;
+    });
+  }
+  if (range === 'yesterday' || range === 'دیروز') {
+    return baseStats.map(s => {
+      if (s.id === 'revenue') return { ...s, value: '۴,۱۰۰,۰۰۰', trend: '-۵٪', up: false };
+      if (s.id === 'orders') return { ...s, value: '۱۵', trend: '+۲٪' };
+      return s;
+    });
+  }
+  if (range === '30days' || range === '۳۰ روز گذشته') {
+    return baseStats.map(s => {
+      if (s.id === 'revenue') return { ...s, value: '۴۵۰,۰۰۰,۰۰۰', trend: '+۱۵٪' };
+      if (s.id === 'orders') return { ...s, value: '۱,۲۰۰', trend: '+۱۰٪' };
+      if (s.id === 'customers') return { ...s, value: '۱۴۰', trend: '+۸٪', up: true };
+      return s;
+    });
+  }
+  
+  return baseStats;
+};
+
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -73,69 +155,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 interface DashboardProps {
   restaurantName: string;
+  searchQuery?: string;
 }
-
-// --- NEW STATS DATA STRUCTURE ---
-const STATS = [
-  { 
-    id: 'revenue', 
-    label: 'کل فروش', 
-    value: '۳۸,۴۵۰,۰۰۰', 
-    unit: 'تومان', 
-    trend: '+۱۲٪', 
-    up: true, 
-    icon: TrendingUp, 
-    color: 'emerald',
-    insights: [
-      { label: 'میانگین فاکتور', value: '۴۵۰,۰۰۰ تومان' },
-      { label: 'فروش سالن', value: '۲۸,۴۵۰,۰۰۰' },
-      { label: 'بیرون‌بر', value: '۱۰,۰۰۰,۰۰۰' }
-    ]
-  },
-  { 
-    id: 'orders', 
-    label: 'سفارشات جدید', 
-    value: '۴۸', 
-    unit: 'سفارش امروز', 
-    trend: '+۵٪', 
-    up: true, 
-    icon: ShoppingBag, 
-    color: 'blue',
-    insights: [
-       { label: 'تکمیل شده', value: '۲۴' },
-       { label: 'در انتظار', value: '۱۲' },
-       { label: 'لغو شده', value: '۲' }
-    ]
-  },
-  { 
-    id: 'customers', 
-    label: 'مشتریان جدید', 
-    value: '۱۲', 
-    unit: 'نفر', 
-    trend: '-۲٪', 
-    up: false, 
-    icon: Users, 
-    color: 'purple',
-    insights: [
-       { label: 'مشتریان وفادار', value: '۱۰۵' },
-       { label: 'مشتریان جدید', value: '۱۲' }
-    ]
-  },
-  { 
-    id: 'prep', 
-    label: 'زمان آماده‌سازی', 
-    value: '۱۸', 
-    unit: 'دقیقه میانگین', 
-    trend: '-۳ دقیقه', 
-    up: true, 
-    icon: Clock, 
-    color: 'orange',
-    insights: [
-       { label: 'پیش‌غذا', value: '۸ دقیقه' },
-       { label: 'غذای اصلی', value: '۲۰ دقیقه' }
-    ]
-  },
-];
 
 // --- SUMMARY CARD COMPONENT ---
 const SummaryCard = ({ 
@@ -162,14 +183,14 @@ const SummaryCard = ({
 
   return (
     <motion.div 
-      layoutId={`card-container-${id}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, type: "spring", stiffness: 200, damping: 20 }}
       onClick={onClick}
+      whileHover={{ scale: 1.02, y: -2 }}
       className="bg-white/90 backdrop-blur-md border border-slate-100 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all cursor-pointer group h-[180px] flex flex-col justify-between relative overflow-hidden"
     >
-      {/* Header: Icon Right, Title Left (Flex-Row in RTL puts first item on Right) */}
+      {/* Header */}
       <div className="flex items-start justify-between">
          <div className={`p-2.5 rounded-2xl ${theme.bg} ${theme.text} transition-transform group-hover:scale-110 shadow-sm`}>
             <Icon className="w-6 h-6" />
@@ -177,17 +198,14 @@ const SummaryCard = ({
          <span className="text-xs font-bold text-slate-500 mt-1.5">{label}</span>
       </div>
 
-      {/* Main Metric: Center */}
+      {/* Main Metric */}
       <div className="flex flex-col items-center justify-center flex-1 py-2">
-         <motion.h3 
-            layoutId={`value-${id}`}
-            className="text-4xl font-black text-slate-900 tracking-tight"
-         >
+         <h3 className="text-4xl font-black text-slate-900 tracking-tight">
            {value}
-         </motion.h3>
+         </h3>
       </div>
 
-      {/* Footer: Badges */}
+      {/* Footer */}
       <div className="flex items-center justify-between gap-4">
          <div className={`flex items-center gap-1.5 text-[10px] font-black px-3 py-1.5 rounded-full border ${up ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-rose-600 bg-rose-50 border-rose-100'}`}>
             {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
@@ -216,76 +234,107 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
   const Icon = stat.icon;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <>
+      {/* 
+         Focus Mode Overlay:
+         - z-[100]: Covers everything, including Header (z-40)
+         - Covers dashboard content.
+         - Dark opacity (0.7) and strong blur (8px).
+      */}
       <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+        animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
+        exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+        transition={{ duration: 0.3 }}
         onClick={onClose}
-        className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"
+        className="fixed inset-0 bg-slate-900/70 z-[100]"
       />
-      <motion.div 
-        layoutId={`card-container-${stat.id}`}
-        initial={{ height: 120, opacity: 0 }}
-        animate={{ height: 'auto', opacity: 1 }}
-        exit={{ height: 120, opacity: 0, scale: 0.95 }}
-        transition={{ type: "spring", stiffness: 250, damping: 30 }}
-        className="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden border border-slate-100 flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-6 relative">
-           <button onClick={onClose} className="absolute top-5 left-5 p-1 hover:bg-slate-100 rounded-full transition-colors text-slate-400 z-20">
-              <X className="w-5 h-5" />
-           </button>
-
-           <div className="flex items-center justify-between mb-8 mt-2">
-               <div className={`p-3 rounded-2xl ${theme.bg} ${theme.text}`}>
-                 <Icon className="w-7 h-7" />
-              </div>
-              <div className="flex flex-col items-end">
-                 <span className="text-xs font-bold text-slate-400 mb-1">{stat.label}</span>
-                 <motion.h2 layoutId={`value-${stat.id}`} className="text-3xl font-black text-slate-900">{stat.value}</motion.h2>
-              </div>
-           </div>
-
-           <div className="flex items-center gap-3 mb-8">
-               <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
-                  {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                  {stat.trend}
-               </span>
-               <span className="text-xs text-slate-500 font-bold bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{stat.unit}</span>
-           </div>
-
-           {/* Quick Insights Section */}
-           <div className="space-y-4">
-              <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                 <BarChart2 className="w-3 h-3" />
-                 جزئیات سریع
-              </h4>
-              <div className="space-y-3">
-                 {stat.insights.map((detail: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
-                       <span className="text-xs font-bold text-slate-600">{detail.label}</span>
-                       <span className="text-sm font-black text-slate-800">{detail.value}</span>
+      
+      {/* 
+         Modal Container:
+         - z-[110]: Sits above Overlay
+      */}
+      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 pointer-events-none">
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          className="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl relative overflow-hidden border border-slate-100 flex flex-col pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-6 relative">
+             
+             {/* HEADER LAYOUT: RTL Optimized - Title Right, Close Left */}
+             <div className="flex items-center justify-between mb-8">
+                 {/* Right Side (Start in RTL): Icon + Label */}
+                 <div className="flex items-center gap-3">
+                    <div className={`p-3.5 rounded-2xl ${theme.bg} ${theme.text} shadow-sm`}>
+                      <Icon className="w-6 h-6" />
                     </div>
-                 ))}
-              </div>
-           </div>
-           
-           <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-             <button className="text-xs font-bold text-slate-400 hover:text-emerald-600 transition-colors flex items-center justify-center gap-1 mx-auto">
-               مشاهده گزارش کامل <ChevronLeft className="w-3 h-3" />
-             </button>
-           </div>
-        </div>
-      </motion.div>
-    </div>
+                    <span className="text-lg font-black text-slate-700">{stat.label}</span>
+                 </div>
+
+                 {/* Left Side (End in RTL): Close Button */}
+                 <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+                    <X className="w-5 h-5" />
+                 </button>
+             </div>
+
+             {/* Main Metric - Centered/Prominent */}
+             <div className="flex flex-col items-start mb-8">
+                 <motion.h2 
+                   initial={{ opacity: 0, y: 10 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   transition={{ delay: 0.1 }}
+                   className="text-5xl font-black text-slate-900 tracking-tight"
+                 >
+                   {stat.value}
+                 </motion.h2>
+                 <div className="flex items-center gap-3 mt-3">
+                    <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                        {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
+                        {stat.trend}
+                    </span>
+                    <span className="text-xs text-slate-500 font-bold bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{stat.unit}</span>
+                 </div>
+             </div>
+
+             {/* Quick Insights Section */}
+             <div className="space-y-4">
+                <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                   <BarChart2 className="w-3 h-3" />
+                   جزئیات سریع
+                </h4>
+                <div className="space-y-3">
+                   {stat.insights.map((detail: any, i: number) => (
+                      <motion.div 
+                        key={i} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 + (i * 0.1) }}
+                        className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors"
+                      >
+                         <span className="text-xs font-bold text-slate-600">{detail.label}</span>
+                         <span className="text-sm font-black text-slate-800">{detail.value}</span>
+                      </motion.div>
+                   ))}
+                </div>
+             </div>
+             
+             {/* Bottom Spacer (Button Removed) */}
+             <div className="h-6" />
+          </div>
+        </motion.div>
+      </div>
+    </>
   );
 };
 
 // --- DATE RANGE PICKER COMPONENT ---
-const DateRangePicker = ({ isOpen, onClose, onSelect, currentRange }: any) => {
+const DateRangePicker = ({ isOpen, onClose, onConfirm, currentRange }: any) => {
   if (!isOpen) return null;
+  const [selected, setSelected] = useState(currentRange);
 
   const ranges = [
     { label: 'امروز', value: 'today' },
@@ -296,7 +345,6 @@ const DateRangePicker = ({ isOpen, onClose, onSelect, currentRange }: any) => {
     { label: 'ماه گذشته', value: 'lastMonth' },
   ];
 
-  // Mock Calendar Grid (6 weeks, 7 days)
   const days = Array.from({ length: 35 }, (_, i) => i + 1);
 
   return (
@@ -316,8 +364,8 @@ const DateRangePicker = ({ isOpen, onClose, onSelect, currentRange }: any) => {
            {ranges.map(r => (
              <button 
                 key={r.value} 
-                onClick={() => onSelect(r.label)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${currentRange === r.label ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-50 text-slate-600 border border-slate-100 hover:bg-slate-100'}`}
+                onClick={() => setSelected(r.label)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${selected === r.label ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200' : 'bg-slate-50 text-slate-600 border border-slate-100 hover:bg-slate-100'}`}
              >
                 {r.label}
              </button>
@@ -345,7 +393,10 @@ const DateRangePicker = ({ isOpen, onClose, onSelect, currentRange }: any) => {
            </div>
         </div>
 
-        <button onClick={onClose} className="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
+        <button 
+          onClick={() => onConfirm(selected)}
+          className="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors"
+        >
            تایید و اعمال
         </button>
       </motion.div>
@@ -354,7 +405,17 @@ const DateRangePicker = ({ isOpen, onClose, onSelect, currentRange }: any) => {
 };
 
 // --- ALL PRODUCTS MODAL ---
-const AllProductsModal = ({ isOpen, onClose }: any) => {
+const AllProductsModal = ({ isOpen, onClose, searchQuery }: any) => {
+  const [localSearch, setLocalSearch] = useState('');
+  
+  // Combine global search query (from header) with local search in modal if needed, 
+  // but usually modal uses its own. If searchQuery passed, filter by it.
+  const query = localSearch || searchQuery || '';
+
+  const filteredProducts = MOCK_POPULAR_PRODUCTS.filter(p => 
+    p.name.includes(query) || p.category.includes(query)
+  );
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -364,7 +425,7 @@ const AllProductsModal = ({ isOpen, onClose }: any) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
           />
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -389,11 +450,14 @@ const AllProductsModal = ({ isOpen, onClose }: any) => {
                <div className="flex gap-4 mb-6">
                   <div className="relative flex-1">
                      <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                     <input type="text" placeholder="جستجو در محصولات..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-emerald-500 outline-none" />
+                     <input 
+                        type="text" 
+                        value={localSearch || searchQuery || ''}
+                        onChange={(e) => setLocalSearch(e.target.value)}
+                        placeholder="جستجو در محصولات..." 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-emerald-500 outline-none" 
+                     />
                   </div>
-                  <button className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-200">
-                     <Filter className="w-4 h-4" /> فیلتر
-                  </button>
                </div>
 
                <div className="border border-slate-100 rounded-2xl overflow-hidden">
@@ -408,7 +472,7 @@ const AllProductsModal = ({ isOpen, onClose }: any) => {
                         </tr>
                      </thead>
                      <tbody className="divide-y divide-slate-100">
-                        {MOCK_POPULAR_PRODUCTS.map((prod, idx) => (
+                        {filteredProducts.length > 0 ? filteredProducts.map((prod, idx) => (
                            <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
                               <td className="px-6 py-4">
                                  <div className="flex items-center gap-3">
@@ -427,7 +491,13 @@ const AllProductsModal = ({ isOpen, onClose }: any) => {
                                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">موجود</span>
                               </td>
                            </tr>
-                        ))}
+                        )) : (
+                          <tr>
+                             <td colSpan={5} className="px-6 py-10 text-center text-slate-400 text-sm">
+                                موردی یافت نشد
+                             </td>
+                          </tr>
+                        )}
                      </tbody>
                   </table>
                </div>
@@ -440,7 +510,8 @@ const AllProductsModal = ({ isOpen, onClose }: any) => {
 };
 
 
-const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
+const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' }) => {
+  const [statsData, setStatsData] = useState(getMockStats('7days'));
   const [selectedStatId, setSelectedStatId] = useState<string | null>(null);
   const [showAllProductsModal, setShowAllProductsModal] = useState(false);
   const [chartView, setChartView] = useState<'weekly' | 'daily'>('weekly');
@@ -452,11 +523,27 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
   // Report State
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
-  const selectedStat = STATS.find(s => s.id === selectedStatId);
+  const selectedStat = statsData.find(s => s.id === selectedStatId);
+  
+  // Filter popular products based on search query
+  const filteredPopularProducts = MOCK_POPULAR_PRODUCTS.filter(p => 
+    p.name.includes(searchQuery) || p.category.includes(searchQuery)
+  );
 
-  const handleDateSelect = (label: string) => {
-    setDateRangeLabel(label);
+  // Sync Logic
+  const handleDateConfirm = (range: string) => {
+    setDateRangeLabel(range);
     setShowDatePicker(false);
+    
+    // Update Stats Data with simulated visual changes
+    setStatsData(getMockStats(range));
+
+    // Update Chart View Logic
+    if (range === 'امروز' || range === 'today' || range === 'دیروز') {
+      setChartView('daily');
+    } else {
+      setChartView('weekly');
+    }
   };
 
   const handleDownloadReport = () => {
@@ -464,7 +551,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
     setTimeout(() => {
       // 1. Prepare CSV Content
       const headers = ['Metric', 'Value', 'Unit', 'Trend'];
-      const rows = STATS.map(s => [s.label, s.value, s.unit, s.trend]);
+      const rows = statsData.map(s => [s.label, s.value, s.unit, s.trend]);
       
       const chartHeaders = ['Day/Time', 'Revenue'];
       const chartRows = (chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA).map(d => [d.name, d.revenue]);
@@ -520,7 +607,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
                   <DateRangePicker 
                      isOpen={showDatePicker} 
                      onClose={() => setShowDatePicker(false)}
-                     onSelect={handleDateSelect}
+                     onConfirm={handleDateConfirm}
                      currentRange={dateRangeLabel}
                   />
                )}
@@ -550,7 +637,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
 
       {/* STATS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-0">
-        {STATS.map((stat, index) => (
+        {statsData.map((stat, index) => (
           <SummaryCard 
             key={stat.id} 
             {...stat} 
@@ -586,7 +673,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
           <h2 className="text-lg font-black text-slate-800 mb-6">پرفروش‌ترین‌ها</h2>
           <div className="space-y-6">
-            {MOCK_POPULAR_PRODUCTS.slice(0, 4).map((prod, i) => (
+            {filteredPopularProducts.slice(0, 4).map((prod, i) => (
               <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 p-2 rounded-xl transition-colors -mx-2">
                  <div className="flex items-center gap-4">
                     <div className={`w-12 h-12 rounded-2xl bg-${prod.color}-50 flex items-center justify-center text-${prod.color}-600 group-hover:scale-110 transition-transform`}>
@@ -616,6 +703,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName }) => {
       <AllProductsModal 
          isOpen={showAllProductsModal} 
          onClose={() => setShowAllProductsModal(false)} 
+         searchQuery={searchQuery}
       />
     </div>
   );

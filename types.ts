@@ -1,5 +1,5 @@
 
-export type ViewState = 'dashboard' | 'designer' | 'products' | 'orders' | 'analytics' | 'settings' | 'search-results' | 'notification-archive' | 'customer-menu';
+export type ViewState = 'dashboard' | 'designer' | 'products' | 'orders' | 'analytics' | 'settings' | 'search-results' | 'notification-archive' | 'customer-menu' | 'notifications';
 
 export interface ComponentItem {
   id: string;
