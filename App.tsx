@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Sparkles } from 'lucide-react';
+import { CheckCircle2, Sparkles, X } from 'lucide-react';
 import { ViewState, Notification, ComponentItem } from './types';
 import { SIDEBAR_LINKS, SEARCH_ITEMS } from './constants';
 import Dashboard from './components/Dashboard';
@@ -112,9 +112,8 @@ const App: React.FC = () => {
   };
 
   const handlePreviewShop = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('view', 'customer-menu');
-    window.open(url.toString(), '_blank');
+    setPreviousView(activeView);
+    setActiveView('customer-menu');
   };
 
   const renderView = () => {
@@ -163,6 +162,21 @@ const App: React.FC = () => {
   const isStandaloneCustomerView = new URLSearchParams(window.location.search).get('view') === 'customer-menu';
   if (isStandaloneCustomerView) return <CustomerMenu />;
   if (!isAuthenticated) return <LoginPage onLogin={handleLogin} brandColor={brandColor} />;
+
+  // Special full-screen render for internal preview
+  if (activeView === 'customer-menu') {
+    return (
+      <div className="relative bg-slate-200 min-h-screen">
+        <button 
+          onClick={() => setActiveView(previousView === 'customer-menu' ? 'dashboard' : previousView)}
+          className="fixed top-6 right-6 z-50 bg-white text-slate-800 px-4 py-2 rounded-xl shadow-lg font-bold text-xs flex items-center gap-2 hover:bg-slate-50 transition-colors border border-slate-200"
+        >
+           <X className="w-4 h-4" /> بستن پیش‌نمایش
+        </button>
+        <CustomerMenu liveElements={canvasElements} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-['Vazirmatn']">
