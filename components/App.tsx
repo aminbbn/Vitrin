@@ -31,9 +31,6 @@ const App: React.FC = () => {
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPublishSuccess, setShowPublishSuccess] = useState(false);
-  
-  // Logout animation state
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // GLOBAL RESTAURANT INFO
   const [restaurantName, setRestaurantName] = useState(() => {
@@ -83,13 +80,9 @@ const App: React.FC = () => {
   const handleLogin = () => { localStorage.setItem('vitrin_auth', 'true'); setIsAuthenticated(true); };
 
   const handleLogout = () => {
-    setIsLoggingOut(true);
-    setTimeout(() => {
-      localStorage.removeItem('vitrin_auth');
-      setIsAuthenticated(false);
-      setActiveView('dashboard');
-      setIsLoggingOut(false);
-    }, 600); // Small delay for fade effect
+    localStorage.removeItem('vitrin_auth');
+    setIsAuthenticated(false);
+    setActiveView('dashboard');
   };
 
   const handlePublish = () => {
@@ -108,19 +101,6 @@ const App: React.FC = () => {
     window.open(url.toString(), '_blank');
   };
 
-  // Notification Handlers
-  const handleMarkAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-  };
-
-  const handleMarkRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-  };
-
-  const handleDeleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  };
-
   const renderView = () => {
     switch (activeView) {
       case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} />;
@@ -135,9 +115,9 @@ const App: React.FC = () => {
         return (
           <NotificationArchive 
             notifications={notifications}
-            onDelete={handleDeleteNotification}
+            onDelete={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
             onClearAll={() => setNotifications([])}
-            onMarkRead={(n) => handleMarkRead(n.id)}
+            onMarkRead={(n) => setNotifications(prev => prev.map(notif => notif.id === n.id ? ({ ...notif, read: true }) : notif))}
             onBack={() => setActiveView(previousView)}
           />
         );
@@ -145,9 +125,9 @@ const App: React.FC = () => {
         return (
           <NotificationsView
              notifications={notifications}
-             onMarkAllRead={handleMarkAllRead}
-             onMarkRead={handleMarkRead}
-             onDelete={handleDeleteNotification}
+             onMarkAllRead={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+             onMarkRead={(id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))}
+             onDelete={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
           />
         );
       default: return <div className="p-10 text-center text-slate-400">بخش در حال توسعه</div>;
@@ -159,20 +139,7 @@ const App: React.FC = () => {
   if (!isAuthenticated) return <LoginPage onLogin={handleLogin} />;
 
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-['Vazirmatn'] relative">
-      <AnimatePresence>
-        {isLoggingOut && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-white z-[100] flex items-center justify-center"
-          >
-            <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-['Vazirmatn']">
       <Sidebar 
         isCollapsed={isSidebarCollapsed}
         toggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}

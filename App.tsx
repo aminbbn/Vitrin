@@ -13,6 +13,7 @@ import SettingsPage from './components/Settings';
 import LoginPage from './components/LoginPage';
 import SearchResults from './components/SearchResults';
 import NotificationArchive from './components/NotificationArchive';
+import NotificationsView from './components/NotificationsView';
 import CustomerMenu from './components/CustomerMenu';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -78,6 +79,12 @@ const App: React.FC = () => {
 
   const handleLogin = () => { localStorage.setItem('vitrin_auth', 'true'); setIsAuthenticated(true); };
 
+  const handleLogout = () => {
+    localStorage.removeItem('vitrin_auth');
+    setIsAuthenticated(false);
+    setActiveView('dashboard');
+  };
+
   const handlePublish = () => {
     setIsPublishing(true);
     localStorage.setItem('vitrin_published_design', JSON.stringify(canvasElements));
@@ -96,7 +103,7 @@ const App: React.FC = () => {
 
   const renderView = () => {
     switch (activeView) {
-      case 'dashboard': return <Dashboard restaurantName={restaurantName} />;
+      case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} />;
       case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} />;
       case 'products': return <ProductManager />;
       case 'orders': return <OrderBoard />;
@@ -112,6 +119,15 @@ const App: React.FC = () => {
             onClearAll={() => setNotifications([])}
             onMarkRead={(n) => setNotifications(prev => prev.map(notif => notif.id === n.id ? ({ ...notif, read: true }) : notif))}
             onBack={() => setActiveView(previousView)}
+          />
+        );
+      case 'notifications':
+        return (
+          <NotificationsView
+             notifications={notifications}
+             onMarkAllRead={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+             onMarkRead={(id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))}
+             onDelete={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
           />
         );
       default: return <div className="p-10 text-center text-slate-400">بخش در حال توسعه</div>;
@@ -145,6 +161,10 @@ const App: React.FC = () => {
           showPublishSuccess={showPublishSuccess}
           notifications={notifications}
           onPreviewShop={handlePreviewShop}
+          onProfileClick={() => setActiveView('settings')}
+          onLogout={handleLogout}
+          restaurantName={restaurantName}
+          onViewAllNotifications={() => setActiveView('notifications')}
         />
         <div className="flex-1 overflow-hidden relative">{renderView()}</div>
       </main>
