@@ -14,7 +14,8 @@ import {
   FileText,
   ChevronLeft,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from 'lucide-react';
 import { Order, OrderStatus } from '../types';
 
@@ -51,6 +52,16 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
   const [draggedOrder, setDraggedOrder] = useState<Order | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  
+  // New Order Modal State
+  const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
+  const [newOrderData, setNewOrderData] = useState({
+    tableNumber: '',
+    customerName: '',
+    items: '',
+    totalPrice: '',
+    notes: ''
+  });
 
   const updateStatus = (id: string, newStatus: OrderStatus) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
@@ -74,6 +85,25 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
 
   const handleDragEnd = () => {
     setDraggedOrder(null);
+  };
+
+  const handleCreateOrder = () => {
+    if (!newOrderData.tableNumber || !newOrderData.items || !newOrderData.totalPrice) return;
+
+    const newOrder: Order = {
+      id: `#${Math.floor(10000 + Math.random() * 90000)}`,
+      tableNumber: parseInt(newOrderData.tableNumber),
+      customerName: newOrderData.customerName,
+      items: newOrderData.items.split(/[،,]/).map(i => i.trim()).filter(i => i),
+      totalPrice: parseInt(newOrderData.totalPrice.replace(/,/g, '')),
+      notes: newOrderData.notes,
+      status: 'new',
+      timestamp: 'هم‌اکنون'
+    };
+
+    setOrders([newOrder, ...orders]);
+    setIsNewOrderModalOpen(false);
+    setNewOrderData({ tableNumber: '', customerName: '', items: '', totalPrice: '', notes: '' });
   };
 
   // Status Stepper for Modal
@@ -109,7 +139,11 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
                  +۸
               </div>
            </div>
-           <button className={`px-5 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 hover:shadow-${brandColor}-300 transition-all active:scale-95`}>
+           <button 
+             onClick={() => setIsNewOrderModalOpen(true)}
+             className={`px-5 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 hover:shadow-${brandColor}-300 transition-all active:scale-95 flex items-center gap-2`}
+           >
+              <Plus className="w-4 h-4" />
               ثبت سفارش جدید
            </button>
         </div>
@@ -273,21 +307,119 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
         ))}
       </div>
 
+      {/* --- NEW ORDER MODAL --- */}
+      <AnimatePresence>
+        {isNewOrderModalOpen && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsNewOrderModalOpen(false)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-30"
+            />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl relative z-[70] p-8"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+                   <Plus className={`w-6 h-6 text-${brandColor}-600`} />
+                   ثبت سفارش جدید
+                </h2>
+                <button 
+                  onClick={() => setIsNewOrderModalOpen(false)}
+                  className="p-2 bg-slate-50 rounded-full hover:bg-slate-100 transition-colors text-slate-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-slate-500">شماره میز</label>
+                     <input 
+                       type="number" 
+                       value={newOrderData.tableNumber}
+                       onChange={(e) => setNewOrderData({ ...newOrderData, tableNumber: e.target.value })}
+                       className={`w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-${brandColor}-500 outline-none`}
+                       placeholder="شماره میز"
+                     />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-xs font-bold text-slate-500">نام مشتری (اختیاری)</label>
+                     <input 
+                       type="text" 
+                       value={newOrderData.customerName}
+                       onChange={(e) => setNewOrderData({ ...newOrderData, customerName: e.target.value })}
+                       className={`w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-${brandColor}-500 outline-none`}
+                       placeholder="نام مشتری"
+                     />
+                   </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500">اقلام سفارش</label>
+                  <textarea 
+                    value={newOrderData.items}
+                    onChange={(e) => setNewOrderData({ ...newOrderData, items: e.target.value })}
+                    className={`w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-${brandColor}-500 outline-none min-h-[80px]`}
+                    placeholder="مثال: پیتزا پپرونی، نوشابه، سالاد سزار (با کاما جدا کنید)"
+                  />
+                  <p className="text-[10px] text-slate-400">اقلام را با کاما (،) از هم جدا کنید</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500">مبلغ کل (تومان)</label>
+                  <input 
+                    type="number" 
+                    value={newOrderData.totalPrice}
+                    onChange={(e) => setNewOrderData({ ...newOrderData, totalPrice: e.target.value })}
+                    className={`w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-${brandColor}-500 outline-none dir-ltr`}
+                    placeholder="0"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500">یادداشت آشپزخانه (اختیاری)</label>
+                  <textarea 
+                    value={newOrderData.notes}
+                    onChange={(e) => setNewOrderData({ ...newOrderData, notes: e.target.value })}
+                    className={`w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-${brandColor}-500 outline-none min-h-[60px]`}
+                    placeholder="توضیحات اضافی برای آشپزخانه..."
+                  />
+                </div>
+
+                <button 
+                  onClick={handleCreateOrder}
+                  className={`w-full py-3.5 bg-${brandColor}-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 transition-all active:scale-95 mt-4`}
+                >
+                  ثبت سفارش
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* --- REIMAGINED ORDER DETAILS MODAL --- */}
       <AnimatePresence>
         {selectedOrder && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedOrder(null)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-30"
             />
             <motion.div 
                layoutId={selectedOrder.id}
                transition={SMOOTH_TRANSITION}
-               className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
+               className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-[60] overflow-hidden flex flex-col max-h-[90vh]"
             >
                {/* Internal Content Wrapper for smooth rendering */}
                <motion.div

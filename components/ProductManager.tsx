@@ -661,19 +661,19 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
       {/* CUSTOM DELETE MODAL */}
       <AnimatePresence>
         {productToDelete && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30"
               onClick={() => setProductToDelete(null)}
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl relative z-10 p-6 flex flex-col items-center text-center"
+              className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl relative z-[60] p-6 flex flex-col items-center text-center"
             >
               <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
                 <AlertTriangle className="w-8 h-8 text-red-500" />

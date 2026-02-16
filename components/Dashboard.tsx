@@ -113,17 +113,10 @@ const getMockStats = (range: string, brandColor: string) => {
     },
   ];
 
-  if (range === 'today' || range === 'امروز') {
+  if (range === '24h' || range === '۲۴ ساعت گذشته') {
     return baseStats.map(s => {
       if (s.id === 'revenue') return { ...s, value: '۳,۸۵۰,۰۰۰', trend: '+۲٪' };
       if (s.id === 'orders') return { ...s, value: '۱۲', trend: '۰٪' };
-      return s;
-    });
-  }
-  if (range === 'yesterday' || range === 'دیروز') {
-    return baseStats.map(s => {
-      if (s.id === 'revenue') return { ...s, value: '۴,۱۰۰,۰۰۰', trend: '-۵٪', up: false };
-      if (s.id === 'orders') return { ...s, value: '۱۵', trend: '+۲٪' };
       return s;
     });
   }
@@ -135,15 +128,8 @@ const getMockStats = (range: string, brandColor: string) => {
       return s;
     });
   }
-  if (range === '3months' || range === '۳ ماه گذشته') {
-    return baseStats.map(s => {
-      if (s.id === 'revenue') return { ...s, value: '۱,۲۵۰,۰۰۰,۰۰۰', trend: '+۲۵٪' };
-      if (s.id === 'orders') return { ...s, value: '۳,۵۰۰', trend: '+۱۸٪' };
-      if (s.id === 'customers') return { ...s, value: '۴۲۰', trend: '+۱۲٪', up: true };
-      return s;
-    });
-  }
   
+  // Default 7 days
   return baseStats;
 };
 
@@ -183,8 +169,6 @@ const SummaryCard = ({
 }: any) => {
   
   // Basic theme construction for standard colors
-  // Note: We rely on Tailwind classes existing in the bundle. 
-  // Common colors like emerald, blue, purple, orange are standard.
   const theme = { bg: `bg-${color}-50`, text: `text-${color}-600`, border: `border-${color}-200` };
 
   return (
@@ -241,10 +225,10 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
         exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
         transition={{ duration: 0.3 }}
         onClick={onClose}
-        className="fixed inset-0 bg-slate-900/70 z-[100]"
+        className="fixed inset-0 bg-slate-900/70 z-30"
       />
       
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none">
         <motion.div 
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -317,8 +301,6 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
 const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => {
   const [localSearch, setLocalSearch] = useState('');
   
-  // Combine global search query (from header) with local search in modal if needed, 
-  // but usually modal uses its own. If searchQuery passed, filter by it.
   const query = localSearch || searchQuery || '';
 
   const filteredProducts = MOCK_POPULAR_PRODUCTS.filter(p => 
@@ -328,19 +310,19 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30"
           />
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
+            className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-[60] overflow-hidden flex flex-col max-h-[85vh]"
           >
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-20">
               <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
@@ -420,7 +402,7 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => 
 
 
 const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '', brandColor }) => {
-  const [dateRange, setDateRange] = useState<'7days' | '30days' | '3months'>('7days');
+  const [dateRange, setDateRange] = useState<'24h' | '7days' | '30days'>('7days');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [statsData, setStatsData] = useState(getMockStats('7days', brandColor));
   const [selectedStatId, setSelectedStatId] = useState<string | null>(null);
@@ -444,22 +426,22 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
 
   const getDateRangeLabel = () => {
     switch(dateRange) {
+      case '24h': return '۲۴ ساعت گذشته';
       case '7days': return '۷ روز گذشته';
       case '30days': return '۳۰ روز گذشته';
-      case '3months': return '۳ ماه گذشته';
     }
   };
 
   // Sync Logic
-  const handleDateConfirm = (range: '7days' | '30days' | '3months') => {
+  const handleDateConfirm = (range: '24h' | '7days' | '30days') => {
     setDateRange(range);
     setIsDropdownOpen(false);
     
     // Update Stats Data with simulated visual changes
     setStatsData(getMockStats(range, brandColor));
 
-    // Update Chart View Logic (simple assumption for mock)
-    if (range === '7days') {
+    // Update Chart View Logic
+    if (range === '24h') {
       setChartView('daily');
     } else {
       setChartView('weekly');
@@ -545,9 +527,9 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
                     exit={{ opacity: 0, y: 5 }}
                     className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden z-50"
                   >
+                    <button onClick={() => handleDateConfirm('24h')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۲۴ ساعت گذشته</button>
                     <button onClick={() => handleDateConfirm('7days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۷ روز گذشته</button>
                     <button onClick={() => handleDateConfirm('30days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۳۰ روز گذشته</button>
-                    <button onClick={() => handleDateConfirm('3months')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۳ ماه گذشته</button>
                   </motion.div>
                )}
             </AnimatePresence>

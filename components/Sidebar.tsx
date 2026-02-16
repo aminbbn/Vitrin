@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     <motion.aside 
       initial={false}
       animate={{ width: isCollapsed ? 80 : 260 }}
-      className="bg-white border-l border-slate-200 flex flex-col z-50 shadow-sm font-['Vazirmatn'] shrink-0"
+      className="bg-white border-l border-slate-200 flex flex-col z-40 shadow-sm font-['Vazirmatn'] shrink-0"
     >
       <div className="p-6 flex items-center justify-between overflow-hidden whitespace-nowrap h-20">
         {!isCollapsed ? (
