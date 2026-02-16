@@ -89,7 +89,11 @@ const itemVariants = {
   exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
 };
 
-const ProductManager: React.FC = () => {
+interface ProductManagerProps {
+  brandColor: string;
+}
+
+const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
   const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
@@ -281,14 +285,14 @@ const ProductManager: React.FC = () => {
             {view === 'list' ? (
               <button 
                 onClick={handleCreate}
-                className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center gap-2 hover:scale-105 active:scale-95"
+                className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-105 active:scale-95`}
               >
                 <Plus className="w-4 h-4" /> افزودن محصول
               </button>
             ) : (
               <button 
                 onClick={handleSave}
-                className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all flex items-center gap-2 hover:scale-105 active:scale-95"
+                className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-105 active:scale-95`}
               >
                 <Check className="w-4 h-4" /> ذخیره تغییرات
               </button>
@@ -318,7 +322,7 @@ const ProductManager: React.FC = () => {
                       onClick={() => setActiveCategory(cat)}
                       className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-300 ${
                         activeCategory === cat 
-                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200 scale-105' 
+                          ? `bg-${brandColor}-600 text-white shadow-md shadow-${brandColor}-200 scale-105` 
                           : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
                       }`}
                     >
@@ -333,7 +337,7 @@ const ProductManager: React.FC = () => {
                       placeholder="جستجو در محصولات..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-500 transition-colors"
+                      className={`w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
                    />
                 </div>
               </div>
@@ -352,12 +356,12 @@ const ProductManager: React.FC = () => {
                       layout // Enables smooth rearrangement
                       variants={itemVariants}
                       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                      className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:shadow-emerald-100 hover:border-emerald-200 transition-all group relative overflow-hidden flex flex-col"
+                      className={`bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:shadow-${brandColor}-100 hover:border-${brandColor}-200 transition-all group relative overflow-hidden flex flex-col`}
                     >
                       <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
                          <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                            <button onClick={() => handleEdit(product)} className="p-2.5 bg-white rounded-xl text-emerald-600 hover:bg-emerald-50 shadow-lg transform hover:scale-110 transition-all"><Edit3 className="w-5 h-5" /></button>
+                            <button onClick={() => handleEdit(product)} className={`p-2.5 bg-white rounded-xl text-${brandColor}-600 hover:bg-${brandColor}-50 shadow-lg transform hover:scale-110 transition-all`}><Edit3 className="w-5 h-5" /></button>
                             <button onClick={() => initiateDelete(product.id)} className="p-2.5 bg-white rounded-xl text-red-500 hover:bg-red-50 shadow-lg transform hover:scale-110 transition-all"><Trash2 className="w-5 h-5" /></button>
                          </div>
                          <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold text-slate-700 shadow-sm">
@@ -368,7 +372,7 @@ const ProductManager: React.FC = () => {
                          <h3 className="font-bold text-slate-800 mb-1">{product.name}</h3>
                          <p className="text-xs text-slate-400 line-clamp-2 mb-4 flex-1">{product.description}</p>
                          <div className="flex items-center justify-between border-t border-slate-50 pt-3">
-                            <span className="font-black text-emerald-600 text-sm">{product.price.toLocaleString()}</span>
+                            <span className={`font-black text-${brandColor}-600 text-sm`}>{product.price.toLocaleString()}</span>
                             <span className="text-[10px] text-slate-400 flex items-center gap-1">
                                <Clock className="w-3 h-3" /> {product.estimatedTime}
                             </span>
@@ -409,7 +413,7 @@ const ProductManager: React.FC = () => {
                   {/* Basic Info */}
                   <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
                     <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                       <Tag className="w-5 h-5 text-emerald-600" />
+                       <Tag className={`w-5 h-5 text-${brandColor}-600`} />
                        اطلاعات پایه
                     </h2>
                     
@@ -420,7 +424,7 @@ const ProductManager: React.FC = () => {
                             type="text" 
                             value={editingProduct.name}
                             onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-500 transition-colors"
+                            className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
                             placeholder="مثال: پیتزا مخصوص"
                           />
                        </div>
@@ -433,7 +437,7 @@ const ProductManager: React.FC = () => {
                                list="categories-list"
                                value={editingProduct.category}
                                onChange={e => setEditingProduct({ ...editingProduct, category: e.target.value })}
-                               className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-500 transition-colors"
+                               className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
                                placeholder="انتخاب یا تایپ دسته‌بندی جدید"
                              />
                              <datalist id="categories-list">
@@ -448,7 +452,7 @@ const ProductManager: React.FC = () => {
                             rows={3}
                             value={editingProduct.description}
                             onChange={e => setEditingProduct({ ...editingProduct, description: e.target.value })}
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-500 transition-colors resize-none"
+                            className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors resize-none`}
                             placeholder="توضیحات جذاب برای مشتری..."
                           />
                        </div>
@@ -461,7 +465,7 @@ const ProductManager: React.FC = () => {
                                type="number" 
                                value={editingProduct.price}
                                onChange={e => setEditingProduct({ ...editingProduct, price: parseInt(e.target.value) || 0 })}
-                               className="w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-500 transition-colors dir-ltr"
+                               className={`w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors dir-ltr`}
                              />
                           </div>
                        </div>
@@ -474,7 +478,7 @@ const ProductManager: React.FC = () => {
                                type="text" 
                                value={editingProduct.estimatedTime}
                                onChange={e => setEditingProduct({ ...editingProduct, estimatedTime: e.target.value })}
-                               className="w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-500 transition-colors"
+                               className={`w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
                                placeholder="مثال: ۱۵ دقیقه"
                              />
                           </div>
@@ -486,12 +490,12 @@ const ProductManager: React.FC = () => {
                   <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
                     <div className="flex items-center justify-between">
                        <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                          <Layers className="w-5 h-5 text-emerald-600" />
+                          <Layers className={`w-5 h-5 text-${brandColor}-600`} />
                           ویژگی‌ها و افزودنی‌ها
                        </h2>
                        <button 
                          onClick={addModifierGroup}
-                         className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors flex items-center gap-1"
+                         className={`text-xs font-bold text-${brandColor}-600 bg-${brandColor}-50 px-3 py-1.5 rounded-lg hover:bg-${brandColor}-100 transition-colors flex items-center gap-1`}
                          >
                          <Plus className="w-3.5 h-3.5" /> گروه جدید
                        </button>
@@ -516,7 +520,7 @@ const ProductManager: React.FC = () => {
                                        type="text" 
                                        value={group.name}
                                        onChange={e => updateModifierGroup(group.id, 'name', e.target.value)}
-                                       className="bg-transparent border-b border-transparent hover:border-slate-300 focus:border-emerald-500 outline-none font-bold text-slate-700 text-sm w-32 md:w-48 transition-colors"
+                                       className={`bg-transparent border-b border-transparent hover:border-slate-300 focus:border-${brandColor}-500 outline-none font-bold text-slate-700 text-sm w-32 md:w-48 transition-colors`}
                                        placeholder="نام گروه (مثال: سایز)"
                                     />
                                     <div className="flex items-center gap-2">
@@ -545,7 +549,7 @@ const ProductManager: React.FC = () => {
                                        type="text" 
                                        value={opt.name}
                                        onChange={e => updateModifierOption(group.id, opt.id, 'name', e.target.value)}
-                                       className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-emerald-500"
+                                       className={`flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-${brandColor}-500`}
                                        placeholder="نام گزینه"
                                     />
                                     <div className="relative w-24">
@@ -553,7 +557,7 @@ const ProductManager: React.FC = () => {
                                           type="number" 
                                           value={opt.price}
                                           onChange={e => updateModifierOption(group.id, opt.id, 'price', parseInt(e.target.value) || 0)}
-                                          className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-emerald-500 text-left dir-ltr pl-6"
+                                          className={`w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-${brandColor}-500 text-left dir-ltr pl-6`}
                                           placeholder="0"
                                        />
                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">+</span>
@@ -563,7 +567,7 @@ const ProductManager: React.FC = () => {
                               ))}
                               <button 
                                  onClick={() => addModifierOption(group.id)}
-                                 className="text-xs text-emerald-600 font-bold hover:underline flex items-center gap-1 mt-2"
+                                 className={`text-xs text-${brandColor}-600 font-bold hover:underline flex items-center gap-1 mt-2`}
                               >
                                  <Plus className="w-3 h-3" /> افزودن گزینه
                               </button>
@@ -579,10 +583,10 @@ const ProductManager: React.FC = () => {
                    {/* Image Upload */}
                    <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                       <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                         <ImageIcon className="w-5 h-5 text-emerald-600" />
+                         <ImageIcon className={`w-5 h-5 text-${brandColor}-600`} />
                          تصویر محصول
                       </h2>
-                      <div className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 hover:border-emerald-300 transition-all group overflow-hidden relative">
+                      <div className={`aspect-square rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 hover:border-${brandColor}-300 transition-all group overflow-hidden relative`}>
                          {editingProduct.image ? (
                             <>
                                <img src={editingProduct.image} className="w-full h-full object-cover" alt="preview" />
@@ -593,7 +597,7 @@ const ProductManager: React.FC = () => {
                          ) : (
                             <>
                                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
-                                  <Plus className="w-6 h-6 text-emerald-600" />
+                                  <Plus className={`w-6 h-6 text-${brandColor}-600`} />
                                </div>
                                <span className="text-xs font-bold text-slate-500">آپلود تصویر</span>
                             </>
@@ -609,14 +613,14 @@ const ProductManager: React.FC = () => {
                    {/* Raw Materials */}
                    <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
                       <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                         <ChefHat className="w-5 h-5 text-emerald-600" />
+                         <ChefHat className={`w-5 h-5 text-${brandColor}-600`} />
                          مواد اولیه
                       </h2>
                       <div className="flex flex-wrap gap-2 mb-2">
                          {editingProduct.rawMaterials?.map((mat, idx) => (
-                            <span key={idx} className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+                            <span key={idx} className={`bg-${brandColor}-50 text-${brandColor}-700 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1`}>
                                {mat}
-                               <button onClick={() => removeRawMaterial(idx)} className="hover:text-emerald-900"><X className="w-3 h-3" /></button>
+                               <button onClick={() => removeRawMaterial(idx)} className={`hover:text-${brandColor}-900`}><X className="w-3 h-3" /></button>
                             </span>
                          ))}
                       </div>
@@ -627,7 +631,7 @@ const ProductManager: React.FC = () => {
                             onChange={e => setTempRawMaterial(e.target.value)}
                             onKeyDown={handleAddRawMaterial}
                             placeholder="تایپ کنید و Enter بزنید..."
-                            className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-emerald-500"
+                            className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-${brandColor}-500`}
                          />
                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">Enter ↵</span>
                       </div>

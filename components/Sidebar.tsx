@@ -10,13 +10,15 @@ interface SidebarProps {
   toggleCollapse: () => void;
   activeView: ViewState;
   onViewChange: (view: ViewState) => void;
+  brandColor: string;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
   isCollapsed, 
   toggleCollapse, 
   activeView, 
-  onViewChange 
+  onViewChange,
+  brandColor
 }) => {
   return (
     <motion.aside 
@@ -27,13 +29,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-6 flex items-center justify-between overflow-hidden whitespace-nowrap h-20">
         {!isCollapsed ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
+            <div className={`w-10 h-10 bg-${brandColor}-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-${brandColor}-200`}>
               <ConciergeBell className="w-6 h-6" />
             </div>
-            <span className="text-xl font-black text-emerald-900 tracking-tight">ویترین</span>
+            <span className={`text-xl font-black text-${brandColor}-900 tracking-tight`}>ویترین</span>
           </motion.div>
         ) : (
-          <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 mx-auto">
+          <div className={`w-10 h-10 bg-${brandColor}-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-${brandColor}-200 mx-auto`}>
             <ConciergeBell className="w-6 h-6" />
           </div>
         )}
@@ -45,10 +47,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             key={link.id}
             onClick={() => onViewChange(link.id as ViewState)}
             className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden ${
-              activeView === link.id ? 'bg-emerald-50 text-emerald-700 font-bold' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+              activeView === link.id ? `bg-${brandColor}-50 text-${brandColor}-700 font-bold` : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
             }`}
           >
-            <div className={`relative z-10 ${activeView === link.id ? 'text-emerald-600' : 'text-slate-400 group-hover:text-slate-600'}`}>
+            <div className={`relative z-10 ${activeView === link.id ? `text-${brandColor}-600` : 'text-slate-400 group-hover:text-slate-600'}`}>
               {link.icon}
             </div>
             {!isCollapsed && (
@@ -61,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </motion.span>
             )}
             {activeView === link.id && !isCollapsed && (
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-r-full" />
+              <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-${brandColor}-500 rounded-r-full`} />
             )}
           </button>
         ))}

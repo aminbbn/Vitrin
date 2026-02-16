@@ -12,7 +12,7 @@ import {
   Check
 } from 'lucide-react';
 
-const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, showPasswordToggle, error }: any) => {
+const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, showPasswordToggle, error, brandColor }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputType = showPassword ? 'text' : type;
 
@@ -31,7 +31,7 @@ const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, sh
         )}
       </div>
       <div className="relative group">
-        <div className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${error ? 'text-red-400' : 'text-slate-400 group-focus-within:text-emerald-600'}`}>
+        <div className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${error ? 'text-red-400' : `text-slate-400 group-focus-within:text-${brandColor}-600`}`}>
           <Icon className="w-5 h-5" />
         </div>
         <input 
@@ -41,7 +41,7 @@ const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, sh
           placeholder={placeholder}
           className={`w-full bg-white text-slate-900 text-sm font-medium border rounded-xl py-3 pl-11 outline-none transition-all placeholder:text-slate-400/70 
             ${showPasswordToggle ? 'pr-11' : 'pr-4'}
-            ${error ? 'border-red-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : 'border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10'}
+            ${error ? 'border-red-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : `border-slate-200 focus:border-${brandColor}-500 focus:ring-4 focus:ring-${brandColor}-500/10`}
           `}
           dir="ltr" 
           style={{ textAlign: 'left' }}
@@ -68,7 +68,7 @@ const WELCOME_MESSAGES = [
   "به ویترین خوش آمدید ✨"
 ];
 
-const TypewriterText = () => {
+const TypewriterText = ({ brandColor }: { brandColor: string }) => {
   const [index, setIndex] = useState(0);
   const [subIndex, setSubIndex] = useState(0);
   const [reverse, setReverse] = useState(false);
@@ -103,16 +103,17 @@ const TypewriterText = () => {
   return (
     <span className="inline-block min-h-[40px] text-2xl font-black text-slate-900">
       {WELCOME_MESSAGES[index].substring(0, subIndex)}
-      <span className={`${blink ? 'opacity-100' : 'opacity-0'} text-emerald-500`}>|</span>
+      <span className={`${blink ? 'opacity-100' : 'opacity-0'} text-${brandColor}-500`}>|</span>
     </span>
   );
 };
 
 interface AuthFormProps {
   onLogin: () => void;
+  brandColor: string;
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
+const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -189,11 +190,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
       >
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-emerald-600 rounded-2xl shadow-lg shadow-emerald-200 mb-6">
+          <div className={`inline-flex items-center justify-center w-14 h-14 bg-${brandColor}-600 rounded-2xl shadow-lg shadow-${brandColor}-200 mb-6`}>
             <ConciergeBell className="w-7 h-7 text-white" />
           </div>
           <div className="h-16 flex items-center justify-center mb-2">
-             <TypewriterText />
+             <TypewriterText brandColor={brandColor} />
           </div>
           <p className="text-slate-500 text-sm">
             {authMode === 'login' ? 'لطفا برای ورود به پنل، مشخصات خود را وارد کنید' : 'برای شروع، اطلاعات رستوران خود را ثبت کنید'}
@@ -215,6 +216,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
                 if (errors.restaurantName) setErrors({ ...errors, restaurantName: undefined });
               }}
               error={errors.restaurantName}
+              brandColor={brandColor}
             />
           )}
 
@@ -229,6 +231,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
               if (errors.email) setErrors({ ...errors, email: undefined });
             }}
             error={errors.email}
+            brandColor={brandColor}
           />
 
           <ModernInput 
@@ -243,6 +246,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
             }}
             showPasswordToggle
             error={errors.password}
+            brandColor={brandColor}
           />
 
           {authMode === 'login' && (
@@ -257,15 +261,15 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
                      />
                      <div className={`w-5 h-5 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
                         rememberMe 
-                           ? 'bg-emerald-500 border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]' 
-                           : 'bg-white border-slate-200 group-hover:border-emerald-200'
+                           ? `bg-${brandColor}-500 border-${brandColor}-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]` 
+                           : `bg-white border-slate-200 group-hover:border-${brandColor}-200`
                      }`}>
                         <Check className={`w-3.5 h-3.5 text-white transition-all duration-200 ${rememberMe ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`} strokeWidth={3} />
                      </div>
                   </div>
                   <span className={`text-xs font-bold transition-colors ${rememberMe ? 'text-slate-800' : 'text-slate-500'}`}>مرا به خاطر بسپار</span>
                </label>
-               <a href="#" className="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors">رمز عبور را فراموش کردید؟</a>
+               <a href="#" className={`text-xs font-bold text-${brandColor}-600 hover:text-${brandColor}-700 transition-colors`}>رمز عبور را فراموش کردید؟</a>
             </div>
           )}
 
@@ -292,11 +296,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
         <div className="text-center mt-10">
            {authMode === 'login' ? (
               <p className="text-xs text-slate-500">
-                 حساب کاربری ندارید؟ <button onClick={() => switchMode('signup')} className="font-bold text-emerald-600 hover:underline">ثبت‌نام کنید</button>
+                 حساب کاربری ندارید؟ <button onClick={() => switchMode('signup')} className={`font-bold text-${brandColor}-600 hover:underline`}>ثبت‌نام کنید</button>
               </p>
            ) : (
               <p className="text-xs text-slate-500">
-                 قبلاً ثبت‌نام کرده‌اید؟ <button onClick={() => switchMode('login')} className="font-bold text-emerald-600 hover:underline">وارد شوید</button>
+                 قبلاً ثبت‌نام کرده‌اید؟ <button onClick={() => switchMode('login')} className={`font-bold text-${brandColor}-600 hover:underline`}>وارد شوید</button>
               </p>
            )}
         </div>

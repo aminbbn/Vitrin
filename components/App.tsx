@@ -37,9 +37,25 @@ const App: React.FC = () => {
     return localStorage.getItem('vitrin_restaurant_name') || 'رستوران ایتالیایی لیمو';
   });
 
+  const [restaurantLogo, setRestaurantLogo] = useState(() => {
+    return localStorage.getItem('vitrin_restaurant_logo') || '';
+  });
+
+  const [brandColor, setBrandColor] = useState(() => {
+    return localStorage.getItem('vitrin_brand_color') || 'emerald';
+  });
+
   useEffect(() => {
     localStorage.setItem('vitrin_restaurant_name', restaurantName);
   }, [restaurantName]);
+
+  useEffect(() => {
+    localStorage.setItem('vitrin_restaurant_logo', restaurantLogo);
+  }, [restaurantLogo]);
+
+  useEffect(() => {
+    localStorage.setItem('vitrin_brand_color', brandColor);
+  }, [brandColor]);
 
   // SHARED CANVAS STATE
   const [canvasElements, setCanvasElements] = useState<ComponentItem[]>(() => {
@@ -103,12 +119,22 @@ const App: React.FC = () => {
 
   const renderView = () => {
     switch (activeView) {
-      case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} />;
+      case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} brandColor={brandColor} />;
       case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} />;
       case 'products': return <ProductManager />;
       case 'orders': return <OrderBoard />;
       case 'analytics': return <Analytics />;
-      case 'settings': return <SettingsPage restaurantName={restaurantName} setRestaurantName={setRestaurantName} />;
+      case 'settings': 
+        return (
+          <SettingsPage 
+            restaurantName={restaurantName} 
+            setRestaurantName={setRestaurantName} 
+            restaurantLogo={restaurantLogo}
+            setRestaurantLogo={setRestaurantLogo}
+            brandColor={brandColor}
+            setBrandColor={setBrandColor}
+          />
+        );
       case 'customer-menu': return <CustomerMenu liveElements={canvasElements} />;
       case 'search-results': return <SearchResults query={searchQuery} onBack={() => setActiveView(previousView)} />;
       case 'notification-archive': 
@@ -136,7 +162,7 @@ const App: React.FC = () => {
 
   const isStandaloneCustomerView = new URLSearchParams(window.location.search).get('view') === 'customer-menu';
   if (isStandaloneCustomerView) return <CustomerMenu />;
-  if (!isAuthenticated) return <LoginPage onLogin={handleLogin} />;
+  if (!isAuthenticated) return <LoginPage onLogin={handleLogin} brandColor={brandColor} />;
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-['Vazirmatn']">
@@ -148,6 +174,7 @@ const App: React.FC = () => {
           setPreviousView(activeView);
           setActiveView(view);
         }}
+        brandColor={brandColor}
       />
 
       <main className="flex-1 flex flex-col min-w-0">
@@ -164,7 +191,9 @@ const App: React.FC = () => {
           onProfileClick={() => setActiveView('settings')}
           onLogout={handleLogout}
           restaurantName={restaurantName}
+          restaurantLogo={restaurantLogo}
           onViewAllNotifications={() => setActiveView('notifications')}
+          brandColor={brandColor}
         />
         <div className="flex-1 overflow-hidden relative">{renderView()}</div>
       </main>

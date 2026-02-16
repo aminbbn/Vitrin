@@ -42,7 +42,11 @@ const SMOOTH_TRANSITION = {
   mass: 1
 };
 
-const OrderBoard: React.FC = () => {
+interface OrderBoardProps {
+  brandColor: string;
+}
+
+const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [draggedOrder, setDraggedOrder] = useState<Order | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -89,7 +93,7 @@ const OrderBoard: React.FC = () => {
       <div className="p-6 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 z-20 shadow-sm relative">
         <div>
           <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-            <Utensils className="w-6 h-6 text-emerald-600" />
+            <Utensils className={`w-6 h-6 text-${brandColor}-600`} />
             مدیریت سفارشات
           </h1>
           <p className="text-sm text-slate-400 mt-1">مانیتورینگ زنده وضعیت سفارشات رستوران</p>
@@ -105,7 +109,7 @@ const OrderBoard: React.FC = () => {
                  +۸
               </div>
            </div>
-           <button className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:shadow-emerald-300 transition-all active:scale-95">
+           <button className={`px-5 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 hover:shadow-${brandColor}-300 transition-all active:scale-95`}>
               ثبت سفارش جدید
            </button>
         </div>
@@ -172,7 +176,7 @@ const OrderBoard: React.FC = () => {
                         className={`bg-white p-5 rounded-2xl transition-all cursor-grab active:cursor-grabbing group relative select-none ${
                           isDragging 
                             ? 'border-2 border-dashed border-slate-300 shadow-none bg-slate-50' 
-                            : 'border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5 hover:border-emerald-200'
+                            : `border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-${brandColor}-500/5 hover:border-${brandColor}-200`
                         }`}
                       >
                         {/* Card Content */}
@@ -215,7 +219,7 @@ const OrderBoard: React.FC = () => {
                                                e.stopPropagation();
                                                updateStatus(order.id, c.id);
                                             }}
-                                            className="w-full text-right px-4 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-emerald-600 transition-colors flex items-center gap-3 border-b border-slate-50 last:border-0"
+                                            className={`w-full text-right px-4 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600 transition-colors flex items-center gap-3 border-b border-slate-50 last:border-0`}
                                          >
                                             <div className={`w-2 h-2 rounded-full ${c.color.replace('text-', 'bg-')}`} />
                                             انتقال به {c.label}
@@ -240,7 +244,7 @@ const OrderBoard: React.FC = () => {
                         <div className="flex items-center justify-between pt-3 border-t border-slate-50">
                            <div className="flex flex-col">
                               <span className="text-[10px] text-slate-400 font-bold mb-0.5">مبلغ کل</span>
-                              <span className="text-sm font-black text-emerald-600">{order.totalPrice.toLocaleString()} <span className="text-[10px] font-medium text-slate-400">تومان</span></span>
+                              <span className={`text-sm font-black text-${brandColor}-600`}>{order.totalPrice.toLocaleString()} <span className="text-[10px] font-medium text-slate-400">تومان</span></span>
                            </div>
                            <div className="text-[10px] font-bold text-slate-400 bg-white border border-slate-100 px-2 py-1 rounded-lg shadow-sm">
                               {order.timestamp}
@@ -319,7 +323,7 @@ const OrderBoard: React.FC = () => {
                        {/* Line */}
                        <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -z-10 rounded-full"></div>
                        <div 
-                          className="absolute top-1/2 right-0 h-1 bg-emerald-500 -z-10 rounded-full transition-all duration-500"
+                          className={`absolute top-1/2 right-0 h-1 bg-emerald-500 -z-10 rounded-full transition-all duration-500`}
                           style={{ width: `${((getStatusStep(selectedOrder.status) - 1) / 3) * 100}%` }}
                        ></div>
 
@@ -377,7 +381,7 @@ const OrderBoard: React.FC = () => {
                        <div className="bg-slate-900 p-6 text-white flex justify-between items-center relative overflow-hidden">
                           <div className="relative z-10">
                              <span className="text-slate-400 text-xs block mb-1">مبلغ قابل پرداخت</span>
-                             <span className="text-2xl font-black text-emerald-400">{selectedOrder.totalPrice.toLocaleString()} <span className="text-sm text-emerald-400/70">تومان</span></span>
+                             <span className={`text-2xl font-black text-${brandColor}-400`}>{selectedOrder.totalPrice.toLocaleString()} <span className={`text-sm text-${brandColor}-400/70`}>تومان</span></span>
                           </div>
                           <div className="relative z-10">
                              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
@@ -386,7 +390,7 @@ const OrderBoard: React.FC = () => {
                           </div>
                           {/* Decorative Circles */}
                           <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
-                          <div className="absolute -left-4 -bottom-4 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl"></div>
+                          <div className={`absolute -left-4 -bottom-4 w-20 h-20 bg-${brandColor}-500/10 rounded-full blur-xl`}></div>
                        </div>
                     </div>
                  </div>
@@ -401,7 +405,7 @@ const OrderBoard: React.FC = () => {
                         {selectedOrder.status === 'new' && (
                            <button 
                              onClick={() => { updateStatus(selectedOrder.id, 'preparing'); setSelectedOrder(null); }}
-                             className="flex-[2] bg-emerald-600 text-white py-3.5 rounded-2xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200 flex items-center justify-center gap-2 text-sm"
+                             className={`flex-[2] bg-${brandColor}-600 text-white py-3.5 rounded-2xl font-bold hover:bg-${brandColor}-700 transition-colors shadow-lg shadow-${brandColor}-200 flex items-center justify-center gap-2 text-sm`}
                            >
                               <CookingPot className="w-4 h-4" />
                               تایید و شروع پخت

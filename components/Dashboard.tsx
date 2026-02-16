@@ -14,7 +14,8 @@ import {
   Download,
   Loader2,
   Filter,
-  Search
+  Search,
+  ChevronDown
 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,7 +51,7 @@ const MOCK_POPULAR_PRODUCTS = [
 ];
 
 // Helper to generate mock stats based on range
-const getMockStats = (range: string) => {
+const getMockStats = (range: string, brandColor: string) => {
   const baseStats = [
     { 
       id: 'revenue', 
@@ -60,7 +61,7 @@ const getMockStats = (range: string) => {
       trend: '+۱۲٪', 
       up: true, 
       icon: TrendingUp, 
-      color: 'emerald',
+      color: brandColor,
       insights: [
         { label: 'میانگین فاکتور', value: '۴۵۰,۰۰۰ تومان' },
         { label: 'فروش سالن', value: '۲۸,۴۵۰,۰۰۰' },
@@ -134,18 +135,26 @@ const getMockStats = (range: string) => {
       return s;
     });
   }
+  if (range === '3months' || range === '۳ ماه گذشته') {
+    return baseStats.map(s => {
+      if (s.id === 'revenue') return { ...s, value: '۱,۲۵۰,۰۰۰,۰۰۰', trend: '+۲۵٪' };
+      if (s.id === 'orders') return { ...s, value: '۳,۵۰۰', trend: '+۱۸٪' };
+      if (s.id === 'customers') return { ...s, value: '۴۲۰', trend: '+۱۲٪', up: true };
+      return s;
+    });
+  }
   
   return baseStats;
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, brandColor }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-xl border border-white/10 text-xs">
         <p className="font-bold mb-2 text-slate-400">{label}</p>
         <div className="flex items-center gap-2 mb-1">
-          <div className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span className="text-emerald-400 font-black text-sm">{payload[0].value.toLocaleString()} تومان</span>
+          <div className={`w-2 h-2 rounded-full bg-${brandColor}-500`} />
+          <span className={`text-${brandColor}-400 font-black text-sm`}>{payload[0].value.toLocaleString()} تومان</span>
         </div>
       </div>
     );
@@ -156,6 +165,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 interface DashboardProps {
   restaurantName: string;
   searchQuery?: string;
+  brandColor: string;
 }
 
 // --- SUMMARY CARD COMPONENT ---
@@ -172,14 +182,10 @@ const SummaryCard = ({
   index 
 }: any) => {
   
-  const colorStyles: any = {
-    emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200' },
-    blue: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200' },
-    purple: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200' },
-    orange: { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200' },
-  };
-
-  const theme = colorStyles[color] || colorStyles.emerald;
+  // Basic theme construction for standard colors
+  // Note: We rely on Tailwind classes existing in the bundle. 
+  // Common colors like emerald, blue, purple, orange are standard.
+  const theme = { bg: `bg-${color}-50`, text: `text-${color}-600`, border: `border-${color}-200` };
 
   return (
     <motion.div 
@@ -207,7 +213,7 @@ const SummaryCard = ({
 
       {/* Footer */}
       <div className="flex items-center justify-between gap-4">
-         <div className={`flex items-center gap-1.5 text-[10px] font-black px-3 py-1.5 rounded-full border ${up ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-rose-600 bg-rose-50 border-rose-100'}`}>
+         <div className={`flex items-center gap-1.5 text-[10px] font-black px-3 py-1.5 rounded-full border ${up ? `text-emerald-600 bg-emerald-50 border-emerald-100` : 'text-rose-600 bg-rose-50 border-rose-100'}`}>
             {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
             {trend}
          </div>
@@ -224,23 +230,11 @@ const SummaryCard = ({
 
 // --- EXPANDED CARD (MODAL) ---
 const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => {
-  const colorStyles: any = {
-    emerald: { text: 'text-emerald-600', bg: 'bg-emerald-50' },
-    blue: { text: 'text-blue-600', bg: 'bg-blue-50' },
-    purple: { text: 'text-purple-600', bg: 'bg-purple-50' },
-    orange: { text: 'text-orange-600', bg: 'bg-orange-50' },
-  };
-  const theme = colorStyles[stat.color] || colorStyles.emerald;
   const Icon = stat.icon;
+  const color = stat.color;
 
   return (
     <>
-      {/* 
-         Focus Mode Overlay:
-         - z-[100]: Covers everything, including Header (z-40)
-         - Covers dashboard content.
-         - Dark opacity (0.7) and strong blur (8px).
-      */}
       <motion.div 
         initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
         animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
@@ -250,10 +244,6 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
         className="fixed inset-0 bg-slate-900/70 z-[100]"
       />
       
-      {/* 
-         Modal Container:
-         - z-[110]: Sits above Overlay
-      */}
       <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 pointer-events-none">
         <motion.div 
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -264,24 +254,18 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-6 relative">
-             
-             {/* HEADER LAYOUT: RTL Optimized - Title Right, Close Left */}
              <div className="flex items-center justify-between mb-8">
-                 {/* Right Side (Start in RTL): Icon + Label */}
                  <div className="flex items-center gap-3">
-                    <div className={`p-3.5 rounded-2xl ${theme.bg} ${theme.text} shadow-sm`}>
+                    <div className={`p-3.5 rounded-2xl bg-${color}-50 text-${color}-600 shadow-sm`}>
                       <Icon className="w-6 h-6" />
                     </div>
                     <span className="text-lg font-black text-slate-700">{stat.label}</span>
                  </div>
-
-                 {/* Left Side (End in RTL): Close Button */}
                  <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
                     <X className="w-5 h-5" />
                  </button>
              </div>
 
-             {/* Main Metric - Centered/Prominent */}
              <div className="flex flex-col items-start mb-8">
                  <motion.h2 
                    initial={{ opacity: 0, y: 10 }}
@@ -300,7 +284,6 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
                  </div>
              </div>
 
-             {/* Quick Insights Section */}
              <div className="space-y-4">
                 <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                    <BarChart2 className="w-3 h-3" />
@@ -322,7 +305,6 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
                 </div>
              </div>
              
-             {/* Bottom Spacer (Button Removed) */}
              <div className="h-6" />
           </div>
         </motion.div>
@@ -331,81 +313,8 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
   );
 };
 
-// --- DATE RANGE PICKER COMPONENT ---
-const DateRangePicker = ({ isOpen, onClose, onConfirm, currentRange }: any) => {
-  if (!isOpen) return null;
-  const [selected, setSelected] = useState(currentRange);
-
-  const ranges = [
-    { label: 'امروز', value: 'today' },
-    { label: 'دیروز', value: 'yesterday' },
-    { label: '۷ روز گذشته', value: '7days' },
-    { label: '۳۰ روز گذشته', value: '30days' },
-    { label: 'این ماه', value: 'thisMonth' },
-    { label: 'ماه گذشته', value: 'lastMonth' },
-  ];
-
-  const days = Array.from({ length: 35 }, (_, i) => i + 1);
-
-  return (
-    <div className="absolute top-full right-0 mt-2 z-50">
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-        className="bg-white rounded-2xl shadow-xl border border-slate-200 p-4 w-[320px] flex flex-col gap-4"
-      >
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-           <span className="font-bold text-slate-800 text-sm">انتخاب بازه زمانی</span>
-           <button onClick={onClose}><X className="w-4 h-4 text-slate-400 hover:text-slate-600" /></button>
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-           {ranges.map(r => (
-             <button 
-                key={r.value} 
-                onClick={() => setSelected(r.label)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${selected === r.label ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200' : 'bg-slate-50 text-slate-600 border border-slate-100 hover:bg-slate-100'}`}
-             >
-                {r.label}
-             </button>
-           ))}
-        </div>
-
-        {/* Visual Mock Calendar */}
-        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-           <div className="flex justify-between items-center mb-2 px-1">
-              <span className="text-xs font-bold text-slate-700">مهر ۱۴۰۲</span>
-              <div className="flex gap-1">
-                 <ChevronLeft className="w-4 h-4 text-slate-400 rotate-180" />
-                 <ChevronLeft className="w-4 h-4 text-slate-400" />
-              </div>
-           </div>
-           <div className="grid grid-cols-7 gap-1 text-center mb-1">
-              {['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'].map(d => <span key={d} className="text-[10px] text-slate-400">{d}</span>)}
-           </div>
-           <div className="grid grid-cols-7 gap-1">
-              {days.map(d => (
-                 <button key={d} className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-medium transition-colors ${d === 15 || d === 22 ? 'bg-emerald-500 text-white shadow-sm' : (d > 15 && d < 22) ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-white'}`}>
-                    {d > 30 ? d - 30 : d}
-                 </button>
-              ))}
-           </div>
-        </div>
-
-        <button 
-          onClick={() => onConfirm(selected)}
-          className="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors"
-        >
-           تایید و اعمال
-        </button>
-      </motion.div>
-    </div>
-  );
-};
-
 // --- ALL PRODUCTS MODAL ---
-const AllProductsModal = ({ isOpen, onClose, searchQuery }: any) => {
+const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => {
   const [localSearch, setLocalSearch] = useState('');
   
   // Combine global search query (from header) with local search in modal if needed, 
@@ -435,7 +344,7 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery }: any) => {
           >
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-20">
               <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-emerald-600" />
+                <ShoppingBag className={`w-5 h-5 text-${brandColor}-600`} />
                 لیست کامل محصولات
               </h3>
               <button 
@@ -455,7 +364,7 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery }: any) => {
                         value={localSearch || searchQuery || ''}
                         onChange={(e) => setLocalSearch(e.target.value)}
                         placeholder="جستجو در محصولات..." 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-emerald-500 outline-none" 
+                        className={`w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-${brandColor}-500 outline-none`}
                      />
                   </div>
                </div>
@@ -485,10 +394,10 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery }: any) => {
                               <td className="px-6 py-4 text-xs font-medium text-slate-500">
                                  <span className="bg-slate-100 px-2 py-1 rounded-md">{prod.category}</span>
                               </td>
-                              <td className="px-6 py-4 text-sm font-black text-emerald-600">{prod.price}</td>
+                              <td className={`px-6 py-4 text-sm font-black text-${brandColor}-600`}>{prod.price}</td>
                               <td className="px-6 py-4 text-sm font-bold text-slate-700">{prod.count}</td>
                               <td className="px-6 py-4">
-                                 <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">موجود</span>
+                                 <span className={`text-[10px] font-bold text-${brandColor}-600 bg-${brandColor}-50 px-2 py-1 rounded-full border border-${brandColor}-100`}>موجود</span>
                               </td>
                            </tr>
                         )) : (
@@ -510,18 +419,21 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery }: any) => {
 };
 
 
-const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' }) => {
-  const [statsData, setStatsData] = useState(getMockStats('7days'));
+const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '', brandColor }) => {
+  const [dateRange, setDateRange] = useState<'7days' | '30days' | '3months'>('7days');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [statsData, setStatsData] = useState(getMockStats('7days', brandColor));
   const [selectedStatId, setSelectedStatId] = useState<string | null>(null);
   const [showAllProductsModal, setShowAllProductsModal] = useState(false);
   const [chartView, setChartView] = useState<'weekly' | 'daily'>('weekly');
   
-  // Date Picker State
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [dateRangeLabel, setDateRangeLabel] = useState('۷ روز گذشته');
-
   // Report State
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
+  // Update stats data when brandColor changes
+  React.useEffect(() => {
+     setStatsData(getMockStats(dateRange, brandColor));
+  }, [brandColor, dateRange]);
 
   const selectedStat = statsData.find(s => s.id === selectedStatId);
   
@@ -530,16 +442,24 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' 
     p.name.includes(searchQuery) || p.category.includes(searchQuery)
   );
 
+  const getDateRangeLabel = () => {
+    switch(dateRange) {
+      case '7days': return '۷ روز گذشته';
+      case '30days': return '۳۰ روز گذشته';
+      case '3months': return '۳ ماه گذشته';
+    }
+  };
+
   // Sync Logic
-  const handleDateConfirm = (range: string) => {
-    setDateRangeLabel(range);
-    setShowDatePicker(false);
+  const handleDateConfirm = (range: '7days' | '30days' | '3months') => {
+    setDateRange(range);
+    setIsDropdownOpen(false);
     
     // Update Stats Data with simulated visual changes
-    setStatsData(getMockStats(range));
+    setStatsData(getMockStats(range, brandColor));
 
-    // Update Chart View Logic
-    if (range === 'امروز' || range === 'today' || range === 'دیروز') {
+    // Update Chart View Logic (simple assumption for mock)
+    if (range === '7days') {
       setChartView('daily');
     } else {
       setChartView('weekly');
@@ -581,8 +501,23 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' 
     }, 1200); // 1.2s delay for visual feedback
   };
 
+  // Determine chart color based on brandColor prop
+  // Simple mapping since chart expects specific hex or valid color
+  const chartColorMap: Record<string, string> = {
+    emerald: '#10b981',
+    blue: '#3b82f6',
+    purple: '#a855f7',
+    orange: '#f97316',
+    red: '#ef4444',
+    violet: '#8b5cf6',
+    pink: '#ec4899',
+    zinc: '#71717a',
+    slate: '#64748b'
+  };
+  const chartHexColor = chartColorMap[brandColor] || '#10b981';
+
   return (
-    <div className="p-8 h-full overflow-y-auto space-y-8 bg-[#F8FAFC] relative font-['Vazirmatn']">
+    <div className="p-8 h-full overflow-y-auto space-y-8 bg-[#F8FAFC] relative font-['Vazirmatn']" onClick={() => setIsDropdownOpen(false)}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900">سلام، {restaurantName} 👋</h1>
@@ -590,26 +525,30 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' 
         </div>
         <div className="flex gap-4 relative">
           
-          {/* DATE PICKER BUTTON */}
+          {/* DATE PICKER DROPDOWN */}
           <div className="relative">
             <button 
-              onClick={() => setShowDatePicker(!showDatePicker)}
+              onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
               className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2 text-xs font-bold text-slate-600 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors min-w-[140px] justify-between"
             >
               <div className="flex items-center gap-2">
-                 <CalendarIcon className="w-4 h-4 text-emerald-600" /> 
-                 <span>{dateRangeLabel}</span>
+                 <CalendarIcon className={`w-4 h-4 text-${brandColor}-600`} /> 
+                 <span>{getDateRangeLabel()}</span>
               </div>
-              <ChevronLeft className={`w-3 h-3 transition-transform ${showDatePicker ? '-rotate-90' : ''}`} />
+              <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
-               {showDatePicker && (
-                  <DateRangePicker 
-                     isOpen={showDatePicker} 
-                     onClose={() => setShowDatePicker(false)}
-                     onConfirm={handleDateConfirm}
-                     currentRange={dateRangeLabel}
-                  />
+               {isDropdownOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden z-50"
+                  >
+                    <button onClick={() => handleDateConfirm('7days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۷ روز گذشته</button>
+                    <button onClick={() => handleDateConfirm('30days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۳۰ روز گذشته</button>
+                    <button onClick={() => handleDateConfirm('3months')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۳ ماه گذشته</button>
+                  </motion.div>
                )}
             </AnimatePresence>
           </div>
@@ -618,7 +557,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' 
           <button 
             onClick={handleDownloadReport}
             disabled={isGeneratingReport}
-            className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed min-w-[160px] justify-center"
+            className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-100 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed min-w-[160px] justify-center`}
           >
             {isGeneratingReport ? (
                <>
@@ -656,16 +595,16 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' 
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col">
-          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800">آمار فروش</h2><div className="flex gap-2 bg-slate-100 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400 hover:text-slate-600'}`}>روزانه</button></div></div>
+          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800">آمار فروش</h2><div className="flex gap-2 bg-slate-100 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white shadow-sm text-${brandColor}-600` : 'text-slate-400 hover:text-slate-600'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white shadow-sm text-${brandColor}-600` : 'text-slate-400 hover:text-slate-600'}`}>روزانه</button></div></div>
           <div className="h-80 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA}>
-                 <defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/><stop offset="95%" stopColor="#10b981" stopOpacity={0}/></linearGradient></defs>
+                 <defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={chartHexColor} stopOpacity={0.2}/><stop offset="95%" stopColor={chartHexColor} stopOpacity={0}/></linearGradient></defs>
                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
                  <YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => `${value / 1000000} م`} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
-                 <Tooltip content={<CustomTooltip />} />
-                 <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                 <Tooltip content={<CustomTooltip brandColor={brandColor} />} />
+                 <Area type="monotone" dataKey="revenue" stroke={chartHexColor} strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -686,7 +625,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' 
                  </div>
                  <div className="text-left">
                     <p className="text-sm font-black text-slate-700">{prod.price}</p>
-                    <span className="text-[10px] text-emerald-500 font-bold">{prod.count} فروش</span>
+                    <span className={`text-[10px] text-${brandColor}-500 font-bold`}>{prod.count} فروش</span>
                  </div>
               </div>
             ))}
@@ -704,6 +643,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '' 
          isOpen={showAllProductsModal} 
          onClose={() => setShowAllProductsModal(false)} 
          searchQuery={searchQuery}
+         brandColor={brandColor}
       />
     </div>
   );

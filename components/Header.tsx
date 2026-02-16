@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -19,7 +20,9 @@ interface HeaderProps {
   onProfileClick: () => void;
   onLogout: () => void;
   restaurantName: string;
+  restaurantLogo: string;
   onViewAllNotifications: () => void;
+  brandColor: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -35,7 +38,9 @@ const Header: React.FC<HeaderProps> = ({
   onProfileClick,
   onLogout,
   restaurantName,
-  onViewAllNotifications
+  restaurantLogo,
+  onViewAllNotifications,
+  brandColor
 }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -64,14 +69,14 @@ const Header: React.FC<HeaderProps> = ({
         {/* Left: Search Section */}
         <div className="flex items-center flex-1 max-w-md" ref={searchRef}>
           <div className="relative w-full group">
-            <Search className={`w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isSearchFocused ? 'text-emerald-500' : 'text-slate-400'}`} />
+            <Search className={`w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isSearchFocused ? `text-${brandColor}-500` : 'text-slate-400'}`} />
             <input 
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               placeholder="جستجو در پنل مدیریت..." 
-              className={`bg-slate-100/50 border border-transparent rounded-2xl pr-11 pl-4 py-2.5 w-full text-sm outline-none transition-all ${isSearchFocused ? 'bg-white border-emerald-500/30 ring-4 ring-emerald-500/5 shadow-sm' : 'hover:bg-slate-100'}`}
+              className={`bg-slate-100/50 border border-transparent rounded-2xl pr-11 pl-4 py-2.5 w-full text-sm outline-none transition-all ${isSearchFocused ? `bg-white border-${brandColor}-500/30 ring-4 ring-${brandColor}-500/5 shadow-sm` : 'hover:bg-slate-100'}`}
             />
           </div>
         </div>
@@ -82,11 +87,11 @@ const Header: React.FC<HeaderProps> = ({
           {/* Action Group 1: Status & Preview */}
           <div className="flex items-center gap-1 bg-slate-100/50 p-1 rounded-2xl border border-slate-200/50 mr-2">
             <div className="flex items-center gap-2 px-3 py-1.5">
-               <div className={`w-2 h-2 rounded-full ${isRestaurantOpen ? 'bg-emerald-500' : 'bg-rose-500'} animate-pulse`} />
+               <div className={`w-2 h-2 rounded-full ${isRestaurantOpen ? `bg-${brandColor}-500` : 'bg-rose-500'} animate-pulse`} />
                <span className="text-[11px] font-bold text-slate-600">رستوران {isRestaurantOpen ? 'باز' : 'بسته'}</span>
                <button 
                 onClick={() => setIsRestaurantOpen(!isRestaurantOpen)}
-                className="p-1 hover:bg-white hover:shadow-sm rounded-lg transition-all text-slate-400 hover:text-emerald-600"
+                className={`p-1 hover:bg-white hover:shadow-sm rounded-lg transition-all text-slate-400 hover:text-${brandColor}-600`}
                >
                  <Power className="w-3.5 h-3.5" />
                </button>
@@ -94,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({
             <div className="w-px h-4 bg-slate-200 mx-1" />
             <button 
               onClick={onPreviewShop}
-              className="p-2 rounded-xl text-slate-500 hover:text-emerald-600 hover:bg-white transition-all group"
+              className={`p-2 rounded-xl text-slate-500 hover:text-${brandColor}-600 hover:bg-white transition-all group`}
               title="مشاهده سایت"
             >
               <Eye className="w-4 h-4 group-hover:scale-110" />
@@ -106,7 +111,7 @@ const Header: React.FC<HeaderProps> = ({
             <button 
               onClick={onPublish} 
               disabled={isPublishing} 
-              className={`px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all ${isPublishing ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20 active:scale-95'}`}
+              className={`px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all ${isPublishing ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : `bg-${brandColor}-600 text-white hover:bg-${brandColor}-700 shadow-lg shadow-${brandColor}-600/20 active:scale-95`}`}
             >
               {isPublishing ? (
                 <div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
@@ -124,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({
                   exit={{ opacity: 0, scale: 0.9 }} 
                   className="absolute top-full mt-3 left-0 bg-slate-900 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-2xl z-50 whitespace-nowrap"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className={`w-4 h-4 text-${brandColor}-400`} />
                   <span className="text-[11px] font-bold">تغییرات با موفقیت اعمال شد</span>
                 </motion.div>
               )}
@@ -137,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({
           <div className="relative" ref={notifRef}>
             <button 
                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} 
-               className={`p-2.5 rounded-xl relative transition-all ${isNotificationsOpen ? 'bg-emerald-50 text-emerald-600 shadow-inner' : 'text-slate-500 hover:bg-slate-100'}`}
+               className={`p-2.5 rounded-xl relative transition-all ${isNotificationsOpen ? `bg-${brandColor}-50 text-${brandColor}-600 shadow-inner` : 'text-slate-500 hover:bg-slate-100'}`}
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
@@ -157,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({
                 >
                    <div className="p-4 border-b border-slate-100 flex justify-between items-center">
                       <h3 className="font-black text-slate-800 text-sm">اعلان‌های سیستم</h3>
-                      <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg font-bold">
+                      <span className={`text-[10px] bg-${brandColor}-100 text-${brandColor}-700 px-2.5 py-1 rounded-lg font-bold`}>
                         {unreadCount} مورد جدید
                       </span>
                    </div>
@@ -166,7 +171,7 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="p-10 text-center text-slate-400 text-xs">پیامی برای نمایش وجود ندارد</div>
                       ) : (
                         notifications.map(n => (
-                          <div key={n.id} className={`p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer ${!n.read ? 'bg-emerald-50/20' : ''}`}>
+                          <div key={n.id} className={`p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer ${!n.read ? `bg-${brandColor}-50/20` : ''}`}>
                              <div className="flex justify-between mb-1">
                                 <span className="font-bold text-xs text-slate-800">{n.title}</span>
                                 <span className="text-[9px] text-slate-400 font-medium">{n.time}</span>
@@ -178,7 +183,7 @@ const Header: React.FC<HeaderProps> = ({
                    </div>
                    <button 
                     onClick={() => { onViewAllNotifications(); setIsNotificationsOpen(false); }}
-                    className="w-full p-4 bg-slate-50 text-[11px] font-black text-emerald-600 hover:text-emerald-700 hover:bg-slate-100 transition-colors border-t border-slate-100"
+                    className={`w-full p-4 bg-slate-50 text-[11px] font-black text-${brandColor}-600 hover:text-${brandColor}-700 hover:bg-slate-100 transition-colors border-t border-slate-100`}
                    >
                       مشاهده تمام اعلان‌ها
                    </button>
@@ -200,16 +205,20 @@ const Header: React.FC<HeaderProps> = ({
                 className="text-left hidden md:flex flex-col items-end px-2"
               >
                 <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-black text-slate-800 group-hover:text-emerald-600 transition-colors">{restaurantName}</span>
+                    <span className={`text-sm font-black text-slate-800 group-hover:text-${brandColor}-600 transition-colors`}>{restaurantName}</span>
                     <ChevronDown className="w-3 h-3 text-slate-400" />
                 </div>
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">شعبه مرکزی</span>
               </div>
               <div 
                 onClick={onProfileClick}
-                className={`w-10 h-10 rounded-2xl border-2 shadow-sm flex items-center justify-center transition-all ${isProfileOpen ? 'border-emerald-500 bg-emerald-50' : 'bg-slate-100 border-white'}`}
+                className={`w-10 h-10 rounded-2xl border-2 shadow-sm flex items-center justify-center transition-all overflow-hidden ${isProfileOpen ? `border-${brandColor}-500 bg-${brandColor}-50` : 'bg-slate-100 border-white'}`}
               >
-                <User className={`w-5 h-5 ${isProfileOpen ? 'text-emerald-600' : 'text-slate-400'}`} />
+                {restaurantLogo ? (
+                  <img src={restaurantLogo} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <User className={`w-5 h-5 ${isProfileOpen ? `text-${brandColor}-600` : 'text-slate-400'}`} />
+                )}
               </div>
             </div>
 
@@ -261,7 +270,7 @@ const Header: React.FC<HeaderProps> = ({
                <div className="p-8 relative">
                   <div className="flex items-center justify-between mb-8">
                      <div className="flex items-center gap-4">
-                        <div className="p-4 rounded-[1.25rem] bg-emerald-50 text-emerald-600 shadow-inner">
+                        <div className={`p-4 rounded-[1.25rem] bg-${brandColor}-50 text-${brandColor}-600 shadow-inner`}>
                            <Store className="w-6 h-6" />
                         </div>
                         <h3 className="text-xl font-black text-slate-800">اطلاعات فروشگاه</h3>
@@ -277,7 +286,7 @@ const Header: React.FC<HeaderProps> = ({
                            <span className="text-[10px] font-bold text-slate-400 mb-1">نام رسمی</span>
                            <span className="text-lg font-black text-slate-800">{restaurantName}</span>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-[10px] font-black border ${isRestaurantOpen ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-rose-100 text-rose-700 border-rose-200'}`}>
+                        <div className={`px-3 py-1 rounded-full text-[10px] font-black border ${isRestaurantOpen ? `bg-${brandColor}-100 text-${brandColor}-700 border-${brandColor}-200` : 'bg-rose-100 text-rose-700 border-rose-200'}`}>
                            {isRestaurantOpen ? 'فعال' : 'غیرفعال'}
                         </div>
                      </div>

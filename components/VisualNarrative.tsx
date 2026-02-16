@@ -79,7 +79,7 @@ const ITEMS = [
   }
 ];
 
-const DigitalPass = () => (
+const DigitalPass = ({ brandColor }: { brandColor: string }) => (
   <div className="absolute inset-0 pointer-events-none z-0" style={{ perspective: '1500px' }}>
     <motion.div 
       initial={{ opacity: 0 }}
@@ -87,15 +87,15 @@ const DigitalPass = () => (
       className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[160%] h-[60%] origin-bottom"
       style={{ rotateX: '75deg' }}
     >
-      <div className="absolute inset-0 bg-[#06080b] border-t border-emerald-500/10 overflow-hidden shadow-[inset_0_20px_60px_rgba(0,0,0,0.8)]">
+      <div className={`absolute inset-0 bg-[#06080b] border-t border-${brandColor}-500/30 overflow-hidden shadow-[inset_0_20px_60px_rgba(0,0,0,0.8)]`}>
          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/asfalt-dark.png")' }} />
          <div className="absolute inset-x-0 top-0 bottom-0 flex justify-center gap-[400px]">
             {[...Array(2)].map((_, i) => (
-                <div key={i} className="relative w-px h-full bg-gradient-to-t from-emerald-500/0 via-emerald-500/20 to-emerald-400/0">
+                <div key={i} className={`relative w-px h-full bg-gradient-to-t from-${brandColor}-500/0 via-${brandColor}-500/20 to-${brandColor}-400/0`}>
                     <motion.div 
                         animate={{ top: ['100%', '-20%'] }}
                         transition={{ duration: 8 + i * 2, repeat: Infinity, ease: 'linear' }}
-                        className="absolute w-64 -left-32 h-64 bg-emerald-400/[0.03] blur-[120px]"
+                        className={`absolute w-64 -left-32 h-64 bg-${brandColor}-400/[0.03] blur-[120px]`}
                     />
                 </div>
             ))}
@@ -366,9 +366,9 @@ const OrbitItem = ({ item, index, total, rotation, onHover, hoveredId, isActive 
   );
 };
 
-const RestaurantCore = () => (
+const RestaurantCore = ({ brandColor }: { brandColor: string }) => (
   <div className="relative z-10 flex items-center justify-center">
-    <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] rounded-full" />
+    <div className={`absolute inset-0 bg-${brandColor}-500/20 blur-[100px] rounded-full`} />
     <motion.div 
       animate={{ rotate: 360 }}
       transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
@@ -380,16 +380,16 @@ const RestaurantCore = () => (
       className="absolute w-[450px] h-[450px] border border-white/5 rounded-full opacity-30"
     />
     
-    <div className="relative w-32 h-32 bg-[#06080D] rounded-full border border-white/10 flex items-center justify-center shadow-[0_0_60px_-10px_rgba(16,185,129,0.3)] z-20">
+    <div className="relative w-32 h-32 bg-[#06080D] rounded-full border border-white/10 flex items-center justify-center shadow-[0_0_60px_-10px_rgba(255,255,255,0.1)] z-20">
        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/5 to-transparent" />
-       <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20 backdrop-blur-md">
-          <ConciergeBell className="w-8 h-8 text-emerald-500 drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+       <div className={`w-20 h-20 bg-${brandColor}-500/10 rounded-full flex items-center justify-center border border-${brandColor}-500/20 backdrop-blur-md`}>
+          <ConciergeBell className={`w-8 h-8 text-${brandColor}-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]`} />
        </div>
     </div>
   </div>
 );
 
-const VisualNarrative: React.FC = () => {
+const VisualNarrative: React.FC<{ brandColor?: string }> = ({ brandColor = 'emerald' }) => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   
   // Animation logic for left side
@@ -414,17 +414,17 @@ const VisualNarrative: React.FC = () => {
   return (
     <div className="hidden lg:flex w-1/2 relative bg-[#06080D] overflow-hidden items-center justify-center">
       <div className="absolute inset-0 bg-[#06080D]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.02)_0%,transparent_85%)]" />
+      <div className={`absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_0%,transparent_85%)]`} />
       
-      <DigitalPass />
+      <DigitalPass brandColor={brandColor} />
 
       {/* INTELLIGENCE HUD LAYERS */}
       <div className="absolute inset-0 pointer-events-none z-50 p-12 flex flex-col justify-between">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4 bg-white/[0.03] backdrop-blur-3xl px-6 py-3 rounded-full border border-white/10 shadow-2xl pointer-events-auto mt-4 mr-4">
               <div className="relative flex">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping absolute" />
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full relative" />
+                  <div className={`w-2 h-2 bg-${brandColor}-500 rounded-full animate-ping absolute`} />
+                  <div className={`w-2 h-2 bg-${brandColor}-500 rounded-full relative`} />
               </div>
               <span className="text-[10px] font-black text-white/40 tracking-[0.4em] uppercase">SYSTEM_READY</span>
           </div>
@@ -432,12 +432,12 @@ const VisualNarrative: React.FC = () => {
         <div className="flex justify-center w-full pb-10 pointer-events-auto">
           <div className="flex items-stretch gap-1 bg-white/[0.02] backdrop-blur-[60px] rounded-[2rem] border border-white/5 shadow-3xl overflow-hidden p-1.5">
             <div className="flex items-center gap-4 bg-white/[0.03] px-8 py-5 rounded-[1.75rem] border border-white/5 mr-4">
-              <div className="w-10 h-10 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/10">
-                  <Server className="w-5 h-5 text-emerald-500/70" />
+              <div className={`w-10 h-10 bg-${brandColor}-500/10 rounded-2xl flex items-center justify-center border border-${brandColor}-500/10`}>
+                  <Server className={`w-5 h-5 text-${brandColor}-500/70`} />
               </div>
               <div className="flex flex-col">
                   <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">Live Node</span>
-                  <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-widest">Platform v4.2</span>
+                  <span className={`text-[11px] font-bold text-${brandColor}-400 uppercase tracking-widest`}>Platform v4.2</span>
               </div>
             </div>
             <div className="flex items-center gap-10 px-6">
@@ -469,7 +469,7 @@ const VisualNarrative: React.FC = () => {
                       key={i}
                       animate={{ height: [6, 18, 8, 24, 6] }}
                       transition={{ duration: 1.2 + i * 0.2, repeat: Infinity, ease: "easeInOut" }}
-                      className="w-1.5 bg-emerald-500/30 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.2)]"
+                      className={`w-1.5 bg-${brandColor}-500/30 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)]`}
                     />
                 ))}
             </div>
@@ -489,7 +489,7 @@ const VisualNarrative: React.FC = () => {
            transition={{ duration: 0.5, ease: "circOut" }}
            className="relative flex items-center justify-center z-10"
         >
-            <RestaurantCore />
+            <RestaurantCore brandColor={brandColor} />
             {ITEMS.map((item, idx) => (
                item.id !== hoveredId && (
                   <OrbitItem 
