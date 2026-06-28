@@ -91,14 +91,28 @@ const itemVariants = {
 
 interface ProductManagerProps {
   brandColor: string;
+  highlightedItemId?: string | null;
+  clearHighlight?: () => void;
 }
 
-const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
+const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlightedItemId, clearHighlight }) => {
   const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
   const [activeCategory, setActiveCategory] = useState('همه');
   const [searchQuery, setSearchQuery] = useState('');
+  const [localHighlight, setLocalHighlight] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (highlightedItemId) {
+      setLocalHighlight(highlightedItemId);
+      const timer = setTimeout(() => {
+        setLocalHighlight(null);
+        if (clearHighlight) clearHighlight();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedItemId, clearHighlight]);
   
   // Form State
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -356,7 +370,11 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
                       layout // Enables smooth rearrangement
                       variants={itemVariants}
                       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                      className={`bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:shadow-${brandColor}-100 hover:border-${brandColor}-200 transition-all group relative overflow-hidden flex flex-col`}
+                      className={`bg-white rounded-2xl shadow-sm transition-all group relative overflow-hidden flex flex-col ${
+                        localHighlight === product.id 
+                          ? `border-2 border-${brandColor}-500 shadow-xl shadow-${brandColor}-500/50 scale-[1.02] z-10` 
+                          : `border border-slate-100 hover:shadow-lg hover:shadow-${brandColor}-100 hover:border-${brandColor}-200`
+                      }`}
                     >
                       <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
                          <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -460,12 +478,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
                        <div className="col-span-2 sm:col-span-1 space-y-2">
                           <label className="text-xs font-bold text-slate-500">قیمت پایه (تومان)</label>
                           <div className="relative">
-                             <DollarSign className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                             <DollarSign className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
                              <input 
                                type="number" 
                                value={editingProduct.price}
                                onChange={e => setEditingProduct({ ...editingProduct, price: parseInt(e.target.value) || 0 })}
-                               className={`w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors dir-ltr`}
+                               className={`w-full p-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right`}
                              />
                           </div>
                        </div>
@@ -473,12 +491,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
                        <div className="col-span-2 sm:col-span-1 space-y-2">
                           <label className="text-xs font-bold text-slate-500">زمان آماده‌سازی</label>
                           <div className="relative">
-                             <Clock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                             <Clock className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
                              <input 
                                type="text" 
                                value={editingProduct.estimatedTime}
                                onChange={e => setEditingProduct({ ...editingProduct, estimatedTime: e.target.value })}
-                               className={`w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
+                               className={`w-full p-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right`}
                                placeholder="مثال: ۱۵ دقیقه"
                              />
                           </div>
@@ -631,7 +649,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
                             onChange={e => setTempRawMaterial(e.target.value)}
                             onKeyDown={handleAddRawMaterial}
                             placeholder="تایپ کنید و Enter بزنید..."
-                            className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-${brandColor}-500`}
+                            className={`w-full p-3 pl-14 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-${brandColor}-500`}
                          />
                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">Enter ↵</span>
                       </div>
@@ -661,19 +679,25 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
       {/* CUSTOM DELETE MODAL */}
       <AnimatePresence>
         {productToDelete && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          >
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30"
+              className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
               onClick={() => setProductToDelete(null)}
             />
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl relative z-[60] p-6 flex flex-col items-center text-center"
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl relative z-10 p-6 flex flex-col items-center text-center"
             >
               <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
                 <AlertTriangle className="w-8 h-8 text-red-500" />
@@ -697,7 +721,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor }) => {
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

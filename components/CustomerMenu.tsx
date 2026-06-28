@@ -242,23 +242,38 @@ const FeaturedSection = ({ element, onProductClick, brandColor }: any) => {
 
 // --- MODALS & CART ---
 
-const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, brandColor }: any) => {
+const ProductDetailModal = ({ product: incomingProduct, isOpen, onClose, onAddToCart, brandColor }: any) => {
   const [qty, setQty] = useState(1);
-  
-  if (!isOpen || !product) return null;
+  const [localProduct, setLocalProduct] = useState<any>(null);
+
+  useEffect(() => {
+    if (incomingProduct) {
+      setLocalProduct(incomingProduct);
+      setQty(1);
+    }
+  }, [incomingProduct]);
+
+  const product = incomingProduct || localProduct;
+
+  if (!product) return null;
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-end justify-center"
+        >
           <motion.div 
              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-             onClick={onClose} className="fixed inset-0 bg-black/60 z-50 backdrop-blur-md"
+             onClick={onClose} className="fixed inset-0 bg-black/60 backdrop-blur-md"
           />
           <motion.div 
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-[60] bg-white rounded-t-[2.5rem] h-[85vh] overflow-hidden flex flex-col max-w-md mx-auto shadow-[0_-10px_40px_rgba(0,0,0,0.2)]"
+            className="fixed bottom-0 left-0 right-0 z-10 bg-white rounded-t-[2.5rem] h-[85vh] overflow-hidden flex flex-col max-w-md mx-auto shadow-[0_-10px_40px_rgba(0,0,0,0.2)]"
           >
             {/* Image Header */}
             <div className="relative h-72 shrink-0">
@@ -273,12 +288,17 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, brandColor 
             <div className="flex-1 overflow-y-auto p-8 -mt-10 bg-white rounded-t-[2.5rem] relative z-10">
                <div className="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
                
-               <div className="flex justify-between items-start mb-4">
+               <div className="flex justify-between items-start mb-2">
                   <h2 className="text-2xl font-black text-slate-900 leading-tight">{product.name}</h2>
-                  <div className="flex items-center gap-1.5 bg-yellow-50 px-2.5 py-1.5 rounded-xl border border-yellow-100">
+                  <div className="flex items-center gap-1.5 bg-yellow-50 px-2.5 py-1.5 rounded-xl border border-yellow-100 shrink-0">
                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
                      <span className="text-sm font-bold text-yellow-700 pt-0.5">{product.rating}</span>
                   </div>
+               </div>
+               
+               <div className="flex items-baseline gap-1 mb-4">
+                  <span className="text-2xl font-black text-slate-950">{product.price.toLocaleString()}</span>
+                  <span className="text-xs font-normal text-slate-400">تومان</span>
                </div>
                
                <div className="flex items-center gap-4 text-xs text-slate-500 font-medium mb-6">
@@ -308,28 +328,28 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, brandColor 
             </div>
 
             {/* Action Bar */}
-            <div className="p-6 border-t border-slate-100 bg-white safe-area-bottom">
-               <div className="flex items-center justify-between gap-6 mb-4">
-                  <div className="flex items-center gap-4 bg-slate-50 px-4 py-3 rounded-2xl border border-slate-100">
-                     <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-1 hover:bg-white rounded-lg transition-colors"><Minus className="w-4 h-4 text-slate-600" /></button>
-                     <span className="font-black w-6 text-center text-lg">{qty}</span>
-                     <button onClick={() => setQty(qty + 1)} className="p-1 hover:bg-white rounded-lg transition-colors"><Plus className="w-4 h-4 text-slate-600" /></button>
+            <div className="p-4 border-t border-slate-100 bg-white safe-area-bottom shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+               <div className="flex items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+                     <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-1 hover:bg-white rounded-lg transition-colors"><Minus className="w-3.5 h-3.5 text-slate-500" /></button>
+                     <span className="font-bold w-5 text-center text-sm">{qty}</span>
+                     <button onClick={() => setQty(qty + 1)} className="p-1 hover:bg-white rounded-lg transition-colors"><Plus className="w-3.5 h-3.5 text-slate-500" /></button>
                   </div>
                   <div className="flex-1 text-left">
-                     <span className="text-xs text-slate-400 block font-bold mb-0.5">مبلغ کل</span>
-                     <span className="text-xl font-black text-slate-900">{(product.price * qty).toLocaleString()} <span className="text-xs font-normal text-slate-400">تومان</span></span>
+                     <span className="text-[10px] text-slate-400 block font-bold mb-0.5">مبلغ کل</span>
+                     <span className="text-lg font-black text-slate-950">{(product.price * qty).toLocaleString()} <span className="text-xs font-normal text-slate-400">تومان</span></span>
                   </div>
                </div>
                <button 
                   onClick={() => { onAddToCart(product, qty); onClose(); }}
-                  className={`w-full py-4 bg-${brandColor}-600 text-white rounded-2xl font-black text-sm shadow-xl shadow-${brandColor}-500/30 flex items-center justify-center gap-3 active:scale-[0.98] transition-all`}
+                  className={`w-full py-2.5 bg-${brandColor}-600 text-white rounded-xl font-bold text-xs shadow-md shadow-${brandColor}-500/10 flex items-center justify-center gap-2 active:scale-[0.98] transition-all hover:bg-${brandColor}-500`}
                >
-                  <ShoppingBag className="w-5 h-5" />
+                  <ShoppingBag className="w-4 h-4" />
                   افزودن به سبد خرید
                </button>
             </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );
@@ -442,13 +462,13 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements }) => {
                initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }}
                className="fixed bottom-6 left-6 right-6 z-40 max-w-[calc(28rem-3rem)] mx-auto"
             >
-               <div className="bg-[#1a1a1a] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-white/10 backdrop-blur-xl">
+               <div className="bg-white/95 backdrop-blur-md text-slate-800 p-3.5 rounded-2xl shadow-xl flex items-center justify-between border border-slate-100 hover:scale-[1.02] transition-transform">
                   <div className="flex flex-col">
-                     <span className="text-[10px] text-white/60 mb-0.5 font-bold">{cartCount} آیتم در سبد</span>
-                     <span className="font-black text-lg">{cartTotal.toLocaleString()} <span className="text-xs font-normal text-white/60">تومان</span></span>
+                     <span className="text-[10px] text-slate-400 mb-0.5 font-bold">{cartCount} آیتم در سبد</span>
+                     <span className="font-black text-base text-slate-900">{cartTotal.toLocaleString()} <span className="text-[10px] font-normal text-slate-400">تومان</span></span>
                   </div>
-                  <button className={`bg-${brandColor}-600 text-white px-6 py-3 rounded-xl font-bold text-xs shadow-lg shadow-${brandColor}-500/30 flex items-center gap-2 hover:bg-${brandColor}-500 transition-colors`}>
-                     تکمیل سفارش <ChevronLeft className="w-4 h-4" />
+                  <button className={`bg-${brandColor}-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md shadow-${brandColor}-500/10 flex items-center gap-1.5 hover:bg-${brandColor}-500 transition-colors`}>
+                     مشاهده و پرداخت <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
                </div>
             </motion.div>

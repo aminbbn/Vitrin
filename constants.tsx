@@ -127,7 +127,7 @@ export const SEARCH_ITEMS = [
   { id: 'o1', type: 'order', title: 'سفارش #12890', subtitle: 'میز ۵', detail: 'در انتظار', status: 'new' },
   { id: 'o2', type: 'order', title: 'سفارش #12891', subtitle: 'میز ۱۲', detail: 'در حال آماده‌سازی', status: 'preparing' },
   { id: 'o3', type: 'order', title: 'سفارش #12888', subtitle: 'میز ۸', detail: 'آماده تحویل', status: 'ready' },
-  { id: 'c1', type: 'customer', title: 'محمد رضایی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۳۴۵۶۷۸۹', visits: 15 },
-  { id: 'c2', type: 'customer', title: 'سارا احمدی', subtitle: 'مشتری جدید', detail: '۰۹۳۵۰۰۰۰۰۰۰', visits: 1 },
-  { id: 'c3', type: 'customer', title: 'علی کمالی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۹۹۹۸۸۷۷', visits: 24 },
+  { id: 'c1', type: 'customer', title: 'محمد رضایی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۳۴۵۶۷۸۹', visits: 15, phone: '۰۹۱۲۳۴۵۶۷۸۹', email: 'm.rezaei@gmail.com', joinDate: '۱۴۰۱/۱۰/۱۲', orders: 15, spent: '۳,۲۰۰,۰۰۰', favorite: 'برگر کلاسیک' },
+  { id: 'c2', type: 'customer', title: 'سارا احمدی', subtitle: 'مشتری جدید', detail: '۰۹۳۵۰۰۰۰۰۰۰', visits: 1, phone: '۰۹۳۵۰۰۰۰۰۰۰', email: 'sara.ahmadi@yahoo.com', joinDate: '۱۴۰۲/۰۶/۰۱', orders: 1, spent: '۲۴۰,۰۰۰', favorite: 'پیتزا سبزیجات' },
+  { id: 'c3', type: 'customer', title: 'علی کمالی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۹۹۹۸۸۷۷', visits: 24, phone: '۰۹۱۲۹۹۹۸۸۷۷', email: 'ali.kamali@gmail.com', joinDate: '۱۴۰۱/۰۴/۱۵', orders: 24, spent: '۵,۴۰۰,۰۰۰', favorite: 'پاستا آلفردو' },
 ];

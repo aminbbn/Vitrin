@@ -1,12 +1,12 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, Download, Activity, Star,
   MessageCircle, UserCheck, UserPlus, Smile, 
   ArrowUpRight, ArrowDownRight, Send, 
   ShoppingBag, Check, BarChart2,
-  TrendingUp, MapPin, Phone, Search, X, Filter, ChevronLeft, Calendar
+  TrendingUp, MapPin, Phone, Search, X, Filter, ChevronLeft, Calendar, Mail, Copy
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -32,20 +32,20 @@ const ALL_REVIEWS = [
 ];
 
 const ALL_LOYAL_CUSTOMERS = [
-  { id: 1, name: 'سارا محمدی', orders: 42, spent: '۸,۵۰۰,۰۰۰', lastOrder: '۲ روز پیش', joinDate: '۱۴۰۲/۰۱/۱۵', favorite: 'پیتزا پپرونی' },
-  { id: 2, name: 'علی رضاپور', orders: 35, spent: '۶,۲۰۰,۰۰۰', lastOrder: 'دیروز', joinDate: '۱۴۰۲/۰۲/۱۰', favorite: 'برگر کلاسیک' },
-  { id: 3, name: 'مریم کاویانی', orders: 28, spent: '۵,۱۰۰,۰۰۰', lastOrder: 'هفته پیش', joinDate: '۱۴۰۱/۱۱/۲۰', favorite: 'سالاد سزار' },
-  { id: 4, name: 'حسین ناصری', orders: 20, spent: '۳,۴۰۰,۰۰۰', lastOrder: '۳ روز پیش', joinDate: '۱۴۰۲/۰۵/۰۵', favorite: 'پاستا' },
-  { id: 5, name: 'کیان مهرابی', orders: 18, spent: '۳,۱۰۰,۰۰۰', lastOrder: '۵ روز پیش', joinDate: '۱۴۰۲/۰۶/۱۲', favorite: 'برگر' },
-  { id: 6, name: 'لیلا حاتمی', orders: 15, spent: '۲,۸۰۰,۰۰۰', lastOrder: 'دیروز', joinDate: '۱۴۰۲/۰۳/۲۵', favorite: 'پیتزا' },
+  { id: 1, name: 'سارا محمدی', orders: 42, spent: '۸,۵۰۰,۰۰۰', lastOrder: '۲ روز پیش', joinDate: '۱۴۰۲/۰۱/۱۵', favorite: 'پیتزا پپرونی', phone: '۰۹۱۲۱۲۳۴۵۶۷', email: 'sara.mohammadi@gmail.com' },
+  { id: 2, name: 'علی رضاپور', orders: 35, spent: '۶,۲۰۰,۰۰۰', lastOrder: 'دیروز', joinDate: '۱۴۰۲/۰۲/۱۰', favorite: 'برگر کلاسیک', phone: '۰۹۱۲۷۶۵۴۳۲۱', email: 'ali.rezapour@yahoo.com' },
+  { id: 3, name: 'مریم کاویانی', orders: 28, spent: '۵,۱۰۰,۰۰۰', lastOrder: 'هفته پیش', joinDate: '۱۴۰۱/۱۱/۲۰', favorite: 'سالاد سزار', phone: '۰۹۱۲۹۸۷۶۵۴۳', email: 'm.kaviani@hotmail.com' },
+  { id: 4, name: 'حسین ناصری', orders: 20, spent: '۳,۴۰۰,۰۰۰', lastOrder: '۳ روز پیش', joinDate: '۱۴۰۲/۰۵/۰۵', favorite: 'پاستا', phone: '۰۹۱۲۴۵۶۷۸۹۰', email: 'hossein.naseri@gmail.com' },
+  { id: 5, name: 'کیان مهرابی', orders: 18, spent: '۳,۱۰۰,۰۰۰', lastOrder: '۵ روز پیش', joinDate: '۱۴۰۲/۰۶/۱۲', favorite: 'برگر', phone: '۰۹۱۲۳۴۵۶۷۸۹', email: 'kian.mehrabi@outlook.com' },
+  { id: 6, name: 'لیلا حاتمی', orders: 15, spent: '۲,۸۰۰,۰۰۰', lastOrder: 'دیروز', joinDate: '۱۴۰۲/۰۳/۲۵', favorite: 'پیتزا', phone: '۰۹۱۲۲۳۴۵۶۷۸', email: 'leila.hatami@gmail.com' },
 ];
 
 const ALL_NEW_CUSTOMERS = [
-  { id: 101, name: 'آرش کمانگیر', source: 'اینستاگرام', joinDate: 'امروز', firstOrder: 'پیتزا پپرونی' },
-  { id: 102, name: 'بهرام رادان', source: 'گوگل مپ', joinDate: 'امروز', firstOrder: 'سالاد سزار' },
-  { id: 103, name: 'هدیه تهرانی', source: 'معرفی دوستان', joinDate: 'دیروز', firstOrder: 'برگر کلاسیک' },
-  { id: 104, name: 'نوید محمدزاده', source: 'اسنپ‌فود', joinDate: 'دیروز', firstOrder: 'پاستا آلفردو' },
-  { id: 105, name: 'ترانه علیدوستی', source: 'گذری', joinDate: '۲ روز پیش', firstOrder: 'نوشیدنی' },
+  { id: 101, name: 'آرش کمانگیر', source: 'اینستاگرام', joinDate: 'امروز', firstOrder: 'پیتزا پپرونی', phone: '۰۹۳۵۱۲۳۴۵۶۷', email: 'arash.k@gmail.com' },
+  { id: 102, name: 'بهرام رادان', source: 'گوگل مپ', joinDate: 'امروز', firstOrder: 'سالاد سزار', phone: '۰۹۳۶۷۶۵۴۳۲۱', email: 'bahram.r@yahoo.com' },
+  { id: 103, name: 'هدیه تهرانی', source: 'معرفی دوستان', joinDate: 'دیروز', firstOrder: 'برگر کلاسیک', phone: '۰۹۳۷۹۸۷۶۵۴۳', email: 'hedieh.t@gmail.com' },
+  { id: 104, name: 'نوید محمدزاده', source: 'اسنپ‌فود', joinDate: 'دیروز', firstOrder: 'پاستا آلفردو', phone: '۰۹۳۸۴۵۶۷۸۹۰', email: 'navid.m@gmail.com' },
+  { id: 105, name: 'ترانه علیدوستی', source: 'گذری', joinDate: '۲ روز پیش', firstOrder: 'نوشیدنی', phone: '۰۹۳۹۳۴۵۶۷۸۹', email: 'taraneh.a@gmail.com' },
 ];
 
 const ACQUISITION_DATA = [
@@ -281,18 +281,20 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
              <div className="lg:col-span-2">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
-                    <UserCheck className="w-4 h-4 text-blue-500" />
+                    <UserCheck className={`w-4 h-4 text-${brandColor}-500`} />
                     مشتریان وفادار برتر
                     </h3>
-                    <button onClick={() => onShowAll('loyal')} className="text-xs font-bold text-blue-600 hover:bg-blue-50 px-2 py-1 rounded-lg transition-colors flex items-center gap-1">
+                    <button onClick={() => onShowAll('loyal')} className={`text-xs font-bold text-${brandColor}-600 hover:bg-${brandColor}-50 px-2 py-1 rounded-lg transition-colors flex items-center gap-1`}>
                         مشاهده همه <ChevronLeft className="w-3 h-3" />
                     </button>
                 </div>
                 <div className="space-y-3">
                    {ALL_LOYAL_CUSTOMERS.slice(0, 4).map((customer) => (
-                      <div key={customer.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:border-blue-200 transition-colors">
+                      <div key={customer.id}
+                       onClick={() => setSelectedCustomer(customer)}
+                       className={`flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm cursor-pointer glow-transition glow-${brandColor}`}>
                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold">
+                            <div className={`w-10 h-10 bg-${brandColor}-50 text-${brandColor}-600 rounded-xl flex items-center justify-center font-bold`}>
                                {customer.name.charAt(0)}
                             </div>
                             <div>
@@ -302,7 +304,7 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
                          </div>
                          <div className="text-left">
                             <div className="font-black text-sm text-slate-800">{customer.orders} سفارش</div>
-                            <div className="text-[10px] text-blue-600 font-bold">{customer.spent} تومان</div>
+                            <div className={`text-[10px] text-${brandColor}-600 font-bold`}>{customer.spent} تومان</div>
                          </div>
                       </div>
                    ))}
@@ -404,6 +406,155 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
   );
 };
 
+// --- CUSTOMER PROFILE DETAIL MODAL ---
+
+interface CustomerProfileModalProps {
+   customer: any;
+   isOpen: boolean;
+   onClose: () => void;
+   brandColor: string;
+}
+
+const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({ customer, isOpen, onClose, brandColor }) => {
+   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+   if (!customer) return null;
+
+   const handleCopy = (text: string, field: string) => {
+      navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+   };
+
+   return (
+      <motion.div className="fixed inset-0 z-[300] flex items-center justify-center p-4 font-['Vazirmatn']">
+         <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
+         />
+         <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 p-8 overflow-hidden flex flex-col"
+         >
+            {/* Header / Avatar */}
+            <div className="flex flex-col items-center text-center mb-6 relative">
+               <button onClick={onClose} className="absolute right-0 top-0 p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors">
+                  <X className="w-4 h-4" />
+               </button>
+               
+               <div className={`w-20 h-20 bg-${brandColor}-50 text-${brandColor}-600 rounded-[2rem] flex items-center justify-center font-black text-3xl mb-4 shadow-inner`}>
+                  {customer.name?.charAt(0)}
+               </div>
+               
+               <h3 className="text-xl font-black text-slate-800">{customer.name}</h3>
+               <span className={`mt-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-${brandColor}-50 text-${brandColor}-700 border border-${brandColor}-100`}>
+                  {customer.orders ? 'مشتری وفادار و برتر' : 'مشتری جدید رستوران'}
+               </span>
+            </div>
+
+            {/* Main Stats */}
+            <div className="grid grid-cols-2 gap-4 mb-6 bg-slate-50 p-4 rounded-3xl border border-slate-100">
+               <div className="text-center p-2">
+                  <div className="text-[10px] text-slate-400 font-bold mb-1">تعداد سفارشات</div>
+                  <div className={`text-lg font-black text-${brandColor}-600`}>{customer.orders ?? 1}</div>
+               </div>
+               <div className="text-center p-2 border-r border-slate-200">
+                  <div className="text-[10px] text-slate-400 font-bold mb-1 font-['Vazirmatn']">مجموع خرید (تومان)</div>
+                  <div className="text-lg font-black text-slate-800">{customer.spent ?? '۲۴۰,۰۰۰'}</div>
+               </div>
+            </div>
+
+            {/* Customer Details Fields */}
+            <div className="space-y-4 mb-8">
+               {/* Phone */}
+               <div className="flex items-center justify-between p-3.5 bg-slate-50/50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
+                  <div className="flex items-center gap-3">
+                     <div className={`p-2 bg-${brandColor}-50 text-${brandColor}-600 rounded-xl`}>
+                        <Phone className="w-4 h-4" />
+                     </div>
+                     <div className="text-right">
+                        <div className="text-[10px] font-bold text-slate-400">شماره تلفن</div>
+                        <div className="text-sm font-black text-slate-800">{customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷'}</div>
+                     </div>
+                  </div>
+                  <div className="flex gap-2">
+                     <button 
+                        onClick={() => handleCopy(customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷', 'phone')}
+                        className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200/60 shadow-sm"
+                        title="کپی شماره"
+                     >
+                        {copiedField === 'phone' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                     </button>
+                     <a 
+                        href={`tel:${customer.phone ?? '09121234567'}`}
+                        className={`p-2 bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white rounded-xl transition-colors shadow-md shadow-${brandColor}-200 flex items-center justify-center`}
+                        title="تماس"
+                     >
+                        <Phone className="w-3.5 h-3.5" />
+                     </a>
+                  </div>
+               </div>
+
+               {/* Email */}
+               <div className="flex items-center justify-between p-3.5 bg-slate-50/50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
+                  <div className="flex items-center gap-3">
+                     <div className={`p-2 bg-${brandColor}-50 text-${brandColor}-600 rounded-xl`}>
+                        <Mail className="w-4 h-4" />
+                     </div>
+                     <div className="text-right">
+                        <div className="text-[10px] font-bold text-slate-400 font-['Inter']">ایمیل</div>
+                        <div className="text-sm font-black text-slate-800 font-['Inter']">{customer.email ?? 'customer@gmail.com'}</div>
+                     </div>
+                  </div>
+                  <div className="flex gap-2">
+                     <button 
+                        onClick={() => handleCopy(customer.email ?? 'customer@gmail.com', 'email')}
+                        className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200/60 shadow-sm"
+                        title="کپی ایمیل"
+                     >
+                        {copiedField === 'email' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                     </button>
+                     <a 
+                        href={`mailto:${customer.email ?? 'customer@gmail.com'}`}
+                        className={`p-2 bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white rounded-xl transition-colors shadow-md shadow-${brandColor}-200 flex items-center justify-center`}
+                        title="ارسال ایمیل"
+                     >
+                        <Mail className="w-3.5 h-3.5" />
+                     </a>
+                  </div>
+               </div>
+
+               {/* Other Info */}
+               <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 bg-slate-50/30 border border-slate-100 rounded-2xl">
+                     <span className="text-[10px] text-slate-400 block mb-0.5 font-bold">تاریخ عضویت</span>
+                     <span className="text-xs font-black text-slate-700">{customer.joinDate}</span>
+                  </div>
+                  <div className="p-3 bg-slate-50/30 border border-slate-100 rounded-2xl">
+                     <span className="text-[10px] text-slate-400 block mb-0.5 font-bold font-['Vazirmatn']">غذای مورد علاقه</span>
+                     <span className="text-xs font-black text-slate-700">{customer.favorite ?? customer.firstOrder ?? 'پیتزا پپرونی'}</span>
+                  </div>
+               </div>
+            </div>
+
+            {/* Footer Close */}
+            <button 
+               onClick={onClose}
+               className={`w-full py-3 bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white font-black rounded-2xl shadow-lg shadow-${brandColor}-200 transition-all flex items-center justify-center gap-2`}
+            >
+               <Check className="w-5 h-5" /> بستن شناسنامه
+            </button>
+         </motion.div>
+      </motion.div>
+   );
+};
+
 // --- DETAIL LIST MODAL ---
 
 interface DetailModalProps {
@@ -411,17 +562,25 @@ interface DetailModalProps {
    onClose: () => void;
    type: 'reviews' | 'loyal' | 'new';
    brandColor: string;
+   onSelectCustomer: (customer: any) => void;
 }
 
-const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandColor }) => {
+const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandColor, onSelectCustomer }) => {
    const [search, setSearch] = useState('');
-   
-   if (!isOpen) return null;
+   const [localType, setLocalType] = useState(type);
+
+   useEffect(() => {
+      if (isOpen && type) {
+         setLocalType(type);
+      }
+   }, [isOpen, type]);
+
+   const activeType = isOpen ? type : localType;
 
    let title = '';
    let content = null;
 
-   if (type === 'reviews') {
+   if (activeType === 'reviews') {
       title = 'تمام نظرات مشتریان';
       const filtered = ALL_REVIEWS.filter(r => r.comment.includes(search) || r.user.includes(search) || r.productName.includes(search));
       content = (
@@ -452,15 +611,17 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
             ))}
          </div>
       );
-   } else if (type === 'loyal') {
+   } else if (activeType === 'loyal') {
       title = 'لیست مشتریان وفادار';
       const filtered = ALL_LOYAL_CUSTOMERS.filter(c => c.name.includes(search));
       content = (
          <div className="space-y-3">
             {filtered.map(c => (
-               <div key={c.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:border-blue-300 transition-colors">
+               <div key={c.id} 
+               onClick={() => onSelectCustomer(c)}
+               className={`flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl glow-transition glow-${brandColor} cursor-pointer shadow-sm`}>
                   <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-black text-lg">
+                     <div className={`w-12 h-12 bg-${brandColor}-50 text-${brandColor}-600 rounded-2xl flex items-center justify-center font-black text-lg`}>
                         {c.name.charAt(0)}
                      </div>
                      <div>
@@ -479,27 +640,29 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
                      </div>
                      <div className="text-center min-w-[100px]">
                         <div className="text-xs text-slate-400 font-bold mb-0.5">مجموع خرید</div>
-                        <div className="font-black text-blue-600">{c.spent}</div>
+                        <div className={`font-black text-${brandColor}-600`}>{c.spent}</div>
                      </div>
                   </div>
                </div>
             ))}
          </div>
       );
-   } else if (type === 'new') {
+   } else if (activeType === 'new') {
       title = 'لیست مشتریان جدید';
       const filtered = ALL_NEW_CUSTOMERS.filter(c => c.name.includes(search));
       content = (
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filtered.map(c => (
-               <div key={c.id} className="p-4 bg-white border border-slate-100 rounded-2xl hover:border-purple-300 transition-colors flex items-center gap-4">
-                  <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center font-black text-lg shrink-0">
+               <div key={c.id} 
+               onClick={() => onSelectCustomer(c)}
+               className={`p-4 bg-white border border-slate-100 rounded-2xl glow-transition glow-${brandColor} cursor-pointer flex items-center gap-4 shadow-sm`}>
+                  <div className={`w-12 h-12 bg-${brandColor}-50 text-${brandColor}-600 rounded-2xl flex items-center justify-center font-black text-lg shrink-0`}>
                      {c.name.charAt(0)}
                   </div>
                   <div className="flex-1">
                      <div className="flex justify-between items-start mb-1">
                         <span className="font-bold text-slate-800">{c.name}</span>
-                        <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-bold">{c.source}</span>
+                        <span className={`text-[10px] bg-${brandColor}-100 text-${brandColor}-700 px-2 py-0.5 rounded font-bold`}>{c.source}</span>
                      </div>
                      <div className="text-xs text-slate-500">
                         اولین سفارش: <span className="font-bold text-slate-700">{c.firstOrder}</span>
@@ -515,19 +678,19 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
    }
 
    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <motion.div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
          <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-[200]"
          />
          <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-slate-50 w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-10 flex flex-col max-h-[85vh] overflow-hidden"
+            className="bg-slate-50 w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-[201] flex flex-col max-h-[85vh] overflow-hidden"
          >
             {/* Header */}
             <div className="p-6 bg-white border-b border-slate-200 flex items-center justify-between shrink-0">
@@ -558,7 +721,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
                {content}
             </div>
          </motion.div>
-      </div>
+      </motion.div>
    );
 }
 
@@ -572,6 +735,7 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
   // Modal State
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'reviews' | 'loyal' | 'new'>('reviews');
+  const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
   
   const reviewsList = ALL_REVIEWS;
   const stats = useMemo(() => getAnalyticsStats(brandColor, reviewsList.length), [brandColor, reviewsList.length]);
@@ -673,7 +837,8 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
                       <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
                       <Tooltip 
                         cursor={{ fill: '#f8fafc' }}
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.1)' }}
+                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#1e293b', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+                        wrapperStyle={{ zIndex: 1000 }}
                       />
                       <Bar dataKey="returning" name="مشتریان بازگشتی" stackId="a" fill="#3b82f6" radius={[0, 0, 4, 4]} />
                       <Bar dataKey="newCustomers" name="مشتریان جدید" stackId="a" fill="#10b981" radius={[4, 4, 0, 0]} />
@@ -682,11 +847,19 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
              </div>
           </div>
 
-          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200 flex flex-col items-center justify-center relative overflow-hidden">
+          <motion.div 
+             whileHover={{ 
+               y: -4,
+               boxShadow: "0 20px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(16, 185, 129, 0.1)",
+               borderColor: "#10b981"
+             }}
+             transition={{ type: "spring", stiffness: 300, damping: 20 }}
+             className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200 flex flex-col items-center justify-center relative overflow-hidden outline-none focus:outline-none"
+          >
              <h2 className="text-lg font-black text-slate-800 mb-4 z-10">رضایتمندی کل</h2>
-             <div className="h-64 w-full z-10">
+             <div className="h-64 w-full z-10 outline-none focus:outline-none">
                 <ResponsiveContainer width="100%" height="100%">
-                   <PieChart>
+                   <PieChart style={{ outline: 'none' }}>
                       <Pie 
                         data={SATISFACTION_DATA} 
                         innerRadius={60} 
@@ -694,10 +867,14 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
                         paddingAngle={5} 
                         dataKey="value"
                         cornerRadius={4}
+                        style={{ outline: 'none' }}
                       >
-                         {SATISFACTION_DATA.map((entry, index) => <Cell key={index} fill={entry.color} />)}
+                         {SATISFACTION_DATA.map((entry, index) => <Cell key={index} fill={entry.color} style={{ outline: 'none' }} />)}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#1e293b', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+                        wrapperStyle={{ zIndex: 1000 }}
+                      />
                    </PieChart>
                 </ResponsiveContainer>
              </div>
@@ -707,7 +884,7 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
              </div>
              {/* Background Pattern */}
              <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-          </div>
+          </motion.div>
         </div>
 
       </div>
@@ -718,6 +895,15 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
                isOpen={detailModalOpen}
                onClose={() => setDetailModalOpen(false)}
                type={modalType}
+               brandColor={brandColor}
+               onSelectCustomer={(c) => setSelectedCustomer(c)}
+            />
+         )}
+         {selectedCustomer && (
+            <CustomerProfileModal 
+               customer={selectedCustomer}
+               isOpen={!!selectedCustomer}
+               onClose={() => setSelectedCustomer(null)}
                brandColor={brandColor}
             />
          )}

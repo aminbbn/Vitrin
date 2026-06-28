@@ -70,6 +70,7 @@ const App: React.FC = () => {
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
 
   // Notification State
   const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
@@ -120,8 +121,8 @@ const App: React.FC = () => {
     switch (activeView) {
       case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} brandColor={brandColor} />;
       case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} brandColor={brandColor} />;
-      case 'products': return <ProductManager brandColor={brandColor} />;
-      case 'orders': return <OrderBoard brandColor={brandColor} />;
+      case 'products': return <ProductManager brandColor={brandColor} highlightedItemId={highlightedItemId} clearHighlight={() => setHighlightedItemId(null)} />;
+      case 'orders': return <OrderBoard brandColor={brandColor} highlightedItemId={highlightedItemId} clearHighlight={() => setHighlightedItemId(null)} />;
       case 'analytics': return <Analytics brandColor={brandColor} />;
       case 'settings': 
         return (
@@ -135,7 +136,10 @@ const App: React.FC = () => {
           />
         );
       case 'customer-menu': return <CustomerMenu liveElements={canvasElements} />;
-      case 'search-results': return <SearchResults query={searchQuery} onBack={() => setActiveView(previousView)} />;
+      case 'search-results': return <SearchResults query={searchQuery} onBack={() => setActiveView(previousView)} onNavigate={(view, itemId) => {
+        setActiveView(view as ViewState);
+        if (itemId) setHighlightedItemId(itemId);
+      }} />;
       case 'notification-archive': 
         return (
           <NotificationArchive 

@@ -45,13 +45,27 @@ const SMOOTH_TRANSITION = {
 
 interface OrderBoardProps {
   brandColor: string;
+  highlightedItemId?: string | null;
+  clearHighlight?: () => void;
 }
 
-const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
+const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, clearHighlight }) => {
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
   const [draggedOrder, setDraggedOrder] = useState<Order | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [localHighlight, setLocalHighlight] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (highlightedItemId) {
+      setLocalHighlight(highlightedItemId);
+      const timer = setTimeout(() => {
+        setLocalHighlight(null);
+        if (clearHighlight) clearHighlight();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedItemId, clearHighlight]);
   
   // New Order Modal State
   const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
@@ -190,7 +204,6 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
                       <motion.div
                         key={order.id}
                         layout
-                        layoutId={order.id}
                         transition={SMOOTH_TRANSITION}
                         initial={{ opacity: 0, scale: 0.9, y: 10 }}
                         animate={{ 
@@ -208,9 +221,11 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
                            setSelectedOrder(order);
                         }}
                         className={`bg-white p-5 rounded-2xl transition-all cursor-grab active:cursor-grabbing group relative select-none ${
-                          isDragging 
-                            ? 'border-2 border-dashed border-slate-300 shadow-none bg-slate-50' 
-                            : `border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-${brandColor}-500/5 hover:border-${brandColor}-200`
+                          localHighlight === order.id
+                            ? `border-2 border-${brandColor}-500 shadow-xl shadow-${brandColor}-500/50 scale-[1.02] z-10`
+                            : isDragging 
+                              ? 'border-2 border-dashed border-slate-300 shadow-none bg-slate-50' 
+                              : `border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-${brandColor}-500/5 hover:border-${brandColor}-200`
                         }`}
                       >
                         {/* Card Content */}
@@ -310,19 +325,25 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
       {/* --- NEW ORDER MODAL --- */}
       <AnimatePresence>
         {isNewOrderModalOpen && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          >
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsNewOrderModalOpen(false)}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-30"
+              className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl relative z-[70] p-8"
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl relative z-10 p-8"
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
@@ -401,34 +422,35 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* --- REIMAGINED ORDER DETAILS MODAL --- */}
       <AnimatePresence>
         {selectedOrder && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          >
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedOrder(null)}
-              className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-30"
+              className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
             />
             <motion.div 
-               layoutId={selectedOrder.id}
-               transition={SMOOTH_TRANSITION}
-               className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-[60] overflow-hidden flex flex-col max-h-[90vh]"
+               initial={{ scale: 0.95, opacity: 0, y: 15 }}
+               animate={{ scale: 1, opacity: 1, y: 0 }}
+               exit={{ scale: 0.95, opacity: 0, y: 15 }}
+               transition={{ type: "spring", stiffness: 350, damping: 28 }}
+               className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
             >
                {/* Internal Content Wrapper for smooth rendering */}
-               <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2, delay: 0.1 }}
-                  className="flex flex-col h-full"
-               >
+               <div className="flex flex-col h-full">
                  {/* 1. Modal Header: Status Timeline */}
                  <div className="pt-8 pb-6 px-8 bg-white border-b border-slate-100 z-20">
                     <div className="flex items-center justify-between mb-8">
@@ -572,9 +594,9 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor }) => {
                         )}
                      </div>
                  </div>
-               </motion.div>
+               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

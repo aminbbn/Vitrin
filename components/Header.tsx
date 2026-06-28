@@ -199,25 +199,32 @@ const Header: React.FC<HeaderProps> = ({
             onMouseEnter={() => setIsProfileOpen(true)} 
             onMouseLeave={() => setIsProfileOpen(false)}
           >
-            <div className="flex items-center gap-3 pr-2 border-r border-slate-200 mr-1 cursor-pointer group py-1">
-              <div 
-                onClick={() => setIsRestaurantInfoOpen(true)}
-                className="text-left hidden md:flex flex-col items-end px-2"
-              >
+            <div 
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className={`flex items-center gap-3 px-3 py-1.5 rounded-2xl border transition-all cursor-pointer group select-none ${
+                isProfileOpen 
+                  ? `border-${brandColor}-500 bg-${brandColor}-50/50 shadow-inner` 
+                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+              }`}
+            >
+              <div className="text-left hidden md:flex flex-col items-end pl-1">
                 <div className="flex items-center gap-1.5">
                     <span className={`text-sm font-black text-slate-800 group-hover:text-${brandColor}-600 transition-colors`}>{restaurantName}</span>
-                    <ChevronDown className="w-3 h-3 text-slate-400" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 group-hover:translate-y-0.5" />
                 </div>
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">شعبه مرکزی</span>
               </div>
               <div 
-                onClick={onProfileClick}
-                className={`w-10 h-10 rounded-2xl border-2 shadow-sm flex items-center justify-center transition-all overflow-hidden ${isProfileOpen ? `border-${brandColor}-500 bg-${brandColor}-50` : 'bg-slate-100 border-white'}`}
+                className={`w-9 h-9 rounded-xl border shadow-sm flex items-center justify-center transition-all overflow-hidden shrink-0 ${
+                  isProfileOpen 
+                    ? `border-${brandColor}-500 bg-white` 
+                    : 'bg-slate-100 border-slate-200'
+                }`}
               >
                 {restaurantLogo ? (
                   <img src={restaurantLogo} alt="Logo" className="w-full h-full object-cover" />
                 ) : (
-                  <User className={`w-5 h-5 ${isProfileOpen ? `text-${brandColor}-600` : 'text-slate-400'}`} />
+                  <User className={`w-4 h-4 ${isProfileOpen ? `text-${brandColor}-600` : 'text-slate-400'}`} />
                 )}
               </div>
             </div>
@@ -228,15 +235,34 @@ const Header: React.FC<HeaderProps> = ({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 w-56 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-200 z-[60] p-2 origin-top-left"
+                    className="absolute top-full left-0 w-60 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-200 z-[60] p-2 origin-top-left mt-2"
                  >
-                    <div className="px-4 py-3 bg-slate-50 rounded-xl mb-2">
+                    <div className="px-4 py-3 bg-slate-50 rounded-xl mb-1.5">
                        <p className="font-black text-xs text-slate-800 uppercase tracking-tight">پنل مدیریت</p>
                        <p className="text-[10px] text-slate-400 mt-0.5">admin@vitrin.com</p>
                     </div>
+                    
                     <button 
-                      onClick={onLogout}
-                      className="w-full text-right px-4 py-3 rounded-xl text-xs font-black text-rose-500 hover:bg-rose-50 transition-colors flex items-center justify-between group"
+                      onClick={() => { setIsRestaurantInfoOpen(true); setIsProfileOpen(false); }}
+                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-between group mb-1"
+                    >
+                       <span>اطلاعات فروشگاه</span>
+                       <Store className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                    </button>
+
+                    <button 
+                      onClick={() => { onProfileClick(); setIsProfileOpen(false); }}
+                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-between group mb-1"
+                    >
+                       <span>تنظیمات سیستم</span>
+                       <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                    </button>
+
+                    <div className="h-px bg-slate-100 my-1 mx-2" />
+
+                    <button 
+                      onClick={() => { onLogout(); setIsProfileOpen(false); }}
+                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-black text-rose-500 hover:bg-rose-50 transition-colors flex items-center justify-between group"
                     >
                        <span>خروج از حساب</span>
                        <LogOut className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -251,13 +277,13 @@ const Header: React.FC<HeaderProps> = ({
       {/* Restaurant Info Modal */}
       <AnimatePresence>
         {isRestaurantInfoOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
              <motion.div 
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
                exit={{ opacity: 0 }}
                onClick={() => setIsRestaurantInfoOpen(false)}
-               className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+               className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-[200]"
              />
              
              <motion.div 
@@ -316,7 +342,7 @@ const Header: React.FC<HeaderProps> = ({
                   </div>
                </div>
              </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

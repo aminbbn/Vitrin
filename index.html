@@ -37,6 +37,61 @@
       .animate-pulse-emerald {
         animation: pulse-emerald 2s infinite ease-in-out;
       }
+      /* Remove default focus outlines on SVGs and Recharts interactive wrappers */
+      svg, svg *, .recharts-wrapper, .recharts-wrapper *, .recharts-surface, .recharts-surface *:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* Dynamic classes for the brand glow effect across the app */
+      .glow-emerald:hover {
+        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.15), 0 0 12px 2px rgba(16, 185, 129, 0.1) !important;
+        border-color: rgba(16, 185, 129, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-blue:hover {
+        box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15), 0 0 12px 2px rgba(59, 130, 246, 0.1) !important;
+        border-color: rgba(59, 130, 246, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-purple:hover {
+        box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.15), 0 0 12px 2px rgba(168, 85, 247, 0.1) !important;
+        border-color: rgba(168, 85, 247, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-orange:hover {
+        box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.15), 0 0 12px 2px rgba(249, 115, 22, 0.1) !important;
+        border-color: rgba(249, 115, 22, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-red:hover {
+        box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.15), 0 0 12px 2px rgba(239, 68, 68, 0.1) !important;
+        border-color: rgba(239, 68, 68, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-violet:hover {
+        box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.15), 0 0 12px 2px rgba(139, 92, 246, 0.1) !important;
+        border-color: rgba(139, 92, 246, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-pink:hover {
+        box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.15), 0 0 12px 2px rgba(236, 72, 153, 0.1) !important;
+        border-color: rgba(236, 72, 153, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-zinc:hover {
+        box-shadow: 0 10px 25px -5px rgba(113, 113, 122, 0.15), 0 0 12px 2px rgba(113, 113, 122, 0.1) !important;
+        border-color: rgba(113, 113, 122, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-slate:hover {
+        box-shadow: 0 10px 25px -5px rgba(100, 116, 139, 0.15), 0 0 12px 2px rgba(100, 116, 139, 0.1) !important;
+        border-color: rgba(100, 116, 139, 0.4) !important;
+        transform: translateY(-2px);
+      }
+      .glow-transition {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
     </style>
   <script type="importmap">
 {
@@ -50,8 +105,10 @@
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

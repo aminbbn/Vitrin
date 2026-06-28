@@ -136,11 +136,11 @@ const getMockStats = (range: string, brandColor: string) => {
 const CustomTooltip = ({ active, payload, label, brandColor }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-xl border border-white/10 text-xs">
-        <p className="font-bold mb-2 text-slate-400">{label}</p>
+      <div className="bg-white text-slate-800 p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 text-xs z-[100] relative">
+        <p className="font-bold mb-2 text-slate-500">{label}</p>
         <div className="flex items-center gap-2 mb-1">
           <div className={`w-2 h-2 rounded-full bg-${brandColor}-500`} />
-          <span className={`text-${brandColor}-400 font-black text-sm`}>{payload[0].value.toLocaleString()} تومان</span>
+          <span className={`text-${brandColor}-600 font-black text-sm`}>{payload[0].value.toLocaleString()} تومان</span>
         </div>
       </div>
     );
@@ -218,82 +218,85 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
   const color = stat.color;
 
   return (
-    <>
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 overflow-y-auto"
+    >
       <motion.div 
         initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-        animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
+        animate={{ opacity: 1, backdropFilter: "blur(24px)" }}
         exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
         transition={{ duration: 0.3 }}
         onClick={onClose}
-        className="fixed inset-0 bg-slate-900/70 z-30"
+        className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
       />
       
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none">
-        <motion.div 
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl relative overflow-hidden border border-slate-100 flex flex-col pointer-events-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="p-6 relative">
-             <div className="flex items-center justify-between mb-8">
-                 <div className="flex items-center gap-3">
-                    <div className={`p-3.5 rounded-2xl bg-${color}-50 text-${color}-600 shadow-sm`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <span className="text-lg font-black text-slate-700">{stat.label}</span>
-                 </div>
-                 <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
-                    <X className="w-5 h-5" />
-                 </button>
-             </div>
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        className="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl relative overflow-hidden border border-slate-100 flex flex-col z-10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 relative">
+           <div className="flex items-center justify-between mb-8">
+               <div className="flex items-center gap-3">
+                  <div className={`p-3.5 rounded-2xl bg-${color}-50 text-${color}-600 shadow-sm`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <span className="text-lg font-black text-slate-700">{stat.label}</span>
+               </div>
+               <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+                  <X className="w-5 h-5" />
+               </button>
+           </div>
 
-             <div className="flex flex-col items-start mb-8">
-                 <motion.h2 
-                   initial={{ opacity: 0, y: 10 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   transition={{ delay: 0.1 }}
-                   className="text-5xl font-black text-slate-900 tracking-tight"
-                 >
-                   {stat.value}
-                 </motion.h2>
-                 <div className="flex items-center gap-3 mt-3">
-                    <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
-                        {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                        {stat.trend}
-                    </span>
-                    <span className="text-xs text-slate-500 font-bold bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{stat.unit}</span>
-                 </div>
-             </div>
+           <div className="flex flex-col items-start mb-8">
+               <motion.h2 
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.1 }}
+                 className="text-5xl font-black text-slate-900 tracking-tight"
+               >
+                 {stat.value}
+               </motion.h2>
+               <div className="flex items-center gap-3 mt-3">
+                  <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                      {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
+                      {stat.trend}
+                  </span>
+                  <span className="text-xs text-slate-500 font-bold bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{stat.unit}</span>
+               </div>
+           </div>
 
-             <div className="space-y-4">
-                <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                   <BarChart2 className="w-3 h-3" />
-                   جزئیات سریع
-                </h4>
-                <div className="space-y-3">
-                   {stat.insights.map((detail: any, i: number) => (
-                      <motion.div 
-                        key={i} 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 + (i * 0.1) }}
-                        className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors"
-                      >
-                         <span className="text-xs font-bold text-slate-600">{detail.label}</span>
-                         <span className="text-sm font-black text-slate-800">{detail.value}</span>
-                      </motion.div>
-                   ))}
-                </div>
-             </div>
-             
-             <div className="h-6" />
-          </div>
-        </motion.div>
-      </div>
-    </>
+           <div className="space-y-4">
+              <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                 <BarChart2 className="w-3 h-3" />
+                 جزئیات سریع
+              </h4>
+              <div className="space-y-3">
+                 {stat.insights.map((detail: any, i: number) => (
+                    <motion.div 
+                      key={i} 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + (i * 0.1) }}
+                      className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors"
+                    >
+                       <span className="text-xs font-bold text-slate-600">{detail.label}</span>
+                       <span className="text-sm font-black text-slate-800">{detail.value}</span>
+                    </motion.div>
+                 ))}
+              </div>
+           </div>
+           
+           <div className="h-6" />
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
@@ -310,19 +313,26 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+        >
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30"
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
           />
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-[60] overflow-hidden flex flex-col max-h-[85vh]"
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-20">
               <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
@@ -394,7 +404,7 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => 
                </div>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
@@ -585,7 +595,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
                  <YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => `${value / 1000000} م`} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
-                 <Tooltip content={<CustomTooltip brandColor={brandColor} />} />
+                 <Tooltip content={<CustomTooltip brandColor={brandColor} />} wrapperStyle={{ zIndex: 1000 }} />
                  <Area type="monotone" dataKey="revenue" stroke={chartHexColor} strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
               </AreaChart>
             </ResponsiveContainer>
