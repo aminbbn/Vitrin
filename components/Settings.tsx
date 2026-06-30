@@ -21,6 +21,8 @@ interface SettingsPageProps {
   setRestaurantLogo: (logo: string) => void;
   brandColor: string;
   setBrandColor: (color: string) => void;
+  highlightedItemId?: string | null;
+  clearHighlight?: () => void;
 }
 
 const COLORS = [
@@ -45,8 +47,15 @@ const INITIAL_HOURS = [
   { id: 7, label: 'جمعه', isOpen: true, start: '12:00', end: '24:00' },
 ];
 
-const SectionCard = ({ id, title, subtitle, children, icon: Icon, brandColor }: any) => (
-  <section id={id} className="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm relative overflow-hidden">
+const SectionCard = ({ id, title, subtitle, children, icon: Icon, brandColor, isHighlighted }: any) => (
+  <section 
+    id={id} 
+    className={`bg-white rounded-[2rem] p-8 shadow-sm relative overflow-hidden transition-all duration-1000 scroll-mt-24 ${
+      isHighlighted 
+        ? `border-2 border-${brandColor}-500 ring-4 ring-${brandColor}-500/40 scale-[1.02] z-10` 
+        : 'border border-slate-200'
+    }`}
+  >
     <div className="flex items-start gap-4 mb-8">
       <div className={`p-3 rounded-2xl bg-${brandColor}-50 text-${brandColor}-600`}>
         {Icon && <Icon className="w-6 h-6" />}
@@ -66,9 +75,32 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   restaurantLogo,
   setRestaurantLogo,
   brandColor,
-  setBrandColor 
+  setBrandColor,
+  highlightedItemId,
+  clearHighlight
 }) => {
   const [hours, setHours] = useState(INITIAL_HOURS);
+  const [localHighlight, setLocalHighlight] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (highlightedItemId) {
+      setLocalHighlight(highlightedItemId);
+      
+      // Smoothly scroll to the target setting section
+      setTimeout(() => {
+        const element = document.getElementById(highlightedItemId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+
+      const timer = setTimeout(() => {
+        setLocalHighlight(null);
+        if (clearHighlight) clearHighlight();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedItemId, clearHighlight]);
   
   // Local state for other fields not passed from App
   const [address, setAddress] = useState('تهران، سعادت آباد، میدان کاج');
@@ -106,7 +138,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         </div>
 
         {/* IDENTITY SECTION */}
-        <SectionCard id="identity" title="هویت بصری" subtitle="نام، لوگو و توضیحات رستوران شما" icon={Store} brandColor={brandColor}>
+        <SectionCard id="identity" title="هویت بصری" subtitle="نام، لوگو و توضیحات رستوران شما" icon={Store} brandColor={brandColor} isHighlighted={localHighlight === 'identity'}>
            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 relative group">
                  {restaurantLogo ? (
@@ -149,7 +181,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         </SectionCard>
 
         {/* BRANDING SECTION */}
-        <SectionCard id="branding" title="رنگ سازمانی" subtitle="تم رنگی پنل و منوی دیجیتال را انتخاب کنید" icon={Palette} brandColor={brandColor}>
+        <SectionCard id="branding" title="رنگ سازمانی" subtitle="تم رنگی پنل و منوی دیجیتال را انتخاب کنید" icon={Palette} brandColor={brandColor} isHighlighted={localHighlight === 'branding'}>
            <div className="flex flex-wrap gap-4">
               {COLORS.map(color => (
                  <button
@@ -165,7 +197,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         </SectionCard>
 
         {/* CONTACT SECTION */}
-        <SectionCard id="contact" title="اطلاعات تماس" subtitle="آدرس و راه‌های ارتباطی با مشتریان" icon={MapPin} brandColor={brandColor}>
+        <SectionCard id="contact" title="اطلاعات تماس" subtitle="آدرس و راه‌های ارتباطی با مشتریان" icon={MapPin} brandColor={brandColor} isHighlighted={localHighlight === 'contact'}>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                  <label className="text-xs font-bold text-slate-500 block mb-2">آدرس کامل</label>
@@ -211,7 +243,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         </SectionCard>
 
         {/* HOURS SECTION */}
-        <SectionCard id="hours" title="ساعات کاری" subtitle="زمان‌بندی فعالیت رستوران در طول هفته" icon={Clock} brandColor={brandColor}>
+        <SectionCard id="hours" title="ساعات کاری" subtitle="زمان‌بندی فعالیت رستوران در طول هفته" icon={Clock} brandColor={brandColor} isHighlighted={localHighlight === 'hours'}>
           <div className="space-y-4">
             {hours.map((day) => (
               <div key={day.id} className="grid grid-cols-12 gap-4 items-center py-2 border-b border-slate-50 last:border-0">

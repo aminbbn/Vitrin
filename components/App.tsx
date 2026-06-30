@@ -120,7 +120,7 @@ const App: React.FC = () => {
   const renderView = () => {
     switch (activeView) {
       case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} brandColor={brandColor} />;
-      case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} />;
+      case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} brandColor={brandColor} />;
       case 'products': return <ProductManager />;
       case 'orders': return <OrderBoard />;
       case 'analytics': return <Analytics />;

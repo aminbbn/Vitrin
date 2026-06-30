@@ -283,7 +283,7 @@ const Header: React.FC<HeaderProps> = ({
                animate={{ opacity: 1 }}
                exit={{ opacity: 0 }}
                onClick={() => setIsRestaurantInfoOpen(false)}
-               className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-[200]"
+               className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
              />
              
              <motion.div 

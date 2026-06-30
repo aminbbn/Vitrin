@@ -15,7 +15,9 @@ import {
   ChefHat,
   Tag,
   AlertCircle,
-  AlertTriangle
+  AlertTriangle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Product, ModifierGroup, ProductModifier } from '../types';
 
@@ -103,6 +105,37 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
   const [searchQuery, setSearchQuery] = useState('');
   const [localHighlight, setLocalHighlight] = useState<string | null>(null);
 
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollWidth, clientWidth } = scrollRef.current;
+      const reachedHalfPage = scrollWidth > (window.innerWidth / 2);
+      const canScroll = scrollWidth > clientWidth;
+      const shouldShow = canScroll && reachedHalfPage;
+      setShowLeftArrow(shouldShow);
+      setShowRightArrow(shouldShow);
+    }
+  };
+
+  React.useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [categories]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const scrollAmount = 200;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   React.useEffect(() => {
     if (highlightedItemId) {
       setLocalHighlight(highlightedItemId);
@@ -187,6 +220,20 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     const newMaterials = [...(editingProduct.rawMaterials || [])];
     newMaterials.splice(index, 1);
     setEditingProduct({ ...editingProduct, rawMaterials: newMaterials });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEditingProduct({
+        ...editingProduct,
+        image: reader.result as string
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   // --- Modifier Logic ---
@@ -329,20 +376,51 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
             >
               {/* Filters */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 shrink-0">
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                  {categories.map(cat => (
-                    <button
-                      key={cat}
-                      onClick={() => setActiveCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-300 ${
-                        activeCategory === cat 
-                          ? `bg-${brandColor}-600 text-white shadow-md shadow-${brandColor}-200 scale-105` 
-                          : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
+                <div className="relative flex-1 min-w-0 flex items-center">
+                  {/* Right fade & button */}
+                  {showRightArrow && (
+                    <div className="absolute right-0 top-0 bottom-0 flex items-center bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent pl-12 z-10 pointer-events-none">
+                      <button 
+                        onClick={() => scroll('right')}
+                        className="w-10 h-10 bg-white border border-slate-200 text-slate-600 rounded-xl shadow-md flex items-center justify-center hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer pointer-events-auto hover:scale-105 active:scale-95"
+                        aria-label="Scroll right"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Left fade & button */}
+                  {showLeftArrow && (
+                    <div className="absolute left-0 top-0 bottom-0 flex items-center bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent pr-12 z-10 pointer-events-none">
+                      <button 
+                        onClick={() => scroll('left')}
+                        className="w-10 h-10 bg-white border border-slate-200 text-slate-600 rounded-xl shadow-md flex items-center justify-center hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer pointer-events-auto hover:scale-105 active:scale-95"
+                        aria-label="Scroll left"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+
+                  <div 
+                    ref={scrollRef}
+                    className="flex-1 flex items-center gap-2 overflow-x-auto px-4 py-1.5 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                  >
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat)}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-300 outline-none focus:outline-none ${
+                          activeCategory === cat 
+                            ? `bg-${brandColor}-600 text-white border border-${brandColor}-600 shadow-md shadow-${brandColor}-200/50 scale-105` 
+                            : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 hover:text-slate-700'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <div className="relative w-full md:w-64">
                    <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -370,9 +448,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                       layout // Enables smooth rearrangement
                       variants={itemVariants}
                       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                      className={`bg-white rounded-2xl shadow-sm transition-all group relative overflow-hidden flex flex-col ${
-                        localHighlight === product.id 
-                          ? `border-2 border-${brandColor}-500 shadow-xl shadow-${brandColor}-500/50 scale-[1.02] z-10` 
+                      className={`bg-white rounded-2xl shadow-sm transition-all duration-1000 group relative overflow-hidden flex flex-col ${
+                        (localHighlight === product.id || (localHighlight && product.name === localHighlight))
+                          ? `border-2 border-${brandColor}-500 ring-4 ring-${brandColor}-500/40 scale-[1.03] z-10` 
                           : `border border-slate-100 hover:shadow-lg hover:shadow-${brandColor}-100 hover:border-${brandColor}-200`
                       }`}
                     >
@@ -621,7 +699,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                             </>
                          )}
                          {/* Mock Input */}
-                         <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" />
+                         <input type="file" onChange={handleImageUpload} accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
                       </div>
                       <div className="text-[10px] text-slate-400 text-center">
                          حداکثر حجم: ۵ مگابایت (JPG, PNG)

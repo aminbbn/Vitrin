@@ -301,10 +301,10 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
 };
 
 // --- ALL PRODUCTS MODAL ---
-const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => {
+const AllProductsModal = ({ isOpen, onClose, brandColor }: any) => {
   const [localSearch, setLocalSearch] = useState('');
   
-  const query = localSearch || searchQuery || '';
+  const query = localSearch;
 
   const filteredProducts = MOCK_POPULAR_PRODUCTS.filter(p => 
     p.name.includes(query) || p.category.includes(query)
@@ -335,7 +335,7 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => 
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-20">
-              <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
+               <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
                 <ShoppingBag className={`w-5 h-5 text-${brandColor}-600`} />
                 لیست کامل محصولات
               </h3>
@@ -353,7 +353,7 @@ const AllProductsModal = ({ isOpen, onClose, searchQuery, brandColor }: any) => 
                      <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                      <input 
                         type="text" 
-                        value={localSearch || searchQuery || ''}
+                        value={localSearch}
                         onChange={(e) => setLocalSearch(e.target.value)}
                         placeholder="جستجو در محصولات..." 
                         className={`w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-${brandColor}-500 outline-none`}
@@ -429,10 +429,8 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
 
   const selectedStat = statsData.find(s => s.id === selectedStatId);
   
-  // Filter popular products based on search query
-  const filteredPopularProducts = MOCK_POPULAR_PRODUCTS.filter(p => 
-    p.name.includes(searchQuery) || p.category.includes(searchQuery)
-  );
+  // Filter popular products (dashboard popular products should show all by default, not filter by header search)
+  const filteredPopularProducts = MOCK_POPULAR_PRODUCTS;
 
   const getDateRangeLabel = () => {
     switch(dateRange) {
@@ -634,7 +632,6 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
       <AllProductsModal 
          isOpen={showAllProductsModal} 
          onClose={() => setShowAllProductsModal(false)} 
-         searchQuery={searchQuery}
          brandColor={brandColor}
       />
     </div>

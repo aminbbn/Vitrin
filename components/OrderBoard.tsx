@@ -50,11 +50,35 @@ interface OrderBoardProps {
 }
 
 const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, clearHighlight }) => {
-  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+  const [orders, setOrders] = useState<Order[]>(() => {
+    const saved = localStorage.getItem('vitrin_orders');
+    return saved ? JSON.parse(saved) : INITIAL_ORDERS;
+  });
   const [draggedOrder, setDraggedOrder] = useState<Order | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [localHighlight, setLocalHighlight] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    localStorage.setItem('vitrin_orders', JSON.stringify(orders));
+  }, [orders]);
+
+  React.useEffect(() => {
+    const handleSync = () => {
+      const saved = localStorage.getItem('vitrin_orders');
+      if (saved) {
+        setOrders(JSON.parse(saved));
+      }
+    };
+    window.addEventListener('focus', handleSync);
+    window.addEventListener('storage', handleSync);
+    const interval = setInterval(handleSync, 2000); // Check every 2s for active sync
+    return () => {
+      window.removeEventListener('focus', handleSync);
+      window.removeEventListener('storage', handleSync);
+      clearInterval(interval);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (highlightedItemId) {
@@ -220,9 +244,9 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, 
                            if ((e.target as HTMLElement).closest('.action-btn')) return;
                            setSelectedOrder(order);
                         }}
-                        className={`bg-white p-5 rounded-2xl transition-all cursor-grab active:cursor-grabbing group relative select-none ${
-                          localHighlight === order.id
-                            ? `border-2 border-${brandColor}-500 shadow-xl shadow-${brandColor}-500/50 scale-[1.02] z-10`
+                        className={`bg-white p-5 rounded-2xl transition-all duration-1000 cursor-grab active:cursor-grabbing group relative select-none ${
+                          (localHighlight === order.id || (localHighlight && order.id.includes(localHighlight)) || (localHighlight && localHighlight.includes(order.id)))
+                            ? `border-2 border-${brandColor}-500 ring-4 ring-${brandColor}-500/40 scale-[1.03] z-10`
                             : isDragging 
                               ? 'border-2 border-dashed border-slate-300 shadow-none bg-slate-50' 
                               : `border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-${brandColor}-500/5 hover:border-${brandColor}-200`

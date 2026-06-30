@@ -10,7 +10,15 @@ import {
   Mail,
   Copy,
   Check,
-  X
+  X,
+  Settings,
+  Palette,
+  Clock,
+  MapPin,
+  Store,
+  LayoutDashboard,
+  BarChart3,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SEARCH_ITEMS } from '../constants';
@@ -173,15 +181,33 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, onBack, onNavigate
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
   const brandColor = localStorage.getItem('vitrin_brand_color') || 'emerald';
 
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'store': return <Store className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'palette': return <Palette className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'map': return <MapPin className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'clock': return <Clock className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'dashboard': return <LayoutDashboard className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'package': return <Package className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'clipboard': return <ClipboardList className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'barchart': return <BarChart3 className={`w-5 h-5 text-${brandColor}-600`} />;
+      case 'settings': return <Settings className={`w-5 h-5 text-${brandColor}-600`} />;
+      default: return <HelpCircle className="w-5 h-5 text-slate-400" />;
+    }
+  };
+
   const filteredItems = SEARCH_ITEMS.filter(item => 
     item.title.toLowerCase().includes(query.toLowerCase()) || 
     item.subtitle.toLowerCase().includes(query.toLowerCase()) ||
-    item.id.toLowerCase().includes(query.toLowerCase())
+    item.id.toLowerCase().includes(query.toLowerCase()) ||
+    (item.keywords && item.keywords.toLowerCase().includes(query.toLowerCase()))
   );
 
   const products = filteredItems.filter(i => i.type === 'product');
   const orders = filteredItems.filter(i => i.type === 'order');
   const customers = filteredItems.filter(i => i.type === 'customer');
+  const settings = filteredItems.filter(i => i.type === 'setting');
+  const navigation = filteredItems.filter(i => i.type === 'navigation');
 
   const container = {
     hidden: { opacity: 0 },
@@ -216,21 +242,34 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, onBack, onNavigate
                 if (item.type === 'customer') {
                   setSelectedCustomer(item);
                 } else if (item.type === 'product') {
-                  onNavigate('products', item.id);
+                  onNavigate('products', item.title);
                 } else if (item.type === 'order') {
-                  onNavigate('orders', item.id);
+                  const hashIdx = item.title.indexOf('#');
+                  const orderId = hashIdx !== -1 ? item.title.substring(hashIdx) : item.id;
+                  onNavigate('orders', orderId);
+                } else if (item.type === 'setting') {
+                  onNavigate('settings', item.id);
+                } else if (item.type === 'navigation') {
+                  onNavigate(item.id);
                 }
               }}
-              className={`bg-white p-4 rounded-2xl border border-slate-100 shadow-sm transition-all cursor-pointer group glow-transition glow-${brandColor}`}
+              className={`bg-white p-5 rounded-2xl border border-slate-100 shadow-sm transition-all cursor-pointer group hover:border-${brandColor}-200 flex flex-col justify-between`}
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className={`font-bold text-slate-800 mb-1 group-hover:text-${brandColor}-700 transition-colors`}>{item.title}</h4>
-                  <p className="text-xs text-slate-500">{item.subtitle}</p>
+              <div className="flex gap-3 items-start justify-between w-full">
+                <div className="flex gap-3 items-start">
+                  {item.icon && (
+                    <div className={`p-2 bg-${brandColor}-50 rounded-xl mt-0.5 shrink-0`}>
+                      {getIconComponent(item.icon)}
+                    </div>
+                  )}
+                  <div>
+                    <h4 className={`font-bold text-slate-800 mb-1 group-hover:text-${brandColor}-700 transition-colors text-sm`}>{item.title}</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed">{item.subtitle}</p>
+                  </div>
                 </div>
-                {item.type === 'product' && <span className={`text-xs font-black text-${brandColor}-600 bg-${brandColor}-50 px-2 py-1 rounded-lg`}>{item.detail}</span>}
+                {item.type === 'product' && <span className={`text-xs font-black text-${brandColor}-600 bg-${brandColor}-50 px-2 py-1 rounded-lg shrink-0`}>{item.detail}</span>}
                 {item.type === 'order' && (
-                  <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded-lg shrink-0 ${
                     item.status === 'new' ? 'bg-red-50 text-red-600' :
                     item.status === 'preparing' ? 'bg-orange-50 text-orange-600' :
                     `bg-${brandColor}-50 text-${brandColor}-600`
@@ -238,9 +277,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, onBack, onNavigate
                     {item.detail}
                   </span>
                 )}
-                {item.type === 'customer' && <span className={`text-[10px] bg-${brandColor}-50 text-${brandColor}-600 px-2 py-1 rounded-lg font-bold`}>{item.visits} بازدید</span>}
+                {item.type === 'customer' && <span className={`text-[10px] bg-${brandColor}-50 text-${brandColor}-600 px-2 py-1 rounded-lg font-bold shrink-0`}>{item.visits} بازدید</span>}
+                {(item.type === 'setting' || item.type === 'navigation') && <span className={`text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-lg font-bold shrink-0`}>{item.detail}</span>}
               </div>
-              <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center text-[10px] text-slate-400">
+              <div className="mt-4 pt-3 border-t border-slate-50 flex justify-between items-center text-[10px] text-slate-400">
                 <span>شناسه: {item.id}</span>
                 <ChevronLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
               </div>
@@ -290,6 +330,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, onBack, onNavigate
             <ResultSection title="محصولات" items={products} icon={Package} color="text-orange-500" />
             <ResultSection title="سفارشات" items={orders} icon={ClipboardList} color="text-blue-500" />
             <ResultSection title="مشتریان" items={customers} icon={Users} color="text-purple-500" />
+            <ResultSection title="بخش‌ها و صفحات سیستم" items={navigation} icon={LayoutDashboard} color="text-emerald-500" />
+            <ResultSection title="تنظیمات فروشگاه" items={settings} icon={Settings} color="text-rose-500" />
           </motion.div>
         )}
       </div>
