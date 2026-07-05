@@ -229,6 +229,8 @@ const App: React.FC = () => {
             setNotifications(prev => prev.map(notif => notif.id === n.id ? { ...notif, read: true } : notif));
             if (n.link) setActiveView(n.link);
           }}
+          onMarkRead={(id) => setNotifications(prev => prev.map(notif => notif.id === id ? { ...notif, read: true } : notif))}
+          onDelete={(id) => setNotifications(prev => prev.filter(notif => notif.id !== id))}
         />
         <div className="flex-1 overflow-hidden relative">{renderView()}</div>
       </main>

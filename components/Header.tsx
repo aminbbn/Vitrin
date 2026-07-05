@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Power, Eye, Sparkles, CheckCircle2, Bell, User,
-  LogOut, Store, MapPin, Phone, Clock, X, ChevronDown 
+  LogOut, Store, MapPin, Phone, Clock, X, ChevronDown,
+  Check, Trash2
 } from 'lucide-react';
 import { Notification } from '../types';
 
@@ -24,6 +25,8 @@ interface HeaderProps {
   onViewAllNotifications: () => void;
   brandColor: string;
   onNotificationClick: (n: Notification) => void;
+  onMarkRead?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -42,7 +45,9 @@ const Header: React.FC<HeaderProps> = ({
   restaurantLogo,
   onViewAllNotifications,
   brandColor,
-  onNotificationClick
+  onNotificationClick,
+  onMarkRead,
+  onDelete
 }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -179,13 +184,42 @@ const Header: React.FC<HeaderProps> = ({
                               onNotificationClick(n);
                               setIsNotificationsOpen(false);
                             }}
-                            className={`p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer text-right ${!n.read ? `bg-${brandColor}-50/20` : ''}`}
+                            className={`p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer text-right flex items-start gap-3 relative group ${!n.read ? `bg-${brandColor}-50/10` : ''}`}
                           >
-                             <div className="flex justify-between mb-1">
-                                <span className="font-bold text-xs text-slate-800">{n.title}</span>
-                                <span className="text-[9px] text-slate-400 font-medium">{n.time}</span>
+                             <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-center mb-1">
+                                   <span className="font-bold text-xs text-slate-800 truncate">{n.title}</span>
+                                   <span className="text-[9px] text-slate-400 font-medium shrink-0 mr-1">{n.time}</span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">{n.message}</p>
                              </div>
-                             <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">{n.message}</p>
+                             
+                             <div className="flex items-center gap-1 opacity-60 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 self-center">
+                                {!n.read && onMarkRead && (
+                                   <button
+                                      onClick={(e) => {
+                                         e.stopPropagation();
+                                         onMarkRead(n.id);
+                                      }}
+                                      className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                      title="علامت‌گذاری به عنوان خوانده شده"
+                                   >
+                                      <Check className="w-3.5 h-3.5" />
+                                   </button>
+                                )}
+                                {onDelete && (
+                                   <button
+                                      onClick={(e) => {
+                                         e.stopPropagation();
+                                         onDelete(n.id);
+                                      }}
+                                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                                      title="حذف"
+                                   >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                   </button>
+                                )}
+                             </div>
                           </div>
                         ))
                       )}

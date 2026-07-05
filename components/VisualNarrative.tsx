@@ -6,12 +6,12 @@ import {
 } from 'lucide-react';
 
 const ITEMS = [
-  { id: 'designer',  icon: <Palette className="w-5 h-5" />,      title: 'طراحی بصری',        subtitle: 'Visual Menu Designer',    desc: 'ویرایشگر حرفه‌ای برای طراحی منوهای چاپی و دیجیتال با استانداردهای روز.', stat: '۱۰۰+ قالب حرفه‌ای',      color: '#fbbf24' },
-  { id: 'orders',    icon: <ClipboardList className="w-5 h-5" />, title: 'مدیریت سفارش',      subtitle: 'Live Order System',       desc: 'رهگیری لحظه‌ای سفارشات از لحظه ثبت تا تحویل درب میز مشتری.',           stat: 'پردازش آنی',             color: '#10b981' },
-  { id: 'analytics', icon: <BarChart3 className="w-5 h-5" />,    title: 'هوش تجاری',          subtitle: 'BI & Analytics',          desc: 'تحلیل دقیق پرفروش‌ترین آیتم‌ها و رفتارهای خرید مشتریان شما.',          stat: 'گزارش‌های ماهانه',       color: '#3b82f6' },
-  { id: 'products',  icon: <Package className="w-5 h-5" />,       title: 'انبارداری هوشمند',  subtitle: 'Inventory Management',    desc: 'کنترل خودکار موجودی مواد اولیه بر اساس هر سفارش ثبت شده.',            stat: 'دقت ۹۹٪',               color: '#f97316' },
-  { id: 'app',       icon: <Smartphone className="w-5 h-5" />,    title: 'منوی دیجیتال',      subtitle: 'PWA Mobile App',          desc: 'ارائه منوی آنلاین بدون نیاز به نصب اپلیکیشن توسط مشتری.',            stat: 'سازگار با تمام گوشی‌ها', color: '#8b5cf6' },
-  { id: 'security',  icon: <ShieldCheck className="w-5 h-5" />,   title: 'پشتیبان‌گیری کلاود', subtitle: 'Cloud Backup',           desc: 'امنیت کامل داده‌های رستوران و دسترسی از هر جای دنیا.',                stat: 'رمزنگاری AES-256',       color: '#06b6d4' },
+  { id: 'designer',  icon: <Palette className="w-5 h-5" />,      title: 'طراحی بصری',        subtitle: 'طراح هوشمند منو',    desc: 'ویرایشگر حرفه‌ای برای طراحی منوهای چاپی و دیجیتال با استانداردهای روز.', stat: '۱۰۰+ قالب حرفه‌ای',      color: '#fbbf24' },
+  { id: 'orders',    icon: <ClipboardList className="w-5 h-5" />, title: 'مدیریت سفارش',      subtitle: 'سیستم ثبت سفارش آنی',       desc: 'رهگیری لحظه‌ای سفارشات از لحظه ثبت تا تحویل درب میز مشتری.',           stat: 'پردازش آنی',             color: '#10b981' },
+  { id: 'analytics', icon: <BarChart3 className="w-5 h-5" />,    title: 'هوش تجاری',          subtitle: 'تحلیل هوشمند کسب‌وکار',          desc: 'تحلیل دقیق پرفروش‌ترین آیتم‌ها و رفتارهای خرید مشتریان شما.',          stat: 'گزارش‌های ماهانه',       color: '#3b82f6' },
+  { id: 'products',  icon: <Package className="w-5 h-5" />,       title: 'انبارداری هوشمند',  subtitle: 'کنترل و مدیریت موجودی',    desc: 'کنترل خودکار موجودی مواد اولیه بر اساس هر سفارش ثبت شده.',            stat: 'دقت ۹۹٪',               color: '#f97316' },
+  { id: 'app',       icon: <Smartphone className="w-5 h-5" />,    title: 'منوی دیجیتال',      subtitle: 'منوی وب‌اپلیکیشن مشتری',          desc: 'ارائه منوی آنلاین بدون نیاز به نصب اپلیکیشن توسط مشتری.',            stat: 'سازگار با تمام گوشی‌ها', color: '#8b5cf6' },
+  { id: 'security',  icon: <ShieldCheck className="w-5 h-5" />,   title: 'پشتیبان‌گیری کلاود', subtitle: 'پشتیبان‌گیری امن ابری',           desc: 'امنیت کامل داده‌های رستوران و دسترسی از هر جای دنیا.',                stat: 'رمزنگاری AES-256',       color: '#06b6d4' },
 ];
 
 // Resolve brandColor string → hex for inline styles
@@ -302,7 +302,7 @@ const StatusBar = ({ brandColor }: { brandColor: string }) => {
   const c = hex(brandColor);
   return (
     <div
-      className="flex items-center gap-4 px-5 py-2.5 rounded-full"
+      className="flex items-center gap-4 px-5 py-2.5 rounded-full flex-row-reverse"
       style={{
         background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.03) 100%)',
         border: '1px solid rgba(255,255,255,0.10)',
@@ -324,25 +324,25 @@ const StatusBar = ({ brandColor }: { brandColor: string }) => {
 
       <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.12)' }} />
 
-      <div className="flex items-center gap-3.5">
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-3.5 flex-row-reverse">
+        <div className="flex items-center gap-1.5 flex-row-reverse">
           <Radio style={{ width: 11, height: 11, color: 'rgba(255,255,255,0.4)' }} />
-          <span className="text-[9px] font-mono" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.05em' }}>uptime 100%</span>
+          <span className="text-[10px] font-sans" style={{ color: 'rgba(255,255,255,0.55)' }}>پایداری ۱۰۰٪</span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-row-reverse">
           <Shield style={{ width: 11, height: 11, color: 'rgba(255,255,255,0.4)' }} />
-          <span className="text-[9px] font-mono" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.05em' }}>AES-256</span>
+          <span className="text-[10px] font-sans" style={{ color: 'rgba(255,255,255,0.55)' }}>رمزنگاری AES-256</span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-row-reverse">
           <Globe style={{ width: 11, height: 11, color: 'rgba(255,255,255,0.4)' }} />
-          <span className="text-[9px] font-mono" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.05em' }}>14ms</span>
+          <span className="text-[10px] font-sans" style={{ color: 'rgba(255,255,255,0.55)' }}>پاسخ‌دهی ۱۴ms</span>
         </div>
       </div>
 
       <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.12)' }} />
 
-      <div className="flex items-center gap-2">
-        <span className="text-[9px] font-bold uppercase tracking-[0.28em]" style={{ color: c }}>PLATFORM V4.2</span>
+      <div className="flex items-center gap-2 flex-row-reverse">
+        <span className="text-[10px] font-bold" style={{ color: c }}>پلتفرم نسخه ۴.۲</span>
         <div className="relative flex">
           <div className="absolute w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: c, opacity: 0.7 }} />
           <div className="relative w-1.5 h-1.5 rounded-full" style={{ backgroundColor: c }} />
@@ -375,14 +375,14 @@ const VisualNarrative: React.FC<{ brandColor?: string }> = ({ brandColor = 'emer
 
       {/* Top-left badge */}
       <div
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full"
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full flex-row-reverse"
         style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', backdropFilter: 'blur(20px)' }}
       >
         <div className="relative flex">
           <div className="absolute w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: c, opacity: 0.7 }} />
           <div className="relative w-1.5 h-1.5 rounded-full" style={{ backgroundColor: c }} />
         </div>
-        <span className="text-[9px] font-black tracking-[0.35em] uppercase" style={{ color: 'rgba(255,255,255,0.45)' }}>SYSTEM_READY</span>
+        <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.45)' }}>سیستم آماده به کار</span>
       </div>
 
       {/* Bottom status bar */}
