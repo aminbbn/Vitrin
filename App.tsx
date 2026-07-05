@@ -20,7 +20,6 @@ import Header from './components/Header';
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
   { id: '1', type: 'order', title: 'سفارش جدید #12895', message: '۲ پیتزا پپرونی، ۱ سالاد سزار - میز ۵', time: '۲ دقیقه پیش', read: false, link: 'orders' },
-  { id: '2', type: 'inventory', title: 'هشدار موجودی', message: 'موجودی "نان برگر" به کمتر از ۱۰ عدد رسیده است.', time: '۱ ساعت پیش', read: false, link: 'products' },
 ];
 
 const App: React.FC = () => {
@@ -94,7 +93,14 @@ const App: React.FC = () => {
     }
   }, [debouncedQuery]);
 
-  const handleLogin = () => { localStorage.setItem('vitrin_auth', 'true'); setIsAuthenticated(true); };
+  const handleLogin = (name?: string) => { 
+    localStorage.setItem('vitrin_auth', 'true'); 
+    if (name) {
+      setRestaurantName(name);
+      localStorage.setItem('vitrin_restaurant_name', name);
+    }
+    setIsAuthenticated(true); 
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('vitrin_auth');
@@ -146,7 +152,10 @@ const App: React.FC = () => {
             notifications={notifications}
             onDelete={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
             onClearAll={() => setNotifications([])}
-            onMarkRead={(n) => setNotifications(prev => prev.map(notif => notif.id === n.id ? ({ ...notif, read: true }) : notif))}
+            onMarkRead={(n) => {
+              setNotifications(prev => prev.map(notif => notif.id === n.id ? ({ ...notif, read: true }) : notif));
+              if (n.link) setActiveView(n.link);
+            }}
             onBack={() => setActiveView(previousView)}
           />
         );
@@ -155,7 +164,11 @@ const App: React.FC = () => {
           <NotificationsView
              notifications={notifications}
              onMarkAllRead={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
-             onMarkRead={(id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))}
+             onMarkRead={(id) => {
+               setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+               const found = notifications.find(n => n.id === id);
+               if (found && found.link) setActiveView(found.link);
+             }}
              onDelete={(id) => setNotifications(prev => prev.filter(n => n.id !== id))}
           />
         );
@@ -212,6 +225,10 @@ const App: React.FC = () => {
           restaurantLogo={restaurantLogo}
           onViewAllNotifications={() => setActiveView('notifications')}
           brandColor={brandColor}
+          onNotificationClick={(n) => {
+            setNotifications(prev => prev.map(notif => notif.id === n.id ? { ...notif, read: true } : notif));
+            if (n.link) setActiveView(n.link);
+          }}
         />
         <div className="flex-1 overflow-hidden relative">{renderView()}</div>
       </main>

@@ -92,7 +92,7 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
           {/* Filters */}
           <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-full md:w-auto">
-            {['all', 'order', 'inventory', 'system'].map((f) => (
+            {['all', 'order', 'system'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f as any)}
@@ -104,7 +104,6 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
               >
                 {f === 'all' && 'همه'}
                 {f === 'order' && 'سفارشات'}
-                {f === 'inventory' && 'موجودی'}
                 {f === 'system' && 'سیستم'}
               </button>
             ))}

@@ -109,7 +109,7 @@ const TypewriterText = ({ brandColor }: { brandColor: string }) => {
 };
 
 interface AuthFormProps {
-  onLogin: () => void;
+  onLogin: (restaurantName?: string) => void;
   brandColor: string;
 }
 
@@ -166,7 +166,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      onLogin();
+      onLogin(authMode === 'signup' ? restaurantName.trim() : undefined);
     }, 1500);
   };
 
@@ -179,7 +179,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
   };
 
   return (
-    <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50/50">
+    <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50/50 relative">
       <motion.div 
         key={authMode}
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -305,12 +305,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
            )}
         </div>
 
-        <div className="mt-8 pt-6 border-t border-slate-200 text-center">
-           <p className="text-[10px] text-slate-400 font-medium">
-              © ۲۰۲۵ ویترین. تمامی حقوق محفوظ است.
-           </p>
-        </div>
       </motion.div>
+      <div className="absolute bottom-6 left-0 right-0 text-center">
+         <p className="text-[10px] text-slate-400 font-medium">
+            © ۲۰۲۵ ویترین. تمامی حقوق محفوظ است.
+         </p>
+      </div>
     </div>
   );
 };

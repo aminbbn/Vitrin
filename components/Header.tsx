@@ -23,6 +23,7 @@ interface HeaderProps {
   restaurantLogo: string;
   onViewAllNotifications: () => void;
   brandColor: string;
+  onNotificationClick: (n: Notification) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -40,7 +41,8 @@ const Header: React.FC<HeaderProps> = ({
   restaurantName,
   restaurantLogo,
   onViewAllNotifications,
-  brandColor
+  brandColor,
+  onNotificationClick
 }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -171,7 +173,14 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="p-10 text-center text-slate-400 text-xs">پیامی برای نمایش وجود ندارد</div>
                       ) : (
                         notifications.map(n => (
-                          <div key={n.id} className={`p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer ${!n.read ? `bg-${brandColor}-50/20` : ''}`}>
+                          <div 
+                            key={n.id} 
+                            onClick={() => {
+                              onNotificationClick(n);
+                              setIsNotificationsOpen(false);
+                            }}
+                            className={`p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer text-right ${!n.read ? `bg-${brandColor}-50/20` : ''}`}
+                          >
                              <div className="flex justify-between mb-1">
                                 <span className="font-bold text-xs text-slate-800">{n.title}</span>
                                 <span className="text-[9px] text-slate-400 font-medium">{n.time}</span>

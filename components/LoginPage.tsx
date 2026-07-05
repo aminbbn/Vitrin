@@ -4,7 +4,7 @@ import AuthForm from './AuthForm';
 import VisualNarrative from './VisualNarrative';
 
 interface LoginPageProps {
-  onLogin: () => void;
+  onLogin: (restaurantName?: string) => void;
   brandColor: string;
 }
 

@@ -16,8 +16,19 @@ const ITEMS = [
 
 // Resolve brandColor string → hex for inline styles
 const COLOR_MAP: Record<string, string> = {
-  emerald: '#10b981', green: '#22c55e', blue: '#3b82f6',
-  violet: '#8b5cf6',  amber: '#f59e0b', rose: '#f43f5e', cyan: '#06b6d4',
+  emerald: '#10b981',
+  green: '#22c55e',
+  blue: '#3b82f6',
+  purple: '#a855f7',
+  orange: '#f97316',
+  red: '#ef4444',
+  violet: '#8b5cf6',
+  amber: '#f59e0b',
+  pink: '#ec4899',
+  cyan: '#06b6d4',
+  rose: '#f43f5e',
+  zinc: '#71717a',
+  slate: '#64748b',
 };
 const hex = (brandColor: string) => COLOR_MAP[brandColor] ?? '#10b981';
 

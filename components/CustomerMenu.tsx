@@ -21,6 +21,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { ComponentItem, Product } from '../types';
+import { Search3DAnimation } from './Search3DAnimation';
 
 // --- SHARED MOCK DATA (Ideally this comes from a shared context or API) ---
 const MOCK_PRODUCTS: Product[] = [
@@ -82,6 +83,7 @@ const MOCK_PRODUCTS: Product[] = [
 
 const HeroSection: React.FC<{ element: ComponentItem, brandColor: string }> = ({ element, brandColor }) => {
   const { style, imageUrl, title, subtitle, color, fontSize } = element.settings;
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (style === 'overlay') {
     return (
@@ -124,15 +126,43 @@ const HeroSection: React.FC<{ element: ComponentItem, brandColor: string }> = ({
         className="bg-white aspect-[16/10] relative rounded-2xl mx-4 my-2 border border-slate-100 shadow-sm overflow-hidden"
         style={{ width: 'calc(100% - 2rem)' }}
       >
-        <div className="w-full h-full relative flex">
-          <div
-            className="w-1/2 h-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          />
-          <div className="w-1/2 flex flex-col items-start justify-center p-5 text-right">
+        <div className="w-full h-full relative">
+          <motion.div
+            layout
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="absolute top-0 bottom-0 left-0 bg-cover bg-center cursor-pointer z-10 transition-all duration-500 ease-out"
+            style={{ 
+              backgroundImage: `url(${imageUrl})`,
+              width: isExpanded ? '100%' : '50%'
+            }}
+          >
+             <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isExpanded ? 1 : 0 }}
+                className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"
+             />
+          </motion.div>
+
+          <div className={`absolute top-0 bottom-0 right-0 w-1/2 flex flex-col items-start justify-center p-5 text-right transition-opacity duration-300 ${isExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
              <h1 style={{ color: color || '#0f172a', fontSize: fontSize || 18 }} className="font-black mb-2 leading-tight">{title}</h1>
              {subtitle && <p className="text-slate-400 text-[10px] font-bold leading-relaxed">{subtitle}</p>}
+             <button onClick={() => setIsExpanded(true)} className={`mt-3 px-3 py-1.5 bg-${brandColor}-50 text-${brandColor}-600 rounded-lg text-[9px] font-bold`}>سفارش دهید</button>
           </div>
+
+          <AnimatePresence>
+            {isExpanded && (
+               <motion.div 
+                 initial={{ opacity: 0, y: 15 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: 15 }}
+                 transition={{ delay: 0.1 }}
+                 className="absolute bottom-0 left-0 right-0 p-5 z-20 text-right text-white pointer-events-none"
+               >
+                  <h1 style={{ color: color || 'white', fontSize: (fontSize || 18) + 2 }} className="font-black leading-tight mb-1 drop-shadow-md">{title}</h1>
+                  {subtitle && <p className="text-white/90 text-[10px] font-medium drop-shadow-sm leading-relaxed">{subtitle}</p>}
+               </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     );
@@ -195,21 +225,17 @@ const ProductGridSection = ({ element, onProductClick, brandColor }: any) => {
         className="flex items-center justify-between cursor-pointer select-none pb-2 border-b border-dashed border-slate-100"
       >
         <div className="flex flex-col text-right">
-          <h3 className="font-black text-slate-800 flex items-center gap-2" style={{ fontSize: element.settings.fontSize || 18 }}>
+          <h3 className="font-black text-slate-800" style={{ fontSize: element.settings.fontSize || 18 }}>
             {element.settings.title}
-            {isCollapsed ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronUp className="w-4 h-4 text-slate-400" />}
           </h3>
           {element.settings.subtitle && <span className="text-[10px] text-slate-400 font-bold mt-0.5">{element.settings.subtitle}</span>}
         </div>
         
-        {/* Modern iOS-Style Toggle Switch */}
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] font-bold text-slate-400">{isCollapsed ? 'بسته' : 'باز'}</span>
-          <div 
-            className={`w-9 h-5 rounded-full p-0.5 transition-colors relative cursor-pointer ${!isCollapsed ? `bg-${brandColor}-600` : 'bg-slate-200'}`}
-          >
-            <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ease-out absolute top-0.5 right-0.5 ${!isCollapsed ? '-translate-x-4' : 'translate-x-0'}`} />
-          </div>
+        {/* Transforming Arrow on the Left */}
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
+          <ChevronDown 
+            className={`w-4 h-4 text-slate-500 transition-transform duration-300 ease-out ${!isCollapsed ? 'rotate-180' : 'rotate-0'}`} 
+          />
         </div>
       </div>
 
@@ -264,21 +290,17 @@ const ProductListSection = ({ element, onProductClick, brandColor }: any) => {
         className="flex items-center justify-between cursor-pointer select-none pb-2 border-b border-dashed border-slate-100"
       >
         <div className="flex flex-col text-right">
-          <h3 className="font-black text-slate-800 flex items-center gap-2" style={{ fontSize: element.settings.fontSize || 18 }}>
+          <h3 className="font-black text-slate-800" style={{ fontSize: element.settings.fontSize || 18 }}>
             {element.settings.title}
-            {isCollapsed ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronUp className="w-4 h-4 text-slate-400" />}
           </h3>
           {element.settings.subtitle && <span className="text-[10px] text-slate-400 font-bold mt-0.5">{element.settings.subtitle}</span>}
         </div>
         
-        {/* Modern iOS-Style Toggle Switch */}
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] font-bold text-slate-400">{isCollapsed ? 'بسته' : 'باز'}</span>
-          <div 
-            className={`w-9 h-5 rounded-full p-0.5 transition-colors relative cursor-pointer ${!isCollapsed ? `bg-${brandColor}-600` : 'bg-slate-200'}`}
-          >
-            <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ease-out absolute top-0.5 right-0.5 ${!isCollapsed ? '-translate-x-4' : 'translate-x-0'}`} />
-          </div>
+        {/* Transforming Arrow on the Left */}
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
+          <ChevronDown 
+            className={`w-4 h-4 text-slate-500 transition-transform duration-300 ease-out ${!isCollapsed ? 'rotate-180' : 'rotate-0'}`} 
+          />
         </div>
       </div>
 
@@ -798,6 +820,197 @@ const CheckoutModal = ({ isOpen, onClose, cart, updateCartQty, cartTotal, brandC
   );
 };
 
+const ProfileModal = ({ isOpen, onClose, brandColor }: { isOpen: boolean; onClose: () => void; brandColor: string }) => {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [table, setTable] = useState('۵');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      const savedName = localStorage.getItem('vitrin_customer_name') || '';
+      const savedPhone = localStorage.getItem('vitrin_customer_phone') || '';
+      const savedTable = localStorage.getItem('vitrin_customer_table') || '۵';
+      const savedOrders = localStorage.getItem('vitrin_orders') || '[]';
+      
+      setName(savedName);
+      setPhone(savedPhone);
+      setTable(savedTable);
+      try {
+        setOrders(JSON.parse(savedOrders));
+      } catch (e) {
+        setOrders([]);
+      }
+      setIsSaved(false);
+    }
+  }, [isOpen]);
+
+  const handleSave = () => {
+    localStorage.setItem('vitrin_customer_name', name.trim());
+    localStorage.setItem('vitrin_customer_phone', phone.trim());
+    localStorage.setItem('vitrin_customer_table', table);
+    setIsSaved(true);
+    setTimeout(() => {
+      setIsSaved(false);
+      onClose();
+    }, 1200);
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'new': return { label: 'ثبت شده', bg: 'bg-amber-50 text-amber-700 border-amber-100' };
+      case 'preparing': 
+      case 'preparing-chef': return { label: 'در حال آماده‌سازی', bg: 'bg-orange-50 text-orange-700 border-orange-100' };
+      case 'ready': return { label: 'آماده تحویل', bg: 'bg-blue-50 text-blue-700 border-blue-100' };
+      case 'delivered':
+      case 'completed': return { label: 'تحویل شده', bg: 'bg-emerald-50 text-emerald-700 border-emerald-100' };
+      case 'canceled': return { label: 'لغو شده', bg: 'bg-rose-50 text-rose-700 border-rose-100' };
+      default: return { label: 'نامشخص', bg: 'bg-slate-50 text-slate-700 border-slate-100' };
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <motion.div 
+           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+           onClick={onClose} className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 pointer-events-auto"
+        />
+        <motion.div 
+          initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="fixed bottom-0 left-0 right-0 z-50 bg-[#F8FAFC] rounded-t-[2.5rem] h-[85vh] overflow-hidden flex flex-col max-w-md mx-auto shadow-[0_-10px_40px_rgba(0,0,0,0.2)]"
+        >
+          {/* Header */}
+          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-xl bg-${brandColor}-50 flex items-center justify-center text-${brandColor}-600`}>
+                <User className="w-4 h-4" />
+              </div>
+              <h2 className="text-lg font-black text-slate-900">پروفایل و سفارش‌های من</h2>
+            </div>
+            <button onClick={onClose} className="p-1.5 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200 transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Scrollable Container */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-right">
+            
+            {/* User Details Form */}
+            <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+              <h3 className="text-xs font-black text-slate-800 border-r-2 border-slate-900 pr-2 leading-none">اطلاعات کاربری</h3>
+              
+              <div className="space-y-3 pt-1">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-1.5 text-right">نام و نام خانوادگی</label>
+                  <input 
+                    type="text" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="مثال: علی محمدی"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-slate-400 transition-colors font-medium text-slate-800 text-right"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-1.5 text-right">شماره موبایل (اختیاری)</label>
+                  <input 
+                    type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-slate-400 transition-colors font-medium text-slate-800 text-left"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-1.5 text-right">میز پیش‌فرض</label>
+                  <div className="grid grid-cols-5 gap-2 font-['Vazirmatn']">
+                    {['۱', '۲', '۵', '۸', '۱۲'].map((num) => (
+                      <button 
+                        key={num} 
+                        type="button"
+                        onClick={() => setTable(num)}
+                        className={`py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${table === num ? `bg-${brandColor}-50 border-${brandColor}-500 text-${brandColor}-700 shadow-sm ring-2 ring-${brandColor}-500/10` : 'border-slate-200 text-slate-500 bg-white hover:bg-slate-50'}`}
+                      >
+                        میز {num}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                onClick={handleSave}
+                disabled={isSaved}
+                className={`w-full py-2.5 rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer ${isSaved ? 'bg-emerald-600 text-white shadow-emerald-500/10' : `bg-${brandColor}-600 text-white shadow-${brandColor}-500/10 hover:bg-${brandColor}-500`}`}
+              >
+                {isSaved ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    تغییرات ذخیره شد
+                  </>
+                ) : (
+                  'ثبت و ذخیره تغییرات'
+                )}
+              </button>
+            </div>
+
+            {/* Orders History Section */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-black text-slate-800 border-r-2 border-slate-900 pr-2 leading-none">تاریخچه سفارش‌ها ({orders.length})</h3>
+              
+              {orders.length === 0 ? (
+                <div className="bg-white p-8 rounded-2xl border border-slate-100 text-center flex flex-col items-center justify-center space-y-3 shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                     <ChefHat className="w-6 h-6 stroke-[1.5]" />
+                  </div>
+                  <p className="text-xs font-bold text-slate-400">هنوز سفارشی برای شما ثبت نشده است</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {orders.map((ord: any) => {
+                    const statusStyle = getStatusLabel(ord.status);
+                    return (
+                      <div key={ord.id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-black text-slate-800">{ord.id}</span>
+                          <span className={`px-2 py-0.5 rounded-lg border text-[9px] font-black ${statusStyle.bg}`}>
+                            {statusStyle.label}
+                          </span>
+                        </div>
+                        
+                        <div className="text-[11px] text-slate-500 space-y-1 font-medium text-right">
+                          {ord.items && ord.items.map((itemStr: string, idx: number) => (
+                            <div key={idx} className="flex items-center justify-start gap-1.5 direction-rtl">
+                              <span className={`w-1 h-1 rounded-full bg-${brandColor}-500 shrink-0`} />
+                              <span>{itemStr}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="border-t border-slate-50 pt-2.5 flex items-center justify-between text-xs font-bold">
+                          <span className="text-slate-400">میز {ord.tableNumber} • {ord.timestamp || 'هم‌اکنون'}</span>
+                          <span className="text-slate-900 font-black">{ord.totalPrice.toLocaleString()} تومان</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
+
 // --- MAIN PAGE ---
 
 interface CustomerMenuProps {
@@ -812,6 +1025,9 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements }) => {
   const [brandColor, setBrandColor] = useState('emerald');
   const [restaurantName, setRestaurantName] = useState('رستوران لیمو');
   const [restaurantLogo, setRestaurantLogo] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   useEffect(() => {
     const handleSync = () => {
@@ -886,33 +1102,134 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements }) => {
     <div className="min-h-screen bg-[#F2F4F7] font-['Vazirmatn'] pb-32 max-w-md mx-auto shadow-2xl relative min-w-0 border-x border-slate-200">
       
       {/* Top Navigation - Styled to Match Studio Customizations */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-5 py-3 flex items-center justify-between shadow-sm">
-         <div className="w-9 h-9 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors">
-            <Search className="w-4 h-4 text-slate-500" />
-         </div>
-         
-         <div className="flex items-center gap-2">
-            {restaurantLogo ? (
-              <img src={restaurantLogo} alt="Logo" className="w-8 h-8 rounded-lg object-cover border border-slate-100" />
-            ) : (
-              <div className={`w-8 h-8 rounded-lg bg-${brandColor}-50 flex items-center justify-center border border-${brandColor}-100`}>
-                <span className={`text-xs font-bold text-${brandColor}-600`}>{restaurantName ? restaurantName[0] : 'ر'}</span>
-              </div>
-            )}
-            <div className="flex flex-col items-start text-right">
-               <span className="text-[9px] font-black text-slate-400">بهترین طعم، با بالاترین کیفیت</span>
-               <span className={`font-black text-slate-900 text-sm tracking-tight hover:text-${brandColor}-600 transition-colors`}>{restaurantName}</span>
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 px-5 py-3 flex items-center justify-between shadow-sm min-h-[60px]">
+        {isSearchOpen ? (
+          <div className="flex-1 flex items-center gap-3">
+            <button 
+              onClick={() => {
+                setIsSearchOpen(false);
+                setSearchQuery('');
+              }}
+              className="w-9 h-9 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 text-slate-500" />
+            </button>
+            <div className="flex-1 relative">
+              <input 
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="جستجوی پیتزا، برگر، سالاد و..."
+                className={`w-full bg-slate-50 border border-slate-200 rounded-xl px-4 pr-10 py-2 text-xs outline-none focus:border-${brandColor}-500 transition-colors font-medium text-right`}
+              />
+              <Search className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="p-1 bg-slate-200 hover:bg-slate-300 text-slate-500 rounded-full absolute left-2 top-1/2 -translate-y-1/2 transition-colors flex items-center justify-center w-5 h-5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </div>
-         </div>
+          </div>
+        ) : (
+          <>
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className="w-9 h-9 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors"
+            >
+              <Search className="w-4 h-4 text-slate-500" />
+            </button>
+            
+            <div className="flex items-center gap-2">
+              {restaurantLogo ? (
+                <img src={restaurantLogo} alt="Logo" className="w-8 h-8 rounded-lg object-cover border border-slate-100" />
+              ) : (
+                <div className={`w-8 h-8 rounded-lg bg-${brandColor}-50 flex items-center justify-center border border-${brandColor}-100`}>
+                  <span className={`text-xs font-bold text-${brandColor}-600`}>{restaurantName ? restaurantName[0] : 'ر'}</span>
+                </div>
+              )}
+              <div className="flex flex-col items-start text-right">
+                <span className="text-[9px] font-black text-slate-400">بهترین طعم، با بالاترین کیفیت</span>
+                <span className={`font-black text-slate-900 text-sm tracking-tight hover:text-${brandColor}-600 transition-colors`}>{restaurantName}</span>
+              </div>
+            </div>
 
-         <div className="w-9 h-9 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors">
-            <User className="w-4 h-4 text-slate-500" />
-         </div>
+            <button 
+              onClick={() => setIsProfileOpen(true)}
+              className="w-9 h-9 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-slate-100 transition-colors"
+            >
+              <User className="w-4 h-4 text-slate-500" />
+            </button>
+          </>
+        )}
       </div>
 
-      {/* Dynamic Content Renderer */}
+      {/* Dynamic Content Renderer or Search View */}
       <div className="flex flex-col">
-        {elements.length === 0 ? (
+        {isSearchOpen ? (
+          <div className="flex flex-col px-4 py-4 space-y-4">
+            <h3 className="text-xs font-black text-slate-400 mb-2 text-right">
+              {searchQuery.trim() === '' ? 'جستجو در محصولات منو' : `نتایج جستجو برای "${searchQuery}"`}
+            </h3>
+            {searchQuery.trim() === '' ? (
+              <div className="text-center text-slate-400 flex flex-col items-center">
+                <Search3DAnimation brandColor={brandColor} />
+                <p className="font-black text-sm text-slate-700 mt-2 max-w-[280px] leading-relaxed">نام غذا، دسته‌بندی یا مواد تشکیل‌دهنده را جستجو کنید...</p>
+                <p className="text-[10px] text-slate-400 font-bold mt-1.5">پیتزا، برگر، سالاد، نوشیدنی یا دسر</p>
+              </div>
+            ) : (() => {
+              const q = searchQuery.toLowerCase();
+              const filtered = MOCK_PRODUCTS.filter(product => {
+                return (
+                  product.name.toLowerCase().includes(q) ||
+                  product.category.toLowerCase().includes(q) ||
+                  product.description.toLowerCase().includes(q) ||
+                  (product.rawMaterials && product.rawMaterials.some(m => m.toLowerCase().includes(q)))
+                );
+              });
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="p-10 text-center text-slate-400 flex flex-col items-center mt-6">
+                    <X className="w-12 h-12 mb-4 opacity-20 text-rose-500" />
+                    <p className="font-bold text-sm text-slate-500">محصولی با این مشخصات یافت نشد.</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-2 gap-3.5">
+                  {filtered.map(product => (
+                    <motion.div 
+                      key={product.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      onClick={() => setSelectedProduct(product)}
+                      className="bg-white rounded-[1.5rem] overflow-hidden border border-slate-100/80 shadow-sm active:scale-95 transition-transform group cursor-pointer text-right"
+                    >
+                      <div className="aspect-square bg-slate-50 relative overflow-hidden">
+                        <img referrerPolicy="no-referrer" src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      </div>
+                      <div className="p-3">
+                        <h4 className="text-xs font-black text-slate-800 mb-1 line-clamp-1">{product.name}</h4>
+                        <p className="text-[9px] text-slate-400 mb-2 font-bold">{product.category}</p>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-xs font-black text-slate-900">{product.price.toLocaleString()} تومان</span>
+                          <span className={`w-7 h-7 bg-${brandColor}-50 text-${brandColor}-600 rounded-lg flex items-center justify-center text-xs font-bold hover:bg-${brandColor}-100`}>
+                            <Plus className="w-3.5 h-3.5" />
+                          </span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        ) : elements.length === 0 ? (
           <div className="p-10 text-center text-slate-400 flex flex-col items-center mt-10">
             <Clock className="w-12 h-12 mb-4 opacity-20" />
             <p className="font-bold text-sm">منوی رستوران در حال آماده‌سازی است...</p>
@@ -921,7 +1238,7 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements }) => {
           elements.map((el) => {
             switch (el.type) {
               case 'hero':
-                return <HeroSection key={el.id} element={el} />;
+                return <HeroSection key={el.id} element={el} brandColor={brandColor} />;
               case 'product-grid':
                 return <ProductGridSection key={el.id} element={el} onProductClick={setSelectedProduct} brandColor={brandColor} />;
               case 'product-list':
@@ -983,6 +1300,12 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements }) => {
          cartTotal={cartTotal}
          brandColor={brandColor}
          onOrderPlaced={() => setCart([])}
+      />
+
+      <ProfileModal 
+         isOpen={isProfileOpen}
+         onClose={() => setIsProfileOpen(false)}
+         brandColor={brandColor}
       />
 
     </div>
