@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ConciergeBell, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ConciergeBell, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { SIDEBAR_LINKS } from '../constants';
 import { ViewState } from '../types';
 
@@ -11,6 +11,8 @@ interface SidebarProps {
   activeView: ViewState;
   onViewChange: (view: ViewState) => void;
   brandColor: string;
+  isOpenOnMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -18,24 +20,36 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleCollapse, 
   activeView, 
   onViewChange,
-  brandColor
+  brandColor,
+  isOpenOnMobile = false,
+  onCloseMobile
 }) => {
   return (
     <motion.aside 
       initial={false}
       animate={{ width: isCollapsed ? 80 : 260 }}
-      className="bg-white border-l border-slate-200 flex flex-col z-40 shadow-sm font-['Vazirmatn'] shrink-0"
+      className={`bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex flex-col z-50 shadow-sm font-['Vazirmatn'] shrink-0
+        fixed md:relative right-0 top-0 h-screen md:h-auto transition-all duration-300
+        ${isOpenOnMobile ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+      `}
     >
       <div className="p-6 flex items-center justify-between overflow-hidden whitespace-nowrap h-20">
         {!isCollapsed ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
-            <div className={`w-10 h-10 bg-${brandColor}-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-${brandColor}-200`}>
-              <ConciergeBell className="w-6 h-6" />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <div className={`w-10 h-10 bg-${brandColor}-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-${brandColor}-200 dark:shadow-none`}>
+                <ConciergeBell className="w-6 h-6" />
+              </div>
+              <span className={`text-xl font-black text-${brandColor}-900 dark:text-${brandColor}-400 tracking-tight`}>ویترین</span>
             </div>
-            <span className={`text-xl font-black text-${brandColor}-900 tracking-tight`}>ویترین</span>
+            {onCloseMobile && (
+              <button onClick={onCloseMobile} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 md:hidden block">
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </motion.div>
         ) : (
-          <div className={`w-10 h-10 bg-${brandColor}-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-${brandColor}-200 mx-auto`}>
+          <div className={`w-10 h-10 bg-${brandColor}-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-${brandColor}-200 mx-auto dark:shadow-none`}>
             <ConciergeBell className="w-6 h-6" />
           </div>
         )}
@@ -45,12 +59,17 @@ const Sidebar: React.FC<SidebarProps> = ({
         {SIDEBAR_LINKS.map((link) => (
           <button
             key={link.id}
-            onClick={() => onViewChange(link.id as ViewState)}
+            onClick={() => {
+              onViewChange(link.id as ViewState);
+              if (onCloseMobile) onCloseMobile();
+            }}
             className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden ${
-              activeView === link.id ? `bg-${brandColor}-50 text-${brandColor}-700 font-bold` : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+              activeView === link.id 
+                ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-700 dark:text-${brandColor}-400 font-bold` 
+                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-700 dark:hover:text-slate-200'
             }`}
           >
-            <div className={`relative z-10 ${activeView === link.id ? `text-${brandColor}-600` : 'text-slate-400 group-hover:text-slate-600'}`}>
+            <div className={`relative z-10 ${activeView === link.id ? `text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`}>
               {link.icon}
             </div>
             {!isCollapsed && (
@@ -69,8 +88,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </nav>
       
-      <div className="p-4 border-t border-slate-50">
-         <button onClick={toggleCollapse} className="w-full flex items-center justify-center p-2 rounded-lg bg-slate-50 text-slate-500 hover:bg-slate-100 transition-colors">
+      <div className="p-4 border-t border-slate-50 dark:border-slate-800/50">
+         <button onClick={toggleCollapse} className="w-full flex items-center justify-center p-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
           {isCollapsed ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
         </button>
       </div>

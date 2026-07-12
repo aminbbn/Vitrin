@@ -1,9 +1,9 @@
 
-export type ViewState = 'dashboard' | 'designer' | 'products' | 'orders' | 'analytics' | 'settings' | 'search-results' | 'notification-archive' | 'customer-menu' | 'notifications';
+export type ViewState = 'dashboard' | 'designer' | 'products' | 'categories' | 'orders' | 'analytics' | 'settings' | 'search-results' | 'notification-archive' | 'customer-menu' | 'notifications';
 
 export interface ComponentItem {
   id: string;
-  type: 'hero' | 'product-grid' | 'product-list' | 'featured' | 'action-btn';
+  type: 'hero' | 'product-grid' | 'product-list' | 'featured' | 'action-btn' | 'category-display' | 'footer';
   label: string;
   settings: ComponentSettings;
 }
@@ -18,6 +18,13 @@ export interface ComponentSettings {
   animation?: 'fade' | 'slide' | 'bounce';
   imageUrl?: string;
   style?: 'overlay' | 'stack' | 'split';
+  layout?: 'grid' | 'scroll';
+  phone?: string;
+  address?: string;
+  customText?: string;
+  showInstagram?: boolean;
+  showWhatsapp?: boolean;
+  showTwitter?: boolean;
 }
 
 export interface ProductModifier {
@@ -41,10 +48,19 @@ export interface ProductReview {
   date: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  image?: string;
+  icon?: string;
+  order: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   category: string;
+  categoryId?: string;
   description: string;
   price: number;
   image: string;
@@ -53,6 +69,9 @@ export interface Product {
   estimatedTime?: string;
   rating?: number;
   reviews?: ProductReview[];
+  isAvailable?: boolean;
+  discountPrice?: number;
+  tags?: string[];
 }
 
 export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered';

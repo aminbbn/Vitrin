@@ -151,18 +151,18 @@ const MetricCard = ({ id, label, value, unit, trend, up, icon: Icon, color, isAc
       whileTap={{ scale: 0.98 }}
       className={`relative p-5 rounded-[1.5rem] border-2 transition-all duration-300 w-full text-right overflow-hidden group ${
         isActive 
-          ? `bg-${color}-600 border-${color}-600 text-white shadow-xl shadow-${color}-200 scale-105 z-10` 
-          : 'bg-white border-transparent hover:border-slate-200 text-slate-600 shadow-sm hover:shadow-md'
+          ? `bg-${color}-600 border-${color}-600 text-white shadow-xl shadow-${color}-200 dark:shadow-none scale-105 z-10` 
+          : 'bg-white dark:bg-slate-900 border-transparent hover:border-slate-200 dark:hover:border-slate-800 text-slate-600 dark:text-slate-300 shadow-sm hover:shadow-md'
       }`}
     >
       <div className="flex justify-between items-start mb-4">
-        <div className={`p-2.5 rounded-2xl transition-colors ${isActive ? 'bg-white/20 text-white' : `bg-${color}-50 text-${color}-600`}`}>
+        <div className={`p-2.5 rounded-2xl transition-colors ${isActive ? 'bg-white/20 text-white' : `bg-${color}-50 dark:bg-${color}-950/30 text-${color}-600 dark:text-${color}-400`}`}>
           <Icon className="w-6 h-6" />
         </div>
         <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-lg ${
           isActive 
             ? 'bg-white/20 text-white' 
-            : up ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+            : up ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600' : 'bg-red-50 dark:bg-red-950/30 text-red-600'
         }`}>
           {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
           {trend}
@@ -170,8 +170,8 @@ const MetricCard = ({ id, label, value, unit, trend, up, icon: Icon, color, isAc
       </div>
       
       <div>
-        <h3 className={`text-3xl font-black mb-1 ${isActive ? 'text-white' : 'text-slate-900'}`}>{value}</h3>
-        <p className={`text-xs font-bold ${isActive ? 'text-white/80' : 'text-slate-400'}`}>{label}</p>
+        <h3 className={`text-3xl font-black mb-1 ${isActive ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>{value}</h3>
+        <p className={`text-xs font-bold ${isActive ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'}`}>{label}</p>
       </div>
 
       {isActive && (
@@ -186,7 +186,7 @@ const MetricCard = ({ id, label, value, unit, trend, up, icon: Icon, color, isAc
 
 // --- INSIGHT PANEL ---
 
-const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { activeStatId: string, reviews: any[], brandColor: string, onShowAll: (type: string) => void }) => {
+const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll, onSelectCustomer }: { activeStatId: string, reviews: any[], brandColor: string, onShowAll: (type: string) => void, onSelectCustomer: (customer: any) => void }) => {
   
   const renderContent = () => {
     switch (activeStatId) {
@@ -196,35 +196,35 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
                   <MessageCircle className="w-4 h-4 text-emerald-500" />
                   آخرین نظرات مشتریان
                 </h3>
-                <button onClick={() => onShowAll('reviews')} className="text-xs font-bold text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded-lg transition-colors flex items-center gap-1">
+                <button onClick={() => onShowAll('reviews')} className="text-xs font-bold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 px-2 py-1 rounded-lg transition-colors flex items-center gap-1">
                    مشاهده همه <ChevronLeft className="w-3 h-3" />
                 </button>
               </div>
               {reviews.slice(0, 3).map((review) => (
-                <div key={review.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex gap-3">
-                  <div className={`w-10 h-10 rounded-full bg-${brandColor}-100 flex items-center justify-center text-${brandColor}-700 font-bold text-sm shrink-0`}>
+                <div key={review.id} className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/60 flex gap-3">
+                  <div className={`w-10 h-10 rounded-full bg-${brandColor}-100 dark:bg-${brandColor}-950/50 flex items-center justify-center text-${brandColor}-700 dark:text-${brandColor}-400 font-bold text-sm shrink-0`}>
                     {review.user.charAt(0)}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-slate-800">{review.user}</span>
+                        <span className="font-bold text-sm text-slate-800 dark:text-slate-200">{review.user}</span>
                         <div className="flex text-yellow-400">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-current' : 'text-slate-200'}`} />
+                            <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-current text-yellow-400' : 'text-slate-200 dark:text-slate-850'}`} />
                           ))}
                         </div>
                       </div>
-                      <span className="text-[10px] text-slate-400">{review.date}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">{review.date}</span>
                     </div>
-                    <p className="text-xs text-slate-600 leading-relaxed mb-2">{review.comment}</p>
-                    <div className="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-slate-100 w-fit">
-                        <img src={review.productImage} className="w-4 h-4 rounded-full object-cover" alt="product" />
-                        <span className="text-[10px] font-bold text-slate-500">{review.productName}</span>
+                    <p className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed mb-2">{review.comment}</p>
+                    <div className="flex items-center gap-2 bg-white dark:bg-slate-900 px-2 py-1 rounded-lg border border-slate-100 dark:border-slate-800/80 w-fit">
+                        <img src={review.productImage || undefined} className="w-4 h-4 rounded-full object-cover" alt="product" />
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">{review.productName}</span>
                     </div>
                   </div>
                 </div>
@@ -233,8 +233,8 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
             
             <div className="flex flex-col gap-6">
                 {activeStatId === 'reviews' ? (
-                   <div className="bg-orange-50 rounded-3xl p-6 border border-orange-100">
-                        <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 mb-6">
+                   <div className="bg-orange-50 dark:bg-orange-950/10 rounded-3xl p-6 border border-orange-100 dark:border-orange-900/20">
+                        <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 flex items-center gap-2 mb-6">
                         <Star className="w-4 h-4 text-orange-500" />
                         توزیع امتیازات
                         </h3>
@@ -242,33 +242,33 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
                         {RATING_BREAKDOWN.map((item) => (
                             <div key={item.star} className="flex items-center gap-4">
                                 <div className="flex items-center gap-1 w-12 shrink-0">
-                                    <span className="text-sm font-black text-slate-700">{item.star}</span>
+                                    <span className="text-sm font-black text-slate-700 dark:text-slate-300">{item.star}</span>
                                     <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" />
                                 </div>
-                                <div className="flex-1 h-3 bg-white rounded-full overflow-hidden">
+                                <div className="flex-1 h-3 bg-white dark:bg-slate-950 rounded-full overflow-hidden">
                                     <motion.div 
                                         initial={{ width: 0 }}
                                         animate={{ width: `${(item.count / 150) * 100}%` }}
                                         className="h-full bg-orange-400 rounded-full"
                                     />
                                 </div>
-                                <span className="text-xs font-bold text-slate-400 w-8 text-left">{item.count}</span>
+                                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 w-8 text-left">{item.count}</span>
                             </div>
                         ))}
                         </div>
                    </div>
                 ) : (
-                    <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100 flex flex-col justify-center items-center text-center flex-1">
+                    <div className="bg-slate-50 dark:bg-slate-950 p-6 border border-slate-100 dark:border-slate-800 flex flex-col justify-center items-center text-center flex-1">
                         <div className="w-32 h-32 relative flex items-center justify-center mb-4">
-                            <div className="absolute inset-0 rounded-full border-4 border-emerald-100"></div>
+                            <div className="absolute inset-0 rounded-full border-4 border-emerald-100 dark:border-emerald-950/30"></div>
                             <div className="absolute inset-0 rounded-full border-4 border-emerald-500 border-l-transparent rotate-45"></div>
                             <div className="flex flex-col items-center">
-                                <span className="text-3xl font-black text-emerald-600">۴.۸</span>
-                                <span className="text-[10px] text-slate-400 font-bold">امتیاز کل</span>
+                                <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">۴.۸</span>
+                                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">امتیاز کل</span>
                             </div>
                         </div>
-                        <p className="text-sm font-bold text-slate-700 max-w-[200px]">وضعیت رضایت مشتریان عالی است!</p>
-                        <p className="text-xs text-slate-400 mt-2">بر اساس ۲۰۵ نظر ثبت شده در ماه جاری</p>
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-300 max-w-[200px]">وضعیت رضایت مشتریان عالی است!</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">بر اساس ۲۰۵ نظر ثبت شده در ماه جاری</p>
                     </div>
                 )}
             </div>
@@ -280,39 +280,39 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
              <div className="lg:col-span-2">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                    <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 flex items-center gap-2">
                     <UserCheck className={`w-4 h-4 text-${brandColor}-500`} />
                     مشتریان وفادار برتر
                     </h3>
-                    <button onClick={() => onShowAll('loyal')} className={`text-xs font-bold text-${brandColor}-600 hover:bg-${brandColor}-50 px-2 py-1 rounded-lg transition-colors flex items-center gap-1`}>
+                    <button onClick={() => onShowAll('loyal')} className={`text-xs font-bold text-${brandColor}-600 dark:text-${brandColor}-400 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/30 px-2 py-1 rounded-lg transition-colors flex items-center gap-1`}>
                         مشاهده همه <ChevronLeft className="w-3 h-3" />
                     </button>
                 </div>
                 <div className="space-y-3">
                    {ALL_LOYAL_CUSTOMERS.slice(0, 4).map((customer) => (
                       <div key={customer.id}
-                       onClick={() => setSelectedCustomer(customer)}
-                       className={`flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm cursor-pointer glow-transition glow-${brandColor}`}>
+                       onClick={() => onSelectCustomer(customer)}
+                       className={`flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl shadow-sm cursor-pointer glow-transition glow-${brandColor}`}>
                          <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 bg-${brandColor}-50 text-${brandColor}-600 rounded-xl flex items-center justify-center font-bold`}>
+                            <div className={`w-10 h-10 bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-xl flex items-center justify-center font-bold`}>
                                {customer.name.charAt(0)}
                             </div>
                             <div>
-                               <div className="font-bold text-sm text-slate-800">{customer.name}</div>
-                               <div className="text-[10px] text-slate-400">آخرین سفارش: {customer.lastOrder}</div>
+                               <div className="font-bold text-sm text-slate-800 dark:text-slate-200">{customer.name}</div>
+                               <div className="text-[10px] text-slate-400 dark:text-slate-500">آخرین سفارش: {customer.lastOrder}</div>
                             </div>
                          </div>
                          <div className="text-left">
-                            <div className="font-black text-sm text-slate-800">{customer.orders} سفارش</div>
-                            <div className={`text-[10px] text-${brandColor}-600 font-bold`}>{customer.spent} تومان</div>
+                            <div className="font-black text-sm text-slate-800 dark:text-slate-200">{customer.orders} سفارش</div>
+                            <div className={`text-[10px] text-${brandColor}-600 dark:text-${brandColor}-400 font-bold`}>{customer.spent} تومان</div>
                          </div>
                       </div>
                    ))}
                 </div>
              </div>
              
-             <div className="bg-blue-50 rounded-3xl p-6 border border-blue-100">
-                <h3 className="text-blue-800 font-black text-sm mb-4">شاخص بازگشت</h3>
+             <div className="bg-blue-50 dark:bg-blue-950/10 rounded-3xl p-6 border border-blue-100 dark:border-blue-900/20">
+                <h3 className="text-blue-800 dark:text-blue-350 font-black text-sm mb-4">شاخص بازگشت</h3>
                 <div className="h-40 w-full">
                    <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={getSalesData('7days')}>
@@ -327,7 +327,7 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
                    </ResponsiveContainer>
                 </div>
                 <div className="mt-4 text-center">
-                   <p className="text-xs text-blue-600 leading-relaxed">
+                   <p className="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
                       <strong>نکته:</strong> ارسال کد تخفیف برای مشتریانی که بیش از ۲ هفته سفارش نداشته‌اند، می‌تواند نرخ بازگشت را تا ۱۵٪ افزایش دهد.
                    </p>
                 </div>
@@ -340,11 +340,11 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
              <div>
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                    <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
                     <UserPlus className="w-4 h-4 text-purple-500" />
                     کانال‌های جذب مشتری
                     </h3>
-                    <button onClick={() => onShowAll('new')} className="text-xs font-bold text-purple-600 hover:bg-purple-50 px-2 py-1 rounded-lg transition-colors flex items-center gap-1">
+                    <button onClick={() => onShowAll('new')} className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 px-2 py-1 rounded-lg transition-colors flex items-center gap-1">
                         لیست مشتریان جدید <ChevronLeft className="w-3 h-3" />
                     </button>
                 </div>
@@ -352,10 +352,10 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
                    {ACQUISITION_DATA.map((item, idx) => (
                       <div key={idx}>
                          <div className="flex justify-between text-xs font-bold mb-1.5">
-                            <span className="text-slate-700">{item.source}</span>
-                            <span className="text-slate-900">{item.count} نفر</span>
+                            <span className="text-slate-700 dark:text-slate-300">{item.source}</span>
+                            <span className="text-slate-900 dark:text-slate-100">{item.count} نفر</span>
                          </div>
-                         <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                         <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                             <motion.div 
                                initial={{ width: 0 }}
                                animate={{ width: `${(item.count / 50) * 100}%` }}
@@ -369,19 +369,19 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
                 </div>
              </div>
              
-             <div className="bg-purple-50 rounded-3xl p-8 border border-purple-100 flex flex-col justify-center items-center text-center relative overflow-hidden">
+             <div className="bg-purple-50 dark:bg-purple-950/10 rounded-3xl p-8 border border-purple-100 dark:border-purple-900/20 flex flex-col justify-center items-center text-center relative overflow-hidden">
                 <div className="relative z-10">
-                   <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg mb-4 mx-auto text-purple-600">
+                   <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center shadow-lg mb-4 mx-auto text-purple-600 dark:text-purple-400">
                       <TrendingUp className="w-8 h-8" />
                    </div>
-                   <h3 className="text-lg font-black text-purple-900 mb-2">رشد فوق‌العاده!</h3>
-                   <p className="text-xs text-purple-700/80 leading-relaxed max-w-xs mx-auto">
+                   <h3 className="text-lg font-black text-purple-900 dark:text-purple-200 mb-2">رشد فوق‌العاده!</h3>
+                   <p className="text-xs text-purple-700/80 dark:text-purple-400/80 leading-relaxed max-w-xs mx-auto">
                       تعداد مشتریان جدید شما نسبت به هفته گذشته <strong>۱۵٪ رشد</strong> داشته است. کمپین اینستاگرامی شما عملکرد موفقی دارد.
                    </p>
                 </div>
                 {/* Background Decorations */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-200/50 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-200/50 rounded-full blur-3xl -ml-10 -mb-10"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-200/50 dark:bg-purple-900/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-200/50 dark:bg-purple-900/10 rounded-full blur-3xl -ml-10 -mb-10"></div>
              </div>
           </div>
         );
@@ -397,7 +397,7 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll }: { active
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm relative overflow-hidden min-h-[300px]"
+      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-[2rem] p-8 shadow-sm relative overflow-hidden min-h-[300px]"
     >
        <div className="relative z-10">
           {renderContent()}
@@ -440,60 +440,60 @@ const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({ customer, i
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 350, damping: 28 }}
-            className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 p-8 overflow-hidden flex flex-col"
+            className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 p-8 overflow-hidden flex flex-col border border-slate-100 dark:border-slate-800"
          >
             {/* Header / Avatar */}
             <div className="flex flex-col items-center text-center mb-6 relative">
-               <button onClick={onClose} className="absolute right-0 top-0 p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full transition-colors">
+               <button onClick={onClose} className="absolute right-0 top-0 p-2 bg-slate-100 dark:bg-slate-850 hover:bg-slate-200 dark:hover:bg-slate-750 text-slate-500 dark:text-slate-400 rounded-full transition-colors">
                   <X className="w-4 h-4" />
                </button>
                
-               <div className={`w-20 h-20 bg-${brandColor}-50 text-${brandColor}-600 rounded-[2rem] flex items-center justify-center font-black text-3xl mb-4 shadow-inner`}>
+               <div className={`w-20 h-20 bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-[2rem] flex items-center justify-center font-black text-3xl mb-4 shadow-inner`}>
                   {customer.name?.charAt(0)}
                </div>
                
-               <h3 className="text-xl font-black text-slate-800">{customer.name}</h3>
-               <span className={`mt-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-${brandColor}-50 text-${brandColor}-700 border border-${brandColor}-100`}>
+               <h3 className="text-xl font-black text-slate-800 dark:text-slate-100">{customer.name}</h3>
+               <span className={`mt-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-700 dark:text-${brandColor}-300 border border-${brandColor}-100 dark:border-${brandColor}-900/40`}>
                   {customer.orders ? 'مشتری وفادار و برتر' : 'مشتری جدید رستوران'}
                </span>
             </div>
 
             {/* Main Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6 bg-slate-50 p-4 rounded-3xl border border-slate-100">
+            <div className="grid grid-cols-2 gap-4 mb-6 bg-slate-50 dark:bg-slate-950 p-4 rounded-3xl border border-slate-100 dark:border-slate-800">
                <div className="text-center p-2">
-                  <div className="text-[10px] text-slate-400 font-bold mb-1">تعداد سفارشات</div>
-                  <div className={`text-lg font-black text-${brandColor}-600`}>{customer.orders ?? 1}</div>
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1">تعداد سفارشات</div>
+                  <div className={`text-lg font-black text-${brandColor}-600 dark:text-${brandColor}-400`}>{customer.orders ?? 1}</div>
                </div>
-               <div className="text-center p-2 border-r border-slate-200">
-                  <div className="text-[10px] text-slate-400 font-bold mb-1 font-['Vazirmatn']">مجموع خرید (تومان)</div>
-                  <div className="text-lg font-black text-slate-800">{customer.spent ?? '۲۴۰,۰۰۰'}</div>
+               <div className="text-center p-2 border-r border-slate-200 dark:border-slate-800">
+                  <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1 font-['Vazirmatn']">مجموع خرید (تومان)</div>
+                  <div className="text-lg font-black text-slate-800 dark:text-slate-200">{customer.spent ?? '۲۴۰,۰۰۰'}</div>
                </div>
             </div>
 
             {/* Customer Details Fields */}
             <div className="space-y-4 mb-8">
                {/* Phone */}
-               <div className="flex items-center justify-between p-3.5 bg-slate-50/50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
+               <div className="flex items-center justify-between p-3.5 bg-slate-50/50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
                   <div className="flex items-center gap-3">
-                     <div className={`p-2 bg-${brandColor}-50 text-${brandColor}-600 rounded-xl`}>
+                     <div className={`p-2 bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-xl`}>
                         <Phone className="w-4 h-4" />
                      </div>
                      <div className="text-right">
                         <div className="text-[10px] font-bold text-slate-400">شماره تلفن</div>
-                        <div className="text-sm font-black text-slate-800">{customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷'}</div>
+                        <div className="text-sm font-black text-slate-800 dark:text-slate-100">{customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷'}</div>
                      </div>
                   </div>
                   <div className="flex gap-2">
                      <button 
                         onClick={() => handleCopy(customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷', 'phone')}
-                        className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200/60 shadow-sm"
+                        className="p-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl transition-colors border border-slate-200/60 dark:border-slate-800 shadow-sm"
                         title="کپی شماره"
                      >
                         {copiedField === 'phone' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                      </button>
                      <a 
                         href={`tel:${customer.phone ?? '09121234567'}`}
-                        className={`p-2 bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white rounded-xl transition-colors shadow-md shadow-${brandColor}-200 flex items-center justify-center`}
+                        className={`p-2 bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white rounded-xl transition-colors shadow-md shadow-${brandColor}-200 dark:shadow-none flex items-center justify-center`}
                         title="تماس"
                      >
                         <Phone className="w-3.5 h-3.5" />
@@ -502,27 +502,27 @@ const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({ customer, i
                </div>
 
                {/* Email */}
-               <div className="flex items-center justify-between p-3.5 bg-slate-50/50 border border-slate-100 rounded-2xl hover:border-slate-200 transition-colors">
+               <div className="flex items-center justify-between p-3.5 bg-slate-50/50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
                   <div className="flex items-center gap-3">
-                     <div className={`p-2 bg-${brandColor}-50 text-${brandColor}-600 rounded-xl`}>
+                     <div className={`p-2 bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-xl`}>
                         <Mail className="w-4 h-4" />
                      </div>
                      <div className="text-right">
                         <div className="text-[10px] font-bold text-slate-400 font-['Inter']">ایمیل</div>
-                        <div className="text-sm font-black text-slate-800 font-['Inter']">{customer.email ?? 'customer@gmail.com'}</div>
+                        <div className="text-sm font-black text-slate-800 dark:text-slate-100 font-['Inter']">{customer.email ?? 'customer@gmail.com'}</div>
                      </div>
                   </div>
                   <div className="flex gap-2">
                      <button 
                         onClick={() => handleCopy(customer.email ?? 'customer@gmail.com', 'email')}
-                        className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200/60 shadow-sm"
+                        className="p-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl transition-colors border border-slate-200/60 dark:border-slate-800 shadow-sm"
                         title="کپی ایمیل"
                      >
                         {copiedField === 'email' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                      </button>
                      <a 
                         href={`mailto:${customer.email ?? 'customer@gmail.com'}`}
-                        className={`p-2 bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white rounded-xl transition-colors shadow-md shadow-${brandColor}-200 flex items-center justify-center`}
+                        className={`p-2 bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white rounded-xl transition-colors shadow-md shadow-${brandColor}-200 dark:shadow-none flex items-center justify-center`}
                         title="ارسال ایمیل"
                      >
                         <Mail className="w-3.5 h-3.5" />
@@ -532,13 +532,13 @@ const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({ customer, i
 
                {/* Other Info */}
                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-slate-50/30 border border-slate-100 rounded-2xl">
+                  <div className="p-3 bg-slate-50/30 dark:bg-slate-950/30 border border-slate-100 dark:border-slate-800 rounded-2xl">
                      <span className="text-[10px] text-slate-400 block mb-0.5 font-bold">تاریخ عضویت</span>
-                     <span className="text-xs font-black text-slate-700">{customer.joinDate}</span>
+                     <span className="text-xs font-black text-slate-700 dark:text-slate-300">{customer.joinDate}</span>
                   </div>
-                  <div className="p-3 bg-slate-50/30 border border-slate-100 rounded-2xl">
+                  <div className="p-3 bg-slate-50/30 dark:bg-slate-950/30 border border-slate-100 dark:border-slate-800 rounded-2xl">
                      <span className="text-[10px] text-slate-400 block mb-0.5 font-bold font-['Vazirmatn']">غذای مورد علاقه</span>
-                     <span className="text-xs font-black text-slate-700">{customer.favorite ?? customer.firstOrder ?? 'پیتزا پپرونی'}</span>
+                     <span className="text-xs font-black text-slate-700 dark:text-slate-300">{customer.favorite ?? customer.firstOrder ?? 'پیتزا پپرونی'}</span>
                   </div>
                </div>
             </div>
@@ -586,25 +586,25 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
       content = (
          <div className="space-y-4">
             {filtered.map(r => (
-               <div key={r.id} className="bg-white p-4 rounded-2xl border border-slate-100 flex gap-4 hover:border-slate-300 transition-colors">
-                  <div className={`w-12 h-12 rounded-xl bg-${brandColor}-50 text-${brandColor}-600 flex items-center justify-center font-black text-lg shrink-0`}>
+               <div key={r.id} className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/60 flex gap-4 hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                  <div className={`w-12 h-12 rounded-xl bg-${brandColor}-50 dark:bg-${brandColor}-950/40 text-${brandColor}-600 dark:text-${brandColor}-400 flex items-center justify-center font-black text-lg shrink-0`}>
                      {r.user.charAt(0)}
                   </div>
                   <div className="flex-1">
                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-slate-800">{r.user}</span>
-                        <span className="text-xs text-slate-400">{r.date}</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-100">{r.user}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500">{r.date}</span>
                      </div>
                      <div className="flex items-center gap-1 mb-2 text-yellow-400">
                         {[...Array(5)].map((_, i) => (
-                           <Star key={i} className={`w-3.5 h-3.5 ${i < r.rating ? 'fill-current' : 'text-slate-200'}`} />
+                           <Star key={i} className={`w-3.5 h-3.5 ${i < r.rating ? 'fill-current' : 'text-slate-200 dark:text-slate-800'}`} />
                         ))}
                      </div>
-                     <p className="text-sm text-slate-600 leading-relaxed mb-3">{r.comment}</p>
+                     <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-3">{r.comment}</p>
                      
-                     <div className="inline-flex items-center gap-2 bg-slate-50 border border-slate-200 pr-1 pl-3 py-1 rounded-full">
-                        <img src={r.productImage} className="w-6 h-6 rounded-full object-cover" alt={r.productName} />
-                        <span className="text-xs font-bold text-slate-600">محصول: <span className={`text-${brandColor}-600`}>{r.productName}</span></span>
+                     <div className="inline-flex items-center gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 pr-1 pl-3 py-1 rounded-full">
+                        <img src={r.productImage || undefined} className="w-6 h-6 rounded-full object-cover" alt={r.productName} />
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">محصول: <span className={`text-${brandColor}-600 dark:text-${brandColor}-400`}>{r.productName}</span></span>
                      </div>
                   </div>
                </div>
@@ -619,28 +619,28 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
             {filtered.map(c => (
                <div key={c.id} 
                onClick={() => onSelectCustomer(c)}
-               className={`flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl glow-transition glow-${brandColor} cursor-pointer shadow-sm`}>
+               className={`flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl glow-transition glow-${brandColor} cursor-pointer shadow-sm`}>
                   <div className="flex items-center gap-4">
-                     <div className={`w-12 h-12 bg-${brandColor}-50 text-${brandColor}-600 rounded-2xl flex items-center justify-center font-black text-lg`}>
+                     <div className={`w-12 h-12 bg-${brandColor}-50 dark:bg-${brandColor}-950/40 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-2xl flex items-center justify-center font-black text-lg`}>
                         {c.name.charAt(0)}
                      </div>
                      <div>
-                        <div className="font-bold text-slate-800 mb-1">{c.name}</div>
-                        <div className="text-xs text-slate-400 flex items-center gap-3">
+                        <div className="font-bold text-slate-800 dark:text-slate-100 mb-1">{c.name}</div>
+                        <div className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-3">
                            <span>عضویت: {c.joinDate}</span>
-                           <span className="w-1 h-1 bg-slate-300 rounded-full" />
+                           <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
                            <span>علاقه: {c.favorite}</span>
                         </div>
                      </div>
                   </div>
                   <div className="text-left flex items-center gap-6">
                      <div className="text-center">
-                        <div className="text-xs text-slate-400 font-bold mb-0.5">تعداد سفارش</div>
-                        <div className="font-black text-slate-800">{c.orders}</div>
+                        <div className="text-xs text-slate-400 dark:text-slate-500 font-bold mb-0.5">تعداد سفارش</div>
+                        <div className="font-black text-slate-800 dark:text-slate-200">{c.orders}</div>
                      </div>
                      <div className="text-center min-w-[100px]">
-                        <div className="text-xs text-slate-400 font-bold mb-0.5">مجموع خرید</div>
-                        <div className={`font-black text-${brandColor}-600`}>{c.spent}</div>
+                        <div className="text-xs text-slate-400 dark:text-slate-500 font-bold mb-0.5">مجموع خرید</div>
+                        <div className={`font-black text-${brandColor}-600 dark:text-${brandColor}-400`}>{c.spent}</div>
                      </div>
                   </div>
                </div>
@@ -655,19 +655,19 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
             {filtered.map(c => (
                <div key={c.id} 
                onClick={() => onSelectCustomer(c)}
-               className={`p-4 bg-white border border-slate-100 rounded-2xl glow-transition glow-${brandColor} cursor-pointer flex items-center gap-4 shadow-sm`}>
-                  <div className={`w-12 h-12 bg-${brandColor}-50 text-${brandColor}-600 rounded-2xl flex items-center justify-center font-black text-lg shrink-0`}>
+               className={`p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-2xl glow-transition glow-${brandColor} cursor-pointer flex items-center gap-4 shadow-sm`}>
+                  <div className={`w-12 h-12 bg-${brandColor}-50 dark:bg-${brandColor}-950/40 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-2xl flex items-center justify-center font-black text-lg shrink-0`}>
                      {c.name.charAt(0)}
                   </div>
                   <div className="flex-1">
                      <div className="flex justify-between items-start mb-1">
-                        <span className="font-bold text-slate-800">{c.name}</span>
-                        <span className={`text-[10px] bg-${brandColor}-100 text-${brandColor}-700 px-2 py-0.5 rounded font-bold`}>{c.source}</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-100">{c.name}</span>
+                        <span className={`text-[10px] bg-${brandColor}-100 dark:bg-${brandColor}-950/50 text-${brandColor}-700 dark:text-${brandColor}-300 px-2 py-0.5 rounded font-bold`}>{c.source}</span>
                      </div>
-                     <div className="text-xs text-slate-500">
-                        اولین سفارش: <span className="font-bold text-slate-700">{c.firstOrder}</span>
+                     <div className="text-xs text-slate-500 dark:text-slate-400">
+                        اولین سفارش: <span className="font-bold text-slate-700 dark:text-slate-300">{c.firstOrder}</span>
                      </div>
-                     <div className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                     <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
                         <Calendar className="w-3 h-3" /> {c.joinDate}
                      </div>
                   </div>
@@ -690,20 +690,20 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-slate-50 w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-[201] flex flex-col max-h-[85vh] overflow-hidden"
+            className="bg-slate-50 dark:bg-slate-950 w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-[201] flex flex-col max-h-[85vh] overflow-hidden border border-slate-100 dark:border-slate-800"
          >
             {/* Header */}
-            <div className="p-6 bg-white border-b border-slate-200 flex items-center justify-between shrink-0">
-               <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+            <div className="p-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+               <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
                   {title}
                </h2>
-               <button onClick={onClose} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors text-slate-500">
+               <button onClick={onClose} className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
                   <X className="w-5 h-5" />
                </button>
             </div>
 
             {/* Toolbar */}
-            <div className="p-4 bg-white/50 backdrop-blur border-b border-slate-200 flex gap-4 shrink-0">
+            <div className="p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur border-b border-slate-200 dark:border-slate-800 flex gap-4 shrink-0">
                <div className="relative flex-1">
                   <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
@@ -711,7 +711,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
                      value={search}
                      onChange={(e) => setSearch(e.target.value)}
                      placeholder="جستجو..."
-                     className={`w-full bg-white border border-slate-200 rounded-xl px-4 pr-10 py-2.5 text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
+                     className={`w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl px-4 pr-10 py-2.5 text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
                   />
                </div>
             </div>
@@ -728,7 +728,57 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, type, brandC
 
 // --- MAIN COMPONENT ---
 
-const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
+const BarCustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] border border-slate-200 dark:border-slate-850 text-xs z-[100] relative font-['Vazirmatn']">
+        <p className="font-bold mb-2 text-slate-500 dark:text-slate-400">{label}</p>
+        {payload.map((item: any, index: number) => (
+          <div key={index} className="flex items-center gap-2 mb-1">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+            <span className="font-medium text-slate-600 dark:text-slate-350">{item.name}:</span>
+            <span className="font-black text-slate-800 dark:text-slate-100">{item.value} نفر</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+const PieCustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.15)] border border-slate-200 dark:border-slate-850 text-xs z-[100] relative font-['Vazirmatn']">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: data.color }} />
+          <span className="font-medium text-slate-600 dark:text-slate-350">{data.name}:</span>
+          <span className="font-black text-slate-800 dark:text-slate-100">{data.value}٪</span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+const Analytics: React.FC<{ brandColor: string; theme?: 'light' | 'dark' }> = ({ brandColor, theme }) => {
+  const [isDark, setIsDark] = useState(() => theme === 'dark' || document.documentElement.classList.contains('dark'));
+
+  useEffect(() => {
+    setIsDark(theme === 'dark' || document.documentElement.classList.contains('dark'));
+  }, [theme]);
+
+  useEffect(() => {
+    const checkDark = () => {
+      setIsDark(document.documentElement.classList.contains('dark') || localStorage.getItem('vitrin_theme') === 'dark');
+    };
+    checkDark();
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
   const [dateRange, setDateRange] = useState<DateRange>('7days');
   const [activeStatId, setActiveStatId] = useState<string>('satisfaction');
   
@@ -780,21 +830,21 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#F8FAFC] font-['Vazirmatn'] overflow-y-auto">
+    <div className="flex flex-col h-full bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors font-['Vazirmatn'] overflow-y-auto">
       
       {/* HEADER */}
       <div className="p-8 pb-4 shrink-0">
         <div className="flex items-center justify-between mb-2">
            <div>
-             <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+             <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-3">
                <Users className="w-6 h-6 text-emerald-600" />
                تحلیل عملکرد
              </h1>
-             <p className="text-sm text-slate-400 mt-1">بررسی دقیق رفتار مشتریان و شاخص‌های کلیدی</p>
+             <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">بررسی دقیق رفتار مشتریان و شاخص‌های کلیدی</p>
            </div>
            <button 
              onClick={handleExportCSV}
-             className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors shadow-sm active:scale-95"
+             className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm active:scale-95"
            >
              <Download className="w-4 h-4" /> خروجی CSV
            </button>
@@ -821,23 +871,24 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
            reviews={reviewsList} 
            brandColor={brandColor} 
            onShowAll={handleShowAll}
+           onSelectCustomer={setSelectedCustomer}
         />
 
         {/* GENERAL CHARTS SECTION */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200">
-             <h2 className="text-lg font-black text-slate-800 mb-8 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-slate-400" /> نمودار روند مشتریان
+          <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-800">
+             <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-8 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-slate-400 dark:text-slate-500" /> نمودار روند مشتریان
              </h2>
              <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                    <BarChart data={chartData} barSize={32}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#26262b' : '#f1f5f9'} />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
                       <Tooltip 
-                        cursor={{ fill: '#f8fafc' }}
-                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#1e293b', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+                        cursor={{ fill: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)' }}
+                        content={<BarCustomTooltip />}
                         wrapperStyle={{ zIndex: 1000 }}
                       />
                       <Bar dataKey="returning" name="مشتریان بازگشتی" stackId="a" fill="#3b82f6" radius={[0, 0, 4, 4]} />
@@ -854,9 +905,9 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
                borderColor: "#10b981"
              }}
              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-             className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200 flex flex-col items-center justify-center relative overflow-hidden outline-none focus:outline-none"
+             className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center relative overflow-hidden outline-none focus:outline-none"
           >
-             <h2 className="text-lg font-black text-slate-800 mb-4 z-10">رضایتمندی کل</h2>
+             <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4 z-10">رضایتمندی کل</h2>
              <div className="h-64 w-full z-10 outline-none focus:outline-none">
                 <ResponsiveContainer width="100%" height="100%">
                    <PieChart style={{ outline: 'none' }}>
@@ -872,15 +923,15 @@ const Analytics: React.FC<{ brandColor: string }> = ({ brandColor }) => {
                          {SATISFACTION_DATA.map((entry, index) => <Cell key={index} fill={entry.color} style={{ outline: 'none' }} />)}
                       </Pie>
                       <Tooltip 
-                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#1e293b', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}
+                        content={<PieCustomTooltip />}
                         wrapperStyle={{ zIndex: 1000 }}
                       />
                    </PieChart>
                 </ResponsiveContainer>
              </div>
              <div className="text-center z-10 -mt-6">
-                <p className="text-3xl font-black text-slate-800">۸۵٪</p>
-                <p className="text-xs text-slate-400 font-bold">تجربه مثبت</p>
+                <p className="text-3xl font-black text-slate-800 dark:text-slate-100">۸۵٪</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-bold">تجربه مثبت</p>
              </div>
              {/* Background Pattern */}
              <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>

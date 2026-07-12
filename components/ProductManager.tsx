@@ -19,56 +19,8 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { Product, ModifierGroup, ProductModifier } from '../types';
-
-// --- MOCK DATA ---
-const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'پیتزا پپرونی',
-    category: 'پیتزا',
-    price: 245000,
-    description: 'پیتزای کلاسیک با پپرونی تند و پنیر موزارلا.',
-    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۲۰ دقیقه',
-    rawMaterials: ['خمیر', 'سس گوجه', 'پپرونی', 'پنیر'],
-    modifiers: [
-      {
-        id: 'm1', name: 'سایز', type: 'mandatory',
-        options: [{ id: 'o1', name: 'متوسط', price: 0 }, { id: 'o2', name: 'بزرگ', price: 85000 }]
-      }
-    ]
-  },
-  {
-    id: '2',
-    name: 'برگر کلاسیک',
-    category: 'برگر',
-    price: 185000,
-    description: 'گوشت گوساله ۱۰۰٪ خالص با نان بریوش.',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۱۵ دقیقه',
-    rawMaterials: ['نان', 'گوشت', 'کاهو', 'گوجه'],
-    modifiers: [
-       {
-        id: 'm3', name: 'پخت', type: 'mandatory',
-        options: [{ id: 'o5', name: 'مدیوم', price: 0 }, { id: 'o6', name: 'ول‌دان', price: 0 }]
-      }
-    ]
-  },
-  {
-    id: '3',
-    name: 'سیب‌زمینی سرخ‌کرده',
-    category: 'پیش‌غذا',
-    price: 85000,
-    description: 'سیب‌زمینی تازه با ادویه مخصوص.',
-    image: 'https://images.unsplash.com/photo-1573080496987-8198cb7fcd48?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۱۰ دقیقه',
-    rawMaterials: ['سیب‌زمینی', 'روغن', 'نمک'],
-    modifiers: []
-  }
-];
-
-const INITIAL_CATEGORIES = ['همه', 'پیتزا', 'برگر', 'پیش‌غذا', 'نوشیدنی', 'سالاد'];
+import { Product, ModifierGroup, ProductModifier, Category } from '../types';
+import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '../constants';
 
 // Animation Variants
 const containerVariants = {
@@ -99,11 +51,36 @@ interface ProductManagerProps {
 
 const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlightedItemId, clearHighlight }) => {
   const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
-  const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
+  const [products, setProducts] = useState<Product[]>(() => {
+    const savedProds = localStorage.getItem('vitrin_products');
+    if (savedProds) {
+      try {
+        return JSON.parse(savedProds);
+      } catch (e) {
+        return INITIAL_PRODUCTS;
+      }
+    }
+    return INITIAL_PRODUCTS;
+  });
+  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
   const [activeCategory, setActiveCategory] = useState('همه');
   const [searchQuery, setSearchQuery] = useState('');
   const [localHighlight, setLocalHighlight] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    const savedCats = localStorage.getItem('vitrin_categories');
+    if (savedCats) {
+      try {
+        setCategories(JSON.parse(savedCats).sort((a: Category, b: Category) => a.order - b.order));
+      } catch (e) {
+        // use initial
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    localStorage.setItem('vitrin_products', JSON.stringify(products));
+  }, [products]);
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -150,6 +127,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
   // Form State
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [tempRawMaterial, setTempRawMaterial] = useState('');
+  const [tempTagInput, setTempTagInput] = useState('');
 
   // Modal State
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
@@ -162,16 +140,21 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
   };
 
   const handleCreate = () => {
+    const defaultCat = categories.length > 0 ? categories[0] : null;
     setEditingProduct({
       id: Math.random().toString(36).substr(2, 9),
       name: '',
-      category: categories[1] || 'دسته بندی نشده',
+      category: defaultCat ? defaultCat.name : 'دسته بندی نشده',
+      categoryId: defaultCat ? defaultCat.id : undefined,
       description: '',
       price: 0,
       image: '',
       estimatedTime: '',
       rawMaterials: [],
-      modifiers: []
+      modifiers: [],
+      isAvailable: true,
+      discountPrice: undefined,
+      tags: []
     });
     setView('create');
   };
@@ -181,10 +164,6 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
 
     if (view === 'create') {
       setProducts([...products, editingProduct]);
-      // Add category if new
-      if (!categories.includes(editingProduct.category) && editingProduct.category !== 'همه') {
-        setCategories([...categories, editingProduct.category]);
-      }
     } else {
       setProducts(products.map(p => p.id === editingProduct.id ? editingProduct : p));
     }
@@ -324,21 +303,21 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
   });
 
   return (
-    <div className="h-full flex flex-col bg-slate-50 font-['Vazirmatn'] relative">
+    <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-950 font-['Vazirmatn'] relative transition-colors">
       
       {/* HEADER */}
-      <div className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-10">
+      <div className="min-h-20 py-4 sm:py-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-8 gap-4 shrink-0 z-10 transition-colors">
          <div>
-            <h1 className="text-2xl font-black text-slate-900">مدیریت محصولات</h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100">مدیریت محصولات</h1>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               {view === 'list' ? `${products.length} محصول در منو موجود است` : view === 'create' ? 'افزودن محصول جدید' : `ویرایش ${editingProduct?.name}`}
             </p>
          </div>
-         <div className="flex gap-3">
+         <div className="flex gap-2 sm:gap-3">
             {view !== 'list' && (
                <button 
                   onClick={() => setView('list')}
-                  className="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                  className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                >
                   انصراف
                </button>
@@ -346,14 +325,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
             {view === 'list' ? (
               <button 
                 onClick={handleCreate}
-                className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-105 active:scale-95`}
+                className={`px-4 sm:px-6 py-2 sm:py-2.5 bg-${brandColor}-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95`}
               >
                 <Plus className="w-4 h-4" /> افزودن محصول
               </button>
             ) : (
               <button 
                 onClick={handleSave}
-                className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-105 active:scale-95`}
+                className={`px-4 sm:px-6 py-2 sm:py-2.5 bg-${brandColor}-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-1.5 sm:gap-2 hover:scale-105 active:scale-95`}
               >
                 <Check className="w-4 h-4" /> ذخیره تغییرات
               </button>
@@ -372,17 +351,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full flex flex-col p-8 overflow-hidden"
+              className="h-full flex flex-col p-4 sm:p-8 overflow-hidden"
             >
               {/* Filters */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 shrink-0">
                 <div className="relative flex-1 min-w-0 flex items-center">
                   {/* Right fade & button */}
                   {showRightArrow && (
-                    <div className="absolute right-0 top-0 bottom-0 flex items-center bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent pl-12 z-10 pointer-events-none">
+                    <div className="absolute right-0 top-0 bottom-0 flex items-center bg-gradient-to-l from-slate-50 dark:from-slate-950 via-slate-50/80 dark:via-slate-950/80 to-transparent pl-12 z-10 pointer-events-none">
                       <button 
                         onClick={() => scroll('right')}
-                        className="w-10 h-10 bg-white border border-slate-200 text-slate-600 rounded-xl shadow-md flex items-center justify-center hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer pointer-events-auto hover:scale-105 active:scale-95"
+                        className="w-10 h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 rounded-xl shadow-md flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition-all cursor-pointer pointer-events-auto hover:scale-105 active:scale-95"
                         aria-label="Scroll right"
                       >
                         <ChevronRight className="w-5 h-5" />
@@ -392,10 +371,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
 
                   {/* Left fade & button */}
                   {showLeftArrow && (
-                    <div className="absolute left-0 top-0 bottom-0 flex items-center bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent pr-12 z-10 pointer-events-none">
+                    <div className="absolute left-0 top-0 bottom-0 flex items-center bg-gradient-to-r from-slate-50 dark:from-slate-950 via-slate-50/80 dark:via-slate-950/80 to-transparent pr-12 z-10 pointer-events-none">
                       <button 
                         onClick={() => scroll('left')}
-                        className="w-10 h-10 bg-white border border-slate-200 text-slate-600 rounded-xl shadow-md flex items-center justify-center hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer pointer-events-auto hover:scale-105 active:scale-95"
+                        className="w-10 h-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 rounded-xl shadow-md flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition-all cursor-pointer pointer-events-auto hover:scale-105 active:scale-95"
                         aria-label="Scroll left"
                       >
                         <ChevronLeft className="w-5 h-5" />
@@ -407,17 +386,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                     ref={scrollRef}
                     className="flex-1 flex items-center gap-2 overflow-x-auto px-4 py-1.5 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                   >
-                    {categories.map(cat => (
+                    {[{ id: 'all', name: 'همه', order: -1 }, ...categories].map(cat => (
                       <button
-                        key={cat}
-                        onClick={() => setActiveCategory(cat)}
+                        key={cat.id}
+                        onClick={() => setActiveCategory(cat.name)}
                         className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-300 outline-none focus:outline-none ${
-                          activeCategory === cat 
-                            ? `bg-${brandColor}-600 text-white border border-${brandColor}-600 shadow-md shadow-${brandColor}-200/50 scale-105` 
-                            : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 hover:text-slate-700'
+                          activeCategory === cat.name 
+                            ? `bg-${brandColor}-600 text-white border border-${brandColor}-600 shadow-md shadow-${brandColor}-200/50 dark:shadow-none scale-105` 
+                            : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-350'
                         }`}
                       >
-                        {cat}
+                        {cat.name}
                       </button>
                     ))}
                   </div>
@@ -429,7 +408,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                       placeholder="جستجو در محصولات..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className={`w-full pl-4 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
+                      className={`w-full pl-4 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
                    />
                 </div>
               </div>
@@ -448,28 +427,28 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                       layout // Enables smooth rearrangement
                       variants={itemVariants}
                       whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                      className={`bg-white rounded-2xl shadow-sm transition-all duration-1000 group relative overflow-hidden flex flex-col ${
+                      className={`bg-white dark:bg-slate-900 rounded-2xl shadow-sm transition-all duration-1000 group relative overflow-hidden flex flex-col ${
                         (localHighlight === product.id || (localHighlight && product.name === localHighlight))
                           ? `border-2 border-${brandColor}-500 ring-4 ring-${brandColor}-500/40 scale-[1.03] z-10` 
-                          : `border border-slate-100 hover:shadow-lg hover:shadow-${brandColor}-100 hover:border-${brandColor}-200`
+                          : `border border-slate-100 dark:border-slate-800 hover:shadow-lg dark:hover:shadow-none hover:border-${brandColor}-200 dark:hover:border-${brandColor}-800`
                       }`}
                     >
-                      <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
-                         <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-950 relative overflow-hidden">
+                         <img src={product.image || undefined} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 backdrop-blur-[2px]">
-                            <button onClick={() => handleEdit(product)} className={`p-2.5 bg-white rounded-xl text-${brandColor}-600 hover:bg-${brandColor}-50 shadow-lg transform hover:scale-110 transition-all`}><Edit3 className="w-5 h-5" /></button>
-                            <button onClick={() => initiateDelete(product.id)} className="p-2.5 bg-white rounded-xl text-red-500 hover:bg-red-50 shadow-lg transform hover:scale-110 transition-all"><Trash2 className="w-5 h-5" /></button>
+                            <button onClick={() => handleEdit(product)} className={`p-2.5 bg-white dark:bg-slate-800 rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/30 shadow-lg transform hover:scale-110 transition-all`}><Edit3 className="w-5 h-5" /></button>
+                            <button onClick={() => initiateDelete(product.id)} className="p-2.5 bg-white dark:bg-slate-800 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 shadow-lg transform hover:scale-110 transition-all"><Trash2 className="w-5 h-5" /></button>
                          </div>
-                         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold text-slate-700 shadow-sm">
+                         <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200/50 dark:border-slate-800">
                             {product.category}
                          </div>
                       </div>
                       <div className="p-4 flex-1 flex flex-col">
-                         <h3 className="font-bold text-slate-800 mb-1">{product.name}</h3>
-                         <p className="text-xs text-slate-400 line-clamp-2 mb-4 flex-1">{product.description}</p>
-                         <div className="flex items-center justify-between border-t border-slate-50 pt-3">
-                            <span className={`font-black text-${brandColor}-600 text-sm`}>{product.price.toLocaleString()}</span>
-                            <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                         <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-1">{product.name}</h3>
+                         <p className="text-xs text-slate-400 dark:text-slate-500 line-clamp-2 mb-4 flex-1">{product.description}</p>
+                         <div className="flex items-center justify-between border-t border-slate-50 dark:border-slate-800/60 pt-3">
+                            <span className={`font-black text-${brandColor}-600 dark:text-${brandColor}-400 text-sm`}>{product.price.toLocaleString()}</span>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
                                <Clock className="w-3 h-3" /> {product.estimatedTime}
                             </span>
                          </div>
@@ -481,10 +460,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                   <motion.div 
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }} 
-                    className="col-span-full flex flex-col items-center justify-center text-slate-400 py-20 border-2 border-dashed border-slate-200 rounded-3xl"
+                    className="col-span-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
                   >
-                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                      <Search className="w-8 h-8 text-slate-300" />
+                    <div className="w-16 h-16 bg-slate-100 dark:bg-slate-900 rounded-full flex items-center justify-center mb-4">
+                      <Search className="w-8 h-8 text-slate-300 dark:text-slate-600" />
                     </div>
                     <p>محصولی یافت نشد</p>
                   </motion.div>
@@ -507,91 +486,236 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                 {/* Left Column: Details */}
                 <div className="lg:col-span-2 space-y-8">
                   {/* Basic Info */}
-                  <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-                    <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                  <section className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6 transition-colors">
+                    <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
                        <Tag className={`w-5 h-5 text-${brandColor}-600`} />
                        اطلاعات پایه
                     </h2>
                     
                     <div className="grid grid-cols-2 gap-6">
                        <div className="col-span-2 sm:col-span-1 space-y-2">
-                          <label className="text-xs font-bold text-slate-500">نام محصول</label>
+                          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">نام محصول</label>
                           <input 
                             type="text" 
                             value={editingProduct.name}
                             onChange={e => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                            className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
+                            className={`w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
                             placeholder="مثال: پیتزا مخصوص"
                           />
                        </div>
                        
                        <div className="col-span-2 sm:col-span-1 space-y-2">
-                          <label className="text-xs font-bold text-slate-500">دسته‌بندی</label>
+                          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">دسته‌بندی</label>
                           <div className="relative">
-                             <input 
-                               type="text" 
-                               list="categories-list"
-                               value={editingProduct.category}
-                               onChange={e => setEditingProduct({ ...editingProduct, category: e.target.value })}
-                               className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors`}
-                               placeholder="انتخاب یا تایپ دسته‌بندی جدید"
-                             />
-                             <datalist id="categories-list">
-                                {INITIAL_CATEGORIES.filter(c => c !== 'همه').map(c => <option key={c} value={c} />)}
-                             </datalist>
+                              <select 
+                                value={editingProduct.categoryId || ""}
+                                onChange={e => {
+                                  const selectedCat = categories.find(c => c.id === e.target.value);
+                                  setEditingProduct({ 
+                                    ...editingProduct, 
+                                    categoryId: selectedCat?.id,
+                                    category: selectedCat ? selectedCat.name : ""
+                                  });
+                                }}
+                                className={`w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors appearance-none`}
+                              >
+                                <option value="" disabled className="text-slate-400">انتخاب دسته‌بندی</option>
+                                {categories.map(c => <option key={c.id} value={c.id} className="text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-900">{c.name}</option>)}
+                              </select>
                           </div>
                        </div>
 
                        <div className="col-span-2 space-y-2">
-                          <label className="text-xs font-bold text-slate-500">توضیحات</label>
+                          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">توضیحات</label>
                           <textarea 
                             rows={3}
                             value={editingProduct.description}
                             onChange={e => setEditingProduct({ ...editingProduct, description: e.target.value })}
-                            className={`w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors resize-none`}
+                            className={`w-full p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors resize-none`}
                             placeholder="توضیحات جذاب برای مشتری..."
                           />
                        </div>
 
                        <div className="col-span-2 sm:col-span-1 space-y-2">
-                          <label className="text-xs font-bold text-slate-500">قیمت پایه (تومان)</label>
+                          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">قیمت پایه (تومان)</label>
                           <div className="relative">
-                             <DollarSign className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                             <DollarSign className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                              <input 
                                type="number" 
                                value={editingProduct.price}
                                onChange={e => setEditingProduct({ ...editingProduct, price: parseInt(e.target.value) || 0 })}
-                               className={`w-full p-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right`}
+                               className={`w-full p-3 pr-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                              />
                           </div>
                        </div>
 
                        <div className="col-span-2 sm:col-span-1 space-y-2">
-                          <label className="text-xs font-bold text-slate-500">زمان آماده‌سازی</label>
+                          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">قیمت ویژه / تخفیف‌دار (اختیاری)</label>
                           <div className="relative">
-                             <Clock className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                             <DollarSign className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+                             <input 
+                               type="number" 
+                               value={editingProduct.discountPrice === undefined ? "" : editingProduct.discountPrice}
+                               onChange={e => setEditingProduct({ ...editingProduct, discountPrice: e.target.value === "" ? undefined : parseInt(e.target.value) || 0 })}
+                               className={`w-full p-3 pr-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                               placeholder="مثال: ۱۹۹,۰۰۰"
+                             />
+                          </div>
+                          
+                          {/* Validation: discountPrice must be less than base price */}
+                          {editingProduct.discountPrice !== undefined && editingProduct.discountPrice >= editingProduct.price && (
+                            <p className="text-[11px] text-red-500 mt-1 flex items-center gap-1 font-bold">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              قیمت تخفیف‌دار باید کمتر از قیمت پایه باشد.
+                            </p>
+                          )}
+
+                          {/* Discount Preview */}
+                          {editingProduct.discountPrice !== undefined && editingProduct.discountPrice > 0 && editingProduct.discountPrice < editingProduct.price && (
+                            <div className="mt-1.5 flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-900/50 p-2 rounded-lg">
+                              <span className="text-[10px] text-slate-400 mr-1 shrink-0">نمایش در منو:</span>
+                              <span className="line-through text-slate-400">{editingProduct.price.toLocaleString()}</span>
+                              <span className="text-slate-400">←</span>
+                              <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-extrabold`}>{editingProduct.discountPrice.toLocaleString()} تومان</span>
+                            </div>
+                          )}
+                       </div>
+
+                       <div className="col-span-2 sm:col-span-1 space-y-2">
+                          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">زمان آماده‌سازی</label>
+                          <div className="relative">
+                             <Clock className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                              <input 
                                type="text" 
                                value={editingProduct.estimatedTime}
                                onChange={e => setEditingProduct({ ...editingProduct, estimatedTime: e.target.value })}
-                               className={`w-full p-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right`}
+                               className={`w-full p-3 pr-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right`}
                                placeholder="مثال: ۱۵ دقیقه"
                              />
+                          </div>
+                       </div>
+
+                       <div className="col-span-2 sm:col-span-1 space-y-2 flex flex-col justify-between">
+                          <div className="flex items-center justify-between h-full pt-1">
+                             <div className="space-y-1">
+                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">موجود در منو</span>
+                                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">قابلیت مشاهده محصول در منوی مشتری</p>
+                             </div>
+                             <button
+                                type="button"
+                                onClick={() => setEditingProduct({ ...editingProduct, isAvailable: editingProduct.isAvailable === false ? true : false })}
+                                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                   editingProduct.isAvailable !== false ? `bg-${brandColor}-500` : 'bg-slate-200 dark:bg-slate-700'
+                                }`}
+                             >
+                                <span
+                                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                      editingProduct.isAvailable !== false ? 'translate-x-0' : 'translate-x-5'
+                                   }`}
+                                />
+                             </button>
+                          </div>
+                          
+                          {/* Availability warning note */}
+                          {editingProduct.isAvailable === false && (
+                             <p className="text-[11px] text-amber-600 dark:text-amber-450 mt-1.5 flex items-center gap-1 font-bold">
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                این محصول برای مشتریان مخفی یا غیرقابل سفارش نمایش داده می‌شود.
+                             </p>
+                          )}
+                       </div>
+
+                       {/* Tags Input */}
+                       <div className="col-span-2 border-t border-slate-100 dark:border-slate-800/60 pt-6 space-y-3">
+                          <label className="text-xs font-bold text-slate-500 dark:text-slate-400">برچسب‌ها (مثال: تند، پرفروش)</label>
+                          
+                          <div className="flex flex-wrap gap-2 mb-2">
+                             {(editingProduct.tags || []).map((tag, idx) => (
+                                <span key={idx} className={`bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-slate-200/50 dark:border-slate-700/50`}>
+                                   {tag}
+                                   <button 
+                                      type="button"
+                                      onClick={() => {
+                                        const newTags = (editingProduct.tags || []).filter((_, i) => i !== idx);
+                                        setEditingProduct({ ...editingProduct, tags: newTags });
+                                      }} 
+                                      className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-0.5"
+                                   >
+                                      <X className="w-3 h-3" />
+                                   </button>
+                                </span>
+                             ))}
+                             {(editingProduct.tags || []).length === 0 && (
+                                <span className="text-[11px] text-slate-400 dark:text-slate-500">هیچ برچسبی برای این محصول ثبت نشده است.</span>
+                             )}
+                          </div>
+                          
+                          {/* Suggested tags */}
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 ml-1">برچسب‌های سریع:</span>
+                             {['تند', 'گیاهی', 'جدید', 'پرفروش', 'پیشنهاد سرآشپز'].map(sTag => {
+                                const isAdded = (editingProduct.tags || []).includes(sTag);
+                                return (
+                                   <button
+                                      type="button"
+                                      key={sTag}
+                                      onClick={() => {
+                                         const currentTags = editingProduct.tags || [];
+                                         if (isAdded) {
+                                            setEditingProduct({ ...editingProduct, tags: currentTags.filter(t => t !== sTag) });
+                                         } else {
+                                            setEditingProduct({ ...editingProduct, tags: [...currentTags, sTag] });
+                                         }
+                                      }}
+                                      className={`text-[10px] px-2.5 py-1 rounded-lg font-bold border transition-all ${
+                                         isAdded 
+                                            ? `bg-${brandColor}-500 border-${brandColor}-500 text-white` 
+                                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
+                                      }`}
+                                   >
+                                      {isAdded ? `✓ ${sTag}` : `+ ${sTag}`}
+                                   </button>
+                                 );
+                             })}
+                          </div>
+
+                          <div className="relative pt-1">
+                             <input 
+                                type="text" 
+                                value={tempTagInput}
+                                onChange={e => setTempTagInput(e.target.value)}
+                                onKeyDown={e => {
+                                   if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      const trimmed = tempTagInput.trim();
+                                      if (trimmed && !(editingProduct.tags || []).includes(trimmed)) {
+                                         setEditingProduct({
+                                            ...editingProduct,
+                                            tags: [...(editingProduct.tags || []), trimmed]
+                                         });
+                                         setTempTagInput('');
+                                      }
+                                   }
+                                }}
+                                placeholder="برچسب جدید بنویسید و Enter بزنید..."
+                                className={`w-full p-3 pl-14 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-xs outline-none focus:border-${brandColor}-500 transition-colors`}
+                             />
+                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 dark:text-slate-500">Enter ↵</span>
                           </div>
                        </div>
                     </div>
                   </section>
 
                   {/* Modifiers Builder */}
-                  <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                  <section className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6 transition-colors">
                     <div className="flex items-center justify-between">
-                       <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                       <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
                           <Layers className={`w-5 h-5 text-${brandColor}-600`} />
                           ویژگی‌ها و افزودنی‌ها
                        </h2>
                        <button 
                          onClick={addModifierGroup}
-                         className={`text-xs font-bold text-${brandColor}-600 bg-${brandColor}-50 px-3 py-1.5 rounded-lg hover:bg-${brandColor}-100 transition-colors flex items-center gap-1`}
+                         className={`text-xs font-bold text-${brandColor}-600 bg-${brandColor}-50 dark:bg-${brandColor}-950/40 px-3 py-1.5 rounded-lg hover:bg-${brandColor}-100 dark:hover:bg-${brandColor}-900/40 transition-colors flex items-center gap-1`}
                          >
                          <Plus className="w-3.5 h-3.5" /> گروه جدید
                        </button>
@@ -599,73 +723,88 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                     
                     <div className="space-y-6">
                       {editingProduct.modifiers.length === 0 && (
-                        <div className="text-center py-8 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-400 text-sm">
+                        <div className="text-center py-8 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 text-sm">
                            هیچ گروه ویژگی‌ای اضافه نشده است. (مثال: سایز، نوع نان، پخت)
                         </div>
                       )}
                       
                       {editingProduct.modifiers.map((group, idx) => (
-                        <div key={group.id} className="bg-slate-50/50 rounded-2xl border border-slate-200 p-5 relative group-card">
+                        <div key={group.id} className="bg-slate-50/50 dark:bg-slate-950/50 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 relative group-card transition-colors">
                            <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-4 flex-1">
-                                 <div className="bg-white p-2 rounded-lg shadow-sm border border-slate-100">
-                                    <span className="text-xs font-black text-slate-400">#{idx + 1}</span>
+                                 <div className="bg-white dark:bg-slate-800 p-2 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
+                                    <span className="text-xs font-black text-slate-400 dark:text-slate-500">#{idx + 1}</span>
                                  </div>
                                  <div className="space-y-1">
                                     <input 
                                        type="text" 
                                        value={group.name}
                                        onChange={e => updateModifierGroup(group.id, 'name', e.target.value)}
-                                       className={`bg-transparent border-b border-transparent hover:border-slate-300 focus:border-${brandColor}-500 outline-none font-bold text-slate-700 text-sm w-32 md:w-48 transition-colors`}
+                                       className={`bg-transparent border-b border-transparent hover:border-slate-300 dark:hover:border-slate-700 focus:border-${brandColor}-500 outline-none font-bold text-slate-800 dark:text-slate-100 text-sm w-32 md:w-48 transition-colors`}
                                        placeholder="نام گروه (مثال: سایز)"
                                     />
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center w-fit bg-slate-100/80 dark:bg-slate-800/80 p-0.5 rounded-lg border border-slate-200/40 dark:border-slate-700/40">
                                        <button 
+                                          type="button"
                                           onClick={() => updateModifierGroup(group.id, 'type', 'mandatory')}
-                                          className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${group.type === 'mandatory' ? 'bg-orange-100 text-orange-600 font-bold' : 'text-slate-400 hover:bg-slate-200'}`}
+                                          className={`text-[10px] px-2.5 py-1 rounded-md font-bold transition-all duration-200 ${group.type === 'mandatory' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                        >
                                           اجباری
                                        </button>
                                        <button 
+                                          type="button"
                                           onClick={() => updateModifierGroup(group.id, 'type', 'optional')}
-                                          className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${group.type === 'optional' ? 'bg-blue-100 text-blue-600 font-bold' : 'text-slate-400 hover:bg-slate-200'}`}
+                                          className={`text-[10px] px-2.5 py-1 rounded-md font-bold transition-all duration-200 ${group.type === 'optional' ? 'bg-blue-500 text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                        >
                                           اختیاری
                                        </button>
                                     </div>
                                  </div>
                               </div>
-                              <button onClick={() => removeModifierGroup(group.id)} className="text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                              <button 
+                                onClick={() => removeModifierGroup(group.id)} 
+                                className="text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 p-1.5 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-all"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                            </div>
 
-                           <div className="space-y-2 pl-4 border-r-2 border-slate-200">
+                           <div className="space-y-3 pr-6 pl-0 border-r-2 border-slate-200 dark:border-slate-800 mt-2">
                               {group.options.map((opt) => (
-                                 <div key={opt.id} className="flex items-center gap-2">
+                                 <div key={opt.id} className="flex items-center gap-3 bg-white dark:bg-slate-950 p-2 rounded-xl border border-slate-200 dark:border-slate-800/60 shadow-sm transition-all hover:border-slate-300 dark:hover:border-slate-700">
                                     <input 
                                        type="text" 
                                        value={opt.name}
                                        onChange={e => updateModifierOption(group.id, opt.id, 'name', e.target.value)}
-                                       className={`flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-${brandColor}-500`}
-                                       placeholder="نام گزینه"
+                                       className={`flex-1 bg-transparent border-0 text-slate-800 dark:text-slate-100 px-2 py-1 text-xs outline-none focus:ring-0`}
+                                       placeholder="نام گزینه (مثال: متوسط)"
                                     />
-                                    <div className="relative w-24">
+                                    <div className="relative w-28 flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1">
+                                       <span className="text-[10px] text-slate-400 dark:text-slate-500 mr-1 shrink-0">+</span>
                                        <input 
                                           type="number" 
                                           value={opt.price}
                                           onChange={e => updateModifierOption(group.id, opt.id, 'price', parseInt(e.target.value) || 0)}
-                                          className={`w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-${brandColor}-500 text-left dir-ltr pl-6`}
+                                          className={`w-full bg-transparent border-0 text-xs text-slate-800 dark:text-slate-100 outline-none text-left dir-ltr font-mono py-0 px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                                           placeholder="0"
                                        />
-                                       <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">+</span>
+                                       <span className="text-[9px] text-slate-400 dark:text-slate-500 ml-1 shrink-0">تومان</span>
                                     </div>
-                                    <button onClick={() => removeModifierOption(group.id, opt.id)} className="p-1.5 text-slate-300 hover:text-red-400"><X className="w-3 h-3" /></button>
+                                    <button 
+                                      onClick={() => removeModifierOption(group.id, opt.id)} 
+                                      className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-all"
+                                      title="حذف گزینه"
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                    </button>
                                  </div>
                               ))}
+                              
                               <button 
                                  onClick={() => addModifierOption(group.id)}
-                                 className={`text-xs text-${brandColor}-600 font-bold hover:underline flex items-center gap-1 mt-2`}
+                                 className={`w-full py-2 border border-dashed border-slate-200 dark:border-slate-800 hover:border-${brandColor}-400 dark:hover:border-${brandColor}-500 rounded-xl text-xs text-slate-500 dark:text-slate-400 hover:text-${brandColor}-600 dark:hover:text-${brandColor}-400 font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-950`}
                               >
-                                 <Plus className="w-3 h-3" /> افزودن گزینه
+                                 <Plus className="w-3.5 h-3.5" /> افزودن گزینه جدید
                               </button>
                            </div>
                         </div>
@@ -677,46 +816,46 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                 {/* Right Column: Media & Extra */}
                 <div className="space-y-8">
                    {/* Image Upload */}
-                   <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                      <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                   <section className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
+                      <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
                          <ImageIcon className={`w-5 h-5 text-${brandColor}-600`} />
                          تصویر محصول
                       </h2>
-                      <div className={`aspect-square rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 hover:border-${brandColor}-300 transition-all group overflow-hidden relative`}>
-                         {editingProduct.image ? (
+                      <div className={`aspect-square rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 hover:border-${brandColor}-300 dark:hover:border-${brandColor}-500 transition-all group overflow-hidden relative`}>
+                         {editingProduct.image && editingProduct.image.trim() !== '' ? (
                             <>
-                               <img src={editingProduct.image} className="w-full h-full object-cover" alt="preview" />
+                               <img src={editingProduct.image || undefined} className="w-full h-full object-cover" alt="preview" />
                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                   <span className="text-white text-xs font-bold">تغییر تصویر</span>
                                </div>
                             </>
                          ) : (
                             <>
-                               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+                               <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm mb-3">
                                   <Plus className={`w-6 h-6 text-${brandColor}-600`} />
-                               </div>
-                               <span className="text-xs font-bold text-slate-500">آپلود تصویر</span>
+                                </div>
+                               <span className="text-xs font-bold text-slate-500 dark:text-slate-400">آپلود تصویر</span>
                             </>
                          )}
                          {/* Mock Input */}
                          <input type="file" onChange={handleImageUpload} accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
                       </div>
-                      <div className="text-[10px] text-slate-400 text-center">
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center">
                          حداکثر حجم: ۵ مگابایت (JPG, PNG)
                       </div>
                    </section>
 
                    {/* Raw Materials */}
-                   <section className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                      <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                   <section className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
+                      <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
                          <ChefHat className={`w-5 h-5 text-${brandColor}-600`} />
                          مواد اولیه
                       </h2>
                       <div className="flex flex-wrap gap-2 mb-2">
                          {editingProduct.rawMaterials?.map((mat, idx) => (
-                            <span key={idx} className={`bg-${brandColor}-50 text-${brandColor}-700 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1`}>
+                            <span key={idx} className={`bg-${brandColor}-50 dark:bg-${brandColor}-950 text-${brandColor}-700 dark:text-${brandColor}-300 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 border border-${brandColor}-100 dark:border-${brandColor}-900`}>
                                {mat}
-                               <button onClick={() => removeRawMaterial(idx)} className={`hover:text-${brandColor}-900`}><X className="w-3 h-3" /></button>
+                               <button onClick={() => removeRawMaterial(idx)} className={`hover:text-${brandColor}-900 dark:hover:text-${brandColor}-100`}><X className="w-3 h-3" /></button>
                             </span>
                          ))}
                       </div>
@@ -727,19 +866,19 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                             onChange={e => setTempRawMaterial(e.target.value)}
                             onKeyDown={handleAddRawMaterial}
                             placeholder="تایپ کنید و Enter بزنید..."
-                            className={`w-full p-3 pl-14 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-${brandColor}-500`}
+                            className={`w-full p-3 pl-14 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-xs outline-none focus:border-${brandColor}-500 transition-colors`}
                          />
-                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">Enter ↵</span>
+                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 dark:text-slate-500">Enter ↵</span>
                       </div>
                    </section>
 
                    {/* System Tip */}
-                   <div className="bg-blue-50 border border-blue-100 p-6 rounded-3xl relative overflow-hidden">
+                   <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/40 p-6 rounded-3xl relative overflow-hidden transition-colors">
                       <div className="flex items-start gap-3 relative z-10">
-                         <AlertCircle className="w-5 h-5 text-blue-600 shrink-0" />
+                         <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
                          <div>
-                            <h4 className="font-bold text-blue-800 text-sm mb-1">نکته مدیریتی</h4>
-                            <p className="text-xs text-blue-600 leading-relaxed">
+                            <h4 className="font-bold text-blue-800 dark:text-blue-300 text-sm mb-1">نکته مدیریتی</h4>
+                            <p className="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
                                افزودن گزینه‌های "اجباری" مثل انتخاب نان یا پخت، تجربه سفارش مشتری را دقیق‌تر می‌کند و خطاهای آشپزخانه را کاهش می‌دهد.
                             </p>
                          </div>
@@ -775,25 +914,25 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl relative z-10 p-6 flex flex-col items-center text-center"
+             className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] shadow-2xl relative z-10 p-6 flex flex-col items-center text-center border border-slate-100 dark:border-slate-800"
             >
-              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-red-50 dark:bg-red-950/30 rounded-full flex items-center justify-center mb-4">
                 <AlertTriangle className="w-8 h-8 text-red-500" />
               </div>
-              <h3 className="text-lg font-black text-slate-800 mb-2">حذف محصول</h3>
-              <p className="text-sm text-slate-500 mb-8 leading-relaxed">
+              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-2">حذف محصول</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
                 آیا از حذف این محصول اطمینان دارید؟ این عملیات قابل بازگشت نیست.
               </p>
               <div className="flex gap-3 w-full">
                 <button 
                   onClick={() => setProductToDelete(null)}
-                  className="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-colors"
+                  className="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   انصراف
                 </button>
                 <button 
                   onClick={confirmDelete}
-                  className="flex-1 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-200"
+                  className="flex-1 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-200 dark:shadow-none"
                 >
                   بله، حذف کن
                 </button>

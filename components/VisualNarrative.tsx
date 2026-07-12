@@ -369,7 +369,7 @@ const VisualNarrative: React.FC<{ brandColor?: string }> = ({ brandColor = 'emer
   const c = hex(brandColor);
 
   return (
-    <div className="hidden lg:flex w-1/2 relative bg-[#06080D] items-center justify-center z-10">
+    <div className="hidden lg:flex w-1/2 relative bg-[#0a0a0a] items-center justify-center z-10">
       {/* Richer background — visible radial glow in center */}
       <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 60% 55% at 50% 48%, ${c}12 0%, rgba(255,255,255,0.012) 40%, transparent 70%)` }} />
 

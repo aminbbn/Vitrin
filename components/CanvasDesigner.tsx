@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { 
   Smartphone, 
   Tablet, 
@@ -24,77 +24,17 @@ import {
   Clock,
   ChefHat,
   Send,
-  User
+  User,
+  LayoutGrid,
+  List,
+  Copy,
+  Edit2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { COMPONENT_LIBRARY } from '../constants';
 import { ComponentItem, Product } from '../types';
-
-// --- Enhanced Mock Data ---
-const MOCK_PRODUCTS: Product[] = [
-  { 
-    id: '1', 
-    name: 'پیتزا پپرونی', 
-    category: 'پیتزا',
-    price: 245000, 
-    description: 'پیتزای کلاسیک با پپرونی تند، پنیر موزارلا و سس گوجه‌فرنگی مخصوص. نان این پیتزا با خمیر ترش ۲۴ ساعته تهیه می‌شود.',
-    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=1000&auto=format&fit=crop',
-    rawMaterials: ['پپرونی ۹۰٪', 'پنیر موزارلا', 'سس مارینارا', 'خمیر دست‌ساز', 'فلفل هالوپینو'],
-    estimatedTime: '۲۰ دقیقه',
-    rating: 4.8,
-    reviews: [
-      { id: 'r1', user: 'محمد امینی', comment: 'بهترین پپرونی که تا حالا خوردم!', rating: 5, date: '۲ روز پیش' },
-      { id: 'r2', user: 'سارا', comment: 'کمی تند بود ولی خوشمزه', rating: 4, date: 'هفته پیش' }
-    ],
-    modifiers: [
-      { id: 'm1', name: 'سایز', type: 'mandatory', options: [{ id: 'o1', name: 'متوسط', price: 0 }, { id: 'o2', name: 'بزرگ', price: 85000 }] },
-      { id: 'm2', name: 'نان', type: 'mandatory', options: [{ id: 'o3', name: 'ایتالیایی', price: 0 }, { id: 'o4', name: 'آمریکایی', price: 15000 }] }
-    ]
-  },
-  { 
-    id: '2', 
-    name: 'برگر کلاسیک', 
-    category: 'برگر',
-    price: 185000, 
-    description: 'گوشت گوساله ۱۰۰٪ خالص، کاهو، گوجه، خیارشور و سس مخصوص',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop',
-    rawMaterials: ['گوشت گوساله ۱۵۰ گرم', 'نان بریوش', 'کاهو فرانسوی', 'گوجه فرنگی', 'سس مخصوص'],
-    estimatedTime: '۱۵ دقیقه',
-    rating: 4.5,
-    reviews: [
-      { id: 'r3', user: 'علی', comment: 'خیلی آبدار و عالی بود', rating: 5, date: 'دیروز' }
-    ],
-    modifiers: [
-      { id: 'm3', name: 'پخت', type: 'mandatory', options: [{ id: 'o5', name: 'مدیوم', price: 0 }, { id: 'o6', name: 'ول‌دان', price: 0 }] },
-      { id: 'm4', name: 'پنیر اضافه', type: 'optional', options: [{ id: 'o7', name: 'خیر', price: 0 }, { id: 'o8', name: 'بله', price: 25000 }] }
-    ]
-  },
-  { 
-    id: '3', 
-    name: 'سالاد سزار', 
-    category: 'سالاد',
-    price: 120000, 
-    description: 'کاهو رسمی، فیله مرغ گریل، نان سیر، پنیر پارمزان و سس سزار',
-    image: 'https://images.unsplash.com/photo-1550304999-8f69611339bf?q=80&w=1000&auto=format&fit=crop',
-    rawMaterials: ['کاهو', 'مرغ گریل', 'نان کروتان', 'پنیر پارمزان', 'سس سزار دست‌ساز'],
-    estimatedTime: '۱۰ دقیقه',
-    rating: 4.9,
-    reviews: [],
-    modifiers: []
-  },
-  { 
-    id: '4', 
-    name: 'پاستا آلفردو', 
-    category: 'پاستا',
-    price: 190000, 
-    description: 'پنه، سس آلفردو خامه ای، قارچ، مرغ و جعفری تازه',
-    image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=1000&auto=format&fit=crop',
-    rawMaterials: ['پاستا پنه', 'خامه', 'شیر', 'قارچ', 'سینه مرغ'],
-    estimatedTime: '۲۵ دقیقه',
-    rating: 4.2,
-    reviews: [],
-    modifiers: []
-  },
-];
+import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '../constants';
 
 // --- Types for Local State ---
 interface CartItem {
@@ -104,662 +44,17 @@ interface CartItem {
 
 type DeviceType = 'mobile' | 'tablet';
 
-interface CommonRendererProps {
-  element: ComponentItem;
-  isSelected: boolean;
-  onClick: () => void;
-  onProductClick: (product: Product) => void;
-  cart: CartItem[];
-  device: DeviceType;
-  brandColor: string;
-}
+import { 
+  HeroBlock, 
+  CategoryDisplayBlock, 
+  FeaturedBlock, 
+  FooterBlock, 
+  CategoryProductsScreen, 
+  ProductDetailSheet, 
+  CartBar, 
+  CartDrawer 
+} from './menu-blocks';
 
-// --- Helper Components ---
-
-const HandleBar = ({ isExpanded, onToggle, brandColor }: { isExpanded: boolean, onToggle: (e: React.MouseEvent) => void, brandColor: string }) => (
-  <div 
-    onClick={onToggle}
-    className="w-full flex items-center justify-center py-2 cursor-pointer hover:bg-slate-50 transition-colors group"
-  >
-    <div className={`w-12 h-1.5 rounded-full transition-all duration-300 ${isExpanded ? `bg-slate-300 group-hover:bg-${brandColor}-400` : `bg-slate-200 group-hover:bg-${brandColor}-300`}`} />
-    {isExpanded ? 
-      <ChevronUp className="w-4 h-4 text-slate-400 absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity" /> : 
-      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-    }
-  </div>
-);
-
-// --- Renderers ---
-
-const HeroRenderer: React.FC<Omit<CommonRendererProps, 'onProductClick' | 'cart'> & { device: DeviceType }> = ({ element, isSelected, onClick, device, brandColor }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const { settings } = element;
-  const { style, imageUrl, title, subtitle, color, fontSize } = settings;
-
-  const handleSplitClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
-  };
-
-  const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 ${isSelected ? `border-${brandColor}-500 ring-4 ring-${brandColor}-500/10` : `border-transparent hover:border-${brandColor}-200`}`;
-  
-  // Responsive aspect ratio
-  const aspectClass = device === 'mobile' ? 'aspect-square' : 'aspect-[21/9] h-[400px]';
-
-  if (style === 'overlay') {
-    return (
-      <motion.div layoutId={element.id} onClick={onClick} className={`${containerClasses} ${aspectClass}`}>
-        <div className="absolute inset-0">
-          <img src={imageUrl} alt="Hero" className="w-full h-full object-cover" />
-          <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-          <h3 style={{ color: color || 'white', fontSize: fontSize || 24 }} className="font-black leading-tight mb-2 shadow-sm">{title}</h3>
-          {subtitle && <p className="text-white/80 text-sm font-medium">{subtitle}</p>}
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (style === 'stack') {
-    return (
-      <motion.div layoutId={element.id} onClick={onClick} className={`${containerClasses} bg-white flex flex-col`}>
-        <div className={`${device === 'mobile' ? 'aspect-square' : 'h-[300px]'} w-full relative overflow-hidden`}>
-          <img src={imageUrl} alt="Hero" className="w-full h-full object-cover" />
-        </div>
-        <div className="p-6 text-center">
-          <h3 style={{ color: color || '#0f172a', fontSize: fontSize || 20 }} className="font-black mb-2">{title}</h3>
-          {subtitle && <p className="text-slate-500 text-sm">{subtitle}</p>}
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (style === 'split') {
-    return (
-      <motion.div 
-        layout
-        layoutId={element.id} 
-        onClick={onClick}
-        className={`${containerClasses} bg-white ${device === 'mobile' ? 'aspect-square' : 'h-[400px]'}`}
-      >
-        <div className="w-full h-full relative">
-          <motion.div
-            layout
-            onClick={handleSplitClick}
-            className={`absolute top-0 bottom-0 left-0 bg-cover bg-center cursor-pointer z-10 transition-all duration-500 ease-spring`}
-            style={{ 
-              backgroundImage: `url(${imageUrl})`,
-              width: isExpanded ? '100%' : '50%'
-            }}
-          >
-             <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: isExpanded ? 1 : 0 }}
-               className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"
-             />
-          </motion.div>
-
-          <div className={`absolute top-0 bottom-0 right-0 w-1/2 flex flex-col items-start justify-center p-6 transition-opacity duration-300 ${isExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-             <h3 style={{ color: color || '#0f172a', fontSize: fontSize || 22 }} className="font-black mb-2 leading-tight">{title}</h3>
-             {subtitle && <p className="text-slate-400 text-xs font-bold">{subtitle}</p>}
-             <button className={`mt-4 px-4 py-2 bg-${brandColor}-50 text-${brandColor}-600 rounded-lg text-xs font-bold`}>سفارش دهید</button>
-          </div>
-
-          <AnimatePresence>
-            {isExpanded && (
-               <motion.div
-                 initial={{ y: 60, opacity: 0 }}
-                 animate={{ y: 0, opacity: 1 }}
-                 exit={{ y: 60, opacity: 0 }}
-                 transition={{ type: 'spring', damping: 20, stiffness: 300, delay: 0.1 }}
-                 className="absolute bottom-0 left-0 right-0 p-8 z-20"
-               >
-                  <h3 style={{ color: 'white', fontSize: (fontSize || 22) + 4 }} className="font-black mb-2 leading-tight drop-shadow-lg">{title}</h3>
-                  {subtitle && <p className="text-white/90 text-sm font-medium drop-shadow-md">{subtitle}</p>}
-               </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
-    );
-  }
-
-  return null;
-};
-
-const ProductGridRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart, device, brandColor }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? `border-${brandColor}-500 ring-4 ring-${brandColor}-500/10` : `border-transparent hover:border-${brandColor}-200`}`;
-  
-  const gridCols = device === 'mobile' ? 'grid-cols-2' : 'grid-cols-3';
-
-  return (
-    <div onClick={onClick} className={containerClasses}>
-      <HandleBar isExpanded={!isCollapsed} onToggle={(e) => { e.stopPropagation(); setIsCollapsed(!isCollapsed); }} brandColor={brandColor} />
-      
-      <div className="px-4 pb-4">
-        <div className="flex items-center justify-between mb-4 mt-2">
-          <h3 className="font-black text-slate-800" style={{ fontSize: element.settings.fontSize }}>{element.settings.title}</h3>
-          {element.settings.subtitle && <span className="text-xs text-slate-400">{element.settings.subtitle}</span>}
-        </div>
-        
-        <AnimatePresence>
-          {!isCollapsed && (
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className={`grid ${gridCols} gap-3 overflow-hidden`}
-            >
-              {MOCK_PRODUCTS.map(product => {
-                const inCart = cart.some(item => item.id === product.id);
-                return (
-                  <div 
-                    key={product.id} 
-                    onClick={(e) => { e.stopPropagation(); onProductClick(product); }}
-                    className={`bg-white rounded-2xl overflow-hidden border-2 transition-all shadow-sm group ${inCart ? `border-${brandColor}-500 bg-${brandColor}-50/30` : 'border-slate-100'}`}
-                  >
-                    <div className="h-28 w-full bg-slate-200 relative overflow-hidden">
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                      {inCart && (
-                        <div className={`absolute top-2 right-2 bg-${brandColor}-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg`}>
-                          <Check className="w-3.5 h-3.5" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3">
-                      <h4 className="text-xs font-bold text-slate-800 mb-1 line-clamp-1">{product.name}</h4>
-                      <div className="flex flex-col gap-2 mt-2">
-                        <span className="text-[11px] font-black text-slate-700">{product.price.toLocaleString()} تومان</span>
-                        <button className={`w-full py-1.5 rounded-lg flex items-center justify-center text-[10px] font-bold transition-colors ${inCart ? `bg-${brandColor}-100 text-${brandColor}-700` : `bg-${brandColor}-600 text-white hover:bg-${brandColor}-700`}`}>
-                          {inCart ? 'افزوده شد' : 'افزودن'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-};
-
-const ProductListRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart, device, brandColor }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const containerClasses = `relative w-full rounded-2xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? `border-${brandColor}-500 ring-4 ring-${brandColor}-500/10` : `border-transparent hover:border-${brandColor}-200`}`;
-  
-  // On Tablet, use a grid for list items to fill space better
-  const layoutClass = device === 'mobile' ? 'flex flex-col space-y-3' : 'grid grid-cols-2 gap-4';
-
-  return (
-    <div onClick={onClick} className={containerClasses}>
-      <HandleBar isExpanded={!isCollapsed} onToggle={(e) => { e.stopPropagation(); setIsCollapsed(!isCollapsed); }} brandColor={brandColor} />
-
-      <div className="px-4 pb-4">
-        <div className="flex items-center justify-between mb-4 mt-2">
-          <h3 className="font-black text-slate-800" style={{ fontSize: element.settings.fontSize }}>{element.settings.title}</h3>
-          {element.settings.subtitle && <span className="text-xs text-slate-400">{element.settings.subtitle}</span>}
-        </div>
-        
-        <AnimatePresence>
-          {!isCollapsed && (
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className={`${layoutClass} overflow-hidden`}
-            >
-              {MOCK_PRODUCTS.map(product => {
-                const inCart = cart.some(item => item.id === product.id);
-                return (
-                  <div 
-                    key={product.id} 
-                    onClick={(e) => { e.stopPropagation(); onProductClick(product); }}
-                    className={`flex gap-3 bg-white border-2 rounded-2xl p-2.5 shadow-sm transition-all ${inCart ? `border-${brandColor}-500 bg-${brandColor}-50/20` : 'border-slate-100'}`}
-                  >
-                    <div className="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden shrink-0 relative">
-                       <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                       {inCart && (
-                        <div className={`absolute inset-0 bg-${brandColor}-500/20 flex items-center justify-center`}>
-                          <div className={`bg-${brandColor}-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-sm`}>
-                             <Check className="w-3.5 h-3.5" />
-                          </div>
-                        </div>
-                       )}
-                    </div>
-                    <div className="flex-1 flex flex-col justify-between py-0.5">
-                      <div>
-                        <h4 className="text-xs font-bold text-slate-800 mb-1">{product.name}</h4>
-                        <p className="text-[10px] text-slate-400 line-clamp-1">{product.description}</p>
-                      </div>
-                      <div className="flex items-center justify-between mt-2">
-                         <span className="text-xs font-black text-slate-800">{product.price.toLocaleString()}</span>
-                         <button className={`px-4 py-1.5 rounded-lg text-[10px] font-bold transition-colors ${inCart ? `bg-${brandColor}-100 text-${brandColor}-700` : `bg-${brandColor}-600 text-white`}`}>
-                           {inCart ? 'ویرایش' : 'افزودن'}
-                         </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-};
-
-const FeaturedRenderer: React.FC<CommonRendererProps> = ({ element, isSelected, onClick, onProductClick, cart, device, brandColor }) => {
-  const containerClasses = `relative w-full rounded-3xl overflow-hidden cursor-pointer transition-all border-2 bg-white ${isSelected ? `border-${brandColor}-500 ring-4 ring-${brandColor}-500/10` : `border-transparent hover:border-${brandColor}-200`}`;
-  const featuredProduct = { ...MOCK_PRODUCTS[0], name: element.settings.title || MOCK_PRODUCTS[0].name, image: element.settings.imageUrl || MOCK_PRODUCTS[0].image };
-  const inCart = cart.some(item => item.id === featuredProduct.id);
-  
-  const heightClass = device === 'mobile' ? 'h-72' : 'h-96';
-
-  return (
-    <div onClick={onClick} className={containerClasses}>
-      <div className={`relative ${heightClass} group`}>
-        <img src={element.settings.imageUrl} alt="Featured" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-        
-        <div className="absolute top-4 right-4 z-10">
-           <div className="bg-orange-500 text-white px-3 py-1 rounded-full text-[10px] font-black flex items-center gap-1 shadow-lg animate-pulse">
-             <Star className="w-3 h-3 fill-current" />
-             پیشنهاد ویژه سرآشپز
-           </div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-           <h3 className="text-2xl font-black text-white mb-2 leading-tight drop-shadow-md">{element.settings.title}</h3>
-           <p className="text-white/80 text-sm mb-4 line-clamp-2">{element.settings.subtitle}</p>
-           
-           <div className="flex items-center justify-between bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-              <div className="flex flex-col">
-                 <span className="text-[10px] text-white/60">قیمت ویژه</span>
-                 <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-black text-white">۳۲۰,۰۰۰</span>
-                    <span className="text-xs text-white/50 line-through">۴۵۰,۰۰۰</span>
-                 </div>
-              </div>
-              <button 
-                onClick={(e) => { e.stopPropagation(); onProductClick(featuredProduct); }}
-                className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg ${inCart ? `bg-${brandColor}-500 text-white` : `bg-white text-slate-900 hover:bg-${brandColor}-50`}`}
-              >
-                {inCart ? 'مشاهده سفارش' : 'سفارش دهید'}
-              </button>
-           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// --- Product Detail Bottom Sheet / Modal ---
-
-const ProductDetailModal = ({ product: incomingProduct, isOpen, onClose, onAddToCart, initialQty = 0, device, brandColor }: any) => {
-  const [qty, setQty] = useState(initialQty || 1);
-  const [activeTab, setActiveTab] = useState<'details' | 'reviews'>('details');
-  const [newComment, setNewComment] = useState('');
-  const [localProduct, setLocalProduct] = useState<any>(null);
-
-  useEffect(() => {
-    if (incomingProduct) {
-      setLocalProduct(incomingProduct);
-      setQty(initialQty || 1);
-    }
-  }, [incomingProduct, initialQty]);
-
-  const product = incomingProduct || localProduct;
-
-  if (!product) return null;
-  
-  const isMobile = device === 'mobile';
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[200] flex items-center justify-center"
-        >
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
-          />
-          <motion.div 
-            initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.9 }}
-            animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
-            exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.9 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`fixed z-10 bg-white shadow-2xl overflow-hidden flex flex-col ${
-              isMobile 
-                ? 'bottom-0 left-0 right-0 rounded-t-[2.5rem] h-[90%]' 
-                : 'top-[10%] left-[10%] right-[10%] bottom-[10%] rounded-[2rem] max-w-4xl mx-auto'
-            }`}
-          >
-            {/* Header / Image */}
-            <div className={`relative shrink-0 ${isMobile ? 'h-64' : 'h-72'}`}>
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-              <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 bg-black/40 backdrop-blur text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors z-10">
-                <X className="w-5 h-5" />
-              </button>
-              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-            </div>
-
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto px-6 pb-28 -mt-10 relative z-0 bg-white rounded-t-3xl pt-6">
-              <div className="flex justify-between items-start mb-2">
-                <h2 className={`font-black text-slate-900 ${isMobile ? 'text-2xl' : 'text-3xl'}`}>{product.name}</h2>
-                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100 shrink-0">
-                  <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
-                  <span className="text-xs font-bold text-yellow-700">{product.rating || 4.5}</span>
-                </div>
-              </div>
-
-              <div className="flex items-baseline gap-1 mb-4">
-                <span className="text-2xl font-black text-slate-950">{product.price.toLocaleString()}</span>
-                <span className="text-xs font-normal text-slate-400">تومان</span>
-              </div>
-              
-              {/* Meta Info */}
-              <div className="flex items-center gap-4 mb-6 text-slate-500 text-xs font-bold">
-                 <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg">
-                    <Clock className="w-3.5 h-3.5 text-orange-500" />
-                    {product.estimatedTime || '۱۵ دقیقه'}
-                 </div>
-              </div>
-
-              {/* Tabs */}
-              <div className="flex border-b border-slate-100 mb-6 sticky top-0 bg-white z-10">
-                <button 
-                  onClick={() => setActiveTab('details')}
-                  className={`flex-1 pb-3 text-sm font-bold transition-colors border-b-2 ${activeTab === 'details' ? `border-${brandColor}-500 text-${brandColor}-600` : 'border-transparent text-slate-400'}`}
-                >
-                  جزئیات محصول
-                </button>
-                <button 
-                  onClick={() => setActiveTab('reviews')}
-                  className={`flex-1 pb-3 text-sm font-bold transition-colors border-b-2 ${activeTab === 'reviews' ? `border-${brandColor}-500 text-${brandColor}-600` : 'border-transparent text-slate-400'}`}
-                >
-                  نظرات کاربران
-                </button>
-              </div>
-
-              {activeTab === 'details' ? (
-                <div className="space-y-6">
-                  <p className="text-sm text-slate-600 leading-relaxed">{product.description}</p>
-                  
-                  {/* Raw Materials */}
-                  {product.rawMaterials && (
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
-                        <ChefHat className={`w-4 h-4 text-${brandColor}-600`} />
-                        مواد اولیه
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {product.rawMaterials.map((item: string, i: number) => (
-                           <span key={i} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold border border-slate-200">{item}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Modifiers */}
-                  {product.modifiers && product.modifiers.length > 0 && (
-                    <div className="space-y-4 pt-4 border-t border-slate-100">
-                      {product.modifiers.map((mod: any, idx: number) => (
-                        <div key={idx} className="space-y-3">
-                          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <div className={`w-1.5 h-1.5 bg-${brandColor}-500 rounded-full`} />
-                            {mod.name}
-                          </h3>
-                          <div className="flex flex-wrap gap-2">
-                            {mod.options.map((opt: any, oIdx: number) => (
-                              <label key={oIdx} className="cursor-pointer">
-                                <input type="radio" name={`mod-${idx}`} className="peer sr-only" />
-                                <div className={`px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-500 peer-checked:bg-${brandColor}-600 peer-checked:text-white peer-checked:border-${brandColor}-600 transition-all shadow-sm`}>
-                                  {opt.name} {opt.price > 0 && `(+${opt.price/1000})`}
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-6">
-                   {/* Comment Input */}
-                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                      <div className="flex gap-2 mb-2">
-                         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">
-                            <User className="w-4 h-4 text-slate-500" />
-                         </div>
-                         <div className="flex-1">
-                            <textarea 
-                               placeholder="نظر خود را بنویسید..." 
-                               value={newComment}
-                               onChange={(e) => setNewComment(e.target.value)}
-                               className={`w-full bg-white border border-slate-200 rounded-xl p-3 text-xs outline-none focus:border-${brandColor}-400 min-h-[80px]`}
-                            />
-                         </div>
-                      </div>
-                      <div className="flex justify-end">
-                         <button className={`bg-${brandColor}-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5`}>
-                            <Send className="w-3 h-3" /> ارسال نظر
-                         </button>
-                      </div>
-                   </div>
-
-                   {/* Reviews List */}
-                   {product.reviews && product.reviews.length > 0 ? (
-                      <div className="space-y-4">
-                         {product.reviews.map((review: any) => (
-                            <div key={review.id} className="border-b border-slate-100 pb-4 last:border-0">
-                               <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center gap-2">
-                                     <span className="text-xs font-bold text-slate-800">{review.user}</span>
-                                     <div className="flex text-yellow-400">
-                                        {[...Array(5)].map((_, i) => (
-                                           <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-current' : 'text-slate-200'}`} />
-                                        ))}
-                                     </div>
-                                  </div>
-                                  <span className="text-[10px] text-slate-400">{review.date}</span>
-                               </div>
-                               <p className="text-xs text-slate-600 leading-relaxed">{review.comment}</p>
-                            </div>
-                         ))}
-                      </div>
-                   ) : (
-                      <div className="text-center py-8 text-slate-400 text-xs">
-                         هنوز نظری ثبت نشده است. اولین نفر باشید!
-                      </div>
-                   )}
-                </div>
-              )}
-            </div>
-
-            {/* Sticky Action Bar */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 flex items-center gap-3 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
-              <div className="flex items-center gap-3 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
-                <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-1 hover:bg-white rounded-lg transition-colors">
-                  <Minus className="w-3.5 h-3.5 text-slate-500" />
-                </button>
-                <span className="font-bold text-sm text-slate-800 w-5 text-center">{qty}</span>
-                <button onClick={() => setQty(qty + 1)} className="p-1 hover:bg-white rounded-lg transition-colors">
-                  <Plus className="w-3.5 h-3.5 text-slate-500" />
-                </button>
-              </div>
-              <button 
-                onClick={() => {
-                  onAddToCart(product.id, qty);
-                  onClose();
-                }}
-                className={`flex-1 bg-${brandColor}-600 text-white py-2.5 rounded-xl font-bold text-xs shadow-md shadow-${brandColor}-500/10 hover:bg-${brandColor}-500 transition-all active:scale-95 flex items-center justify-center gap-1.5`}
-              >
-                <ShoppingBag className="w-4 h-4" />
-                افزودن {(product.price * qty).toLocaleString()} تومان
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
-// --- Cart Drawer Component ---
-const CartDrawer = ({ isOpen, onClose, cart, products, onRemoveItem, onUpdateQty, device, brandColor }: any) => {
-  const total = cart.reduce((acc: number, item: CartItem) => {
-    const p = products.find((prod: Product) => prod.id === item.id);
-    return acc + (p ? p.price * item.qty : 0);
-  }, 0);
-  
-  const isMobile = device === 'mobile';
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[200] flex justify-end"
-        >
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
-          />
-          <motion.div 
-            initial={isMobile ? { y: '100%' } : { x: '100%' }}
-            animate={isMobile ? { y: 0 } : { x: 0 }}
-            exit={isMobile ? { y: '100%' } : { x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`fixed z-10 bg-white shadow-2xl flex flex-col ${
-               isMobile 
-                ? 'bottom-0 left-0 right-0 rounded-t-[2.5rem] h-[70%]' 
-                : 'top-0 right-0 bottom-0 w-[400px] border-l border-slate-100'
-            }`}
-          >
-            <div className={`w-full flex justify-center pt-3 pb-1 ${!isMobile && 'hidden'}`} onClick={onClose}>
-              <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
-            </div>
-            
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-               <h2 className="text-lg font-black text-slate-800">سبد خرید شما</h2>
-               <div className="flex items-center gap-2">
-                 <span className={`bg-${brandColor}-50 text-${brandColor}-600 px-3 py-1 rounded-full text-xs font-bold`}>{cart.length} قلم</span>
-                 {!isMobile && (
-                   <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-full">
-                     <X className="w-5 h-5 text-slate-500" />
-                   </button>
-                 )}
-               </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {cart.map((item: CartItem) => {
-                const product = products.find((p: Product) => p.id === item.id);
-                if (!product) return null;
-                return (
-                  <div key={item.id} className="flex gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <img src={product.image} alt={product.name} className="w-20 h-20 rounded-xl object-cover bg-white" />
-                    <div className="flex-1 flex flex-col justify-between">
-                       <div className="flex justify-between items-start">
-                          <h3 className="font-bold text-slate-800 text-sm">{product.name}</h3>
-                          <button onClick={() => onRemoveItem(item.id)} className="text-slate-400 hover:text-red-500">
-                             <Trash2 className="w-4 h-4" />
-                          </button>
-                       </div>
-                       <div className="flex justify-between items-end">
-                          <span className={`text-sm font-black text-${brandColor}-600`}>{(product.price * item.qty).toLocaleString()}</span>
-                          <div className="flex items-center gap-3 bg-white px-2 py-1 rounded-lg border border-slate-200">
-                             <button onClick={() => onUpdateQty(item.id, Math.max(1, item.qty - 1))} className="p-0.5"><Minus className="w-3 h-3 text-slate-600" /></button>
-                             <span className="text-xs font-bold w-4 text-center">{item.qty}</span>
-                             <button onClick={() => onUpdateQty(item.id, item.qty + 1)} className="p-0.5"><Plus className="w-3 h-3 text-slate-600" /></button>
-                          </div>
-                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-              {cart.length === 0 && (
-                 <div className="text-center py-10 text-slate-400 text-sm">سبد خرید خالی است</div>
-              )}
-            </div>
-
-            <div className="p-5 bg-white border-t border-slate-100 rounded-t-3xl md:rounded-none shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
-               <div className="flex justify-between items-center mb-4">
-                  <span className="text-slate-500 text-xs font-bold">مبلغ قابل پرداخت</span>
-                  <span className="text-lg font-black text-slate-900">{total.toLocaleString()} <span className="text-xs font-normal text-slate-400">تومان</span></span>
-               </div>
-               <button className={`w-full bg-${brandColor}-600 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-${brandColor}-500 transition-all active:scale-95 shadow-md shadow-${brandColor}-500/10 flex items-center justify-center gap-2`}>
-                  تکمیل و پرداخت
-               </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-// --- Floating Cart Bar ---
-
-const CartFloatingBar = ({ cart, products, onClick, device, brandColor }: { cart: CartItem[], products: any[], onClick: () => void, device: DeviceType, brandColor: string }) => {
-  const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
-  const totalPrice = cart.reduce((acc, item) => {
-    const prod = products.find(p => p.id === item.id);
-    return acc + (prod ? prod.price * item.qty : 0);
-  }, 0);
-  
-  const widthClass = device === 'mobile' ? 'left-6 right-6' : 'left-1/2 -translate-x-1/2 w-[400px]';
-
-  return (
-    <AnimatePresence>
-      {totalItems > 0 && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          className={`absolute bottom-6 z-30 cursor-pointer ${widthClass}`}
-          onClick={onClick}
-        >
-          <div className="bg-white/95 backdrop-blur-md text-slate-800 p-3.5 rounded-2xl shadow-xl flex items-center justify-between border border-slate-100 hover:scale-[1.02] transition-transform">
-            <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 font-bold mb-0.5 flex items-center gap-1">
-                 <ShoppingBag className="w-3 h-3 text-slate-400" />
-                 {totalItems} آیتم در سبد
-              </span>
-              <span className="text-base font-black text-slate-900">{totalPrice.toLocaleString()} <span className="text-[10px] font-normal text-slate-400">تومان</span></span>
-            </div>
-            <button className={`bg-${brandColor}-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-${brandColor}-500 transition-colors shadow-md shadow-${brandColor}-500/10 flex items-center gap-1.5`}>
-              مشاهده و پرداخت <ArrowLeft className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
-
-// --- Main Designer Component ---
 
 // Added props interface for CanvasDesigner to receive state from App
 interface CanvasDesignerProps {
@@ -772,6 +67,130 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
   const [device, setDevice] = useState<DeviceType>('mobile');
   const [zoom, setZoom] = useState(100);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+  const [selectedElementIds, setSelectedElementIds] = useState<string[]>([]);
+  const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
+  const [editingLayerLabel, setEditingLayerLabel] = useState<string>('');
+
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+
+  const handleElementClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (e.shiftKey && selectedElementId) {
+      const anchorIndex = canvasElements.findIndex(el => el.id === selectedElementId);
+      const targetIndex = canvasElements.findIndex(el => el.id === id);
+      if (anchorIndex !== -1 && targetIndex !== -1) {
+        const start = Math.min(anchorIndex, targetIndex);
+        const end = Math.max(anchorIndex, targetIndex);
+        const selectedRange = canvasElements.slice(start, end + 1).map(el => el.id);
+        setSelectedElementIds(selectedRange);
+      }
+    } else {
+      setSelectedElementId(id);
+      setSelectedElementIds([id]);
+    }
+  };
+
+  const toggleVisibility = (id: string) => {
+    const isTargetSelected = selectedElementIds.includes(id);
+    setCanvasElements(canvasElements.map(el => {
+      if (el.id === id) {
+        return { ...el, hidden: !el.hidden };
+      }
+      if (isTargetSelected && selectedElementIds.includes(el.id)) {
+        return { ...el, hidden: !el.hidden };
+      }
+      return el;
+    }));
+  };
+
+  const moveElement = (index: number, direction: 'up' | 'down') => {
+    const newElements = [...canvasElements];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex >= 0 && targetIndex < newElements.length) {
+      const temp = newElements[index];
+      newElements[index] = newElements[targetIndex];
+      newElements[targetIndex] = temp;
+      setCanvasElements(newElements);
+    }
+  };
+
+  const duplicateElement = (index: number) => {
+    const elementToCopy = canvasElements[index];
+    const newEl: ComponentItem = {
+      ...elementToCopy,
+      id: Math.random().toString(36).substr(2, 9),
+      settings: JSON.parse(JSON.stringify(elementToCopy.settings)),
+      label: `${elementToCopy.label} (کپی)`
+    };
+    const newElements = [...canvasElements];
+    newElements.splice(index + 1, 0, newEl);
+    setCanvasElements(newElements);
+    setSelectedElementId(newEl.id);
+    setSelectedElementIds([newEl.id]);
+  };
+
+  const startEditingLabel = (id: string, currentLabel: string) => {
+    setEditingLayerId(id);
+    setEditingLayerLabel(currentLabel);
+  };
+
+  const saveEditingLabel = (id: string) => {
+    if (editingLayerLabel.trim()) {
+      setCanvasElements(canvasElements.map(el => 
+        el.id === id ? { ...el, label: editingLayerLabel.trim() } : el
+      ));
+    }
+    setEditingLayerId(null);
+  };
+  const [inspectorTab, setInspectorTab] = useState<'home' | 'categories'>('home');
+  const [previewCategoryId, setPreviewCategoryId] = useState<string | null>(null);
+  const [categoryPageLayout, setCategoryPageLayout] = useState<'grid' | 'list'>(() => {
+    return (localStorage.getItem('vitrin_category_products_layout') as 'grid' | 'list') || 'grid';
+  });
+  const [categoryPageColumns, setCategoryPageColumns] = useState<number>(() => {
+    const saved = localStorage.getItem('vitrin_category_products_columns');
+    return saved ? parseInt(saved) : 2;
+  });
+  const [cats, setCats] = useState<any[]>(INITIAL_CATEGORIES);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+
+  useEffect(() => {
+    localStorage.setItem('vitrin_category_products_layout', categoryPageLayout);
+  }, [categoryPageLayout]);
+
+  useEffect(() => {
+    localStorage.setItem('vitrin_category_products_columns', categoryPageColumns.toString());
+  }, [categoryPageColumns]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('vitrin_categories');
+    if (saved) {
+      try { setCats(JSON.parse(saved)); } catch (e) {}
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleLoadProducts = () => {
+      const saved = localStorage.getItem('vitrin_products');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setProducts(parsed);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    handleLoadProducts();
+    window.addEventListener('storage', handleLoadProducts);
+    window.addEventListener('focus', handleLoadProducts);
+    return () => {
+      window.removeEventListener('storage', handleLoadProducts);
+      window.removeEventListener('focus', handleLoadProducts);
+    };
+  }, []);
   
   // Preview State
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -810,11 +229,16 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
     };
     setCanvasElements([...canvasElements, newEl]);
     setSelectedElementId(newEl.id);
+    setSelectedElementIds([newEl.id]);
   };
 
   const removeElement = (id: string) => {
-    setCanvasElements(canvasElements.filter(el => el.id !== id));
-    if (selectedElementId === id) setSelectedElementId(null);
+    const idsToRemove = selectedElementIds.includes(id) ? selectedElementIds : [id];
+    setCanvasElements(canvasElements.filter(el => !idsToRemove.includes(el.id)));
+    if (idsToRemove.includes(selectedElementId!)) {
+      setSelectedElementId(null);
+    }
+    setSelectedElementIds(prev => prev.filter(item => !idsToRemove.includes(item)));
   };
 
   const selectedElement = canvasElements.find(el => el.id === selectedElementId);
@@ -826,13 +250,13 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
         return {
            width: 375,
            height: 812,
-           className: "bg-white rounded-[3rem] border-[8px] border-slate-900"
+           className: "bg-white dark:bg-slate-950 rounded-[3rem] border-[8px] border-slate-900 dark:border-slate-800 transition-colors duration-300"
         };
       case 'tablet':
         return {
            width: 768,
            height: '100%',
-           className: "bg-white rounded-[2rem] border-[8px] border-slate-900"
+           className: "bg-white dark:bg-slate-950 rounded-[2rem] border-[8px] border-slate-900 dark:border-slate-800 transition-colors duration-300"
         };
     }
   };
@@ -840,55 +264,219 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
   const frameStyle = getDeviceFrameStyles();
 
   return (
-    <div className="flex h-full bg-slate-50 overflow-hidden select-none">
-      {/* Right Sidebar: Library */}
-      <div className="w-72 bg-white border-l border-slate-200 flex flex-col shadow-sm">
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-bold text-slate-800 flex items-center gap-2">
-            <Sparkles className={`w-4 h-4 text-${brandColor}-600`} />
-            اجزای منو
-          </h3>
-          <Layers className="w-4 h-4 text-slate-400" />
-        </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {COMPONENT_LIBRARY.map((cat, idx) => (
-            <div key={idx} className="space-y-3">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{cat.category}</span>
-              <div className="grid grid-cols-2 gap-2">
-                {cat.items.map((item) => (
-                  <button 
-                    key={item.id}
-                    onClick={() => addElement(item)}
-                    className={`flex flex-col items-center justify-center p-3 border border-slate-100 rounded-xl bg-slate-50 hover:bg-${brandColor}-50 hover:border-${brandColor}-200 transition-all group text-center gap-2`}
-                  >
-                    <div className={`p-2 bg-white rounded-lg shadow-sm text-slate-500 group-hover:text-${brandColor}-600 transition-colors`}>
-                      {item.icon}
-                    </div>
-                    <span className={`text-[10px] font-medium text-slate-600 group-hover:text-${brandColor}-700`}>{item.label}</span>
-                  </button>
-                ))}
+    <div className="flex h-full bg-slate-50 dark:bg-slate-950 overflow-hidden select-none">
+      {/* Right Sidebar: Library & Photoshop-like Layers */}
+      <div className="w-72 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800/80 flex flex-col shadow-sm h-full overflow-hidden">
+        {/* Upper Panel: Available Menu Components */}
+        <div className="h-[55%] flex flex-col border-b border-slate-200 dark:border-slate-800/80 overflow-hidden">
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800/60 flex items-center justify-between shrink-0">
+            <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <Sparkles className={`w-4 h-4 text-${brandColor}-600`} />
+              اجزای منو
+            </h3>
+            <span className="text-[10px] bg-slate-50 dark:bg-slate-850 text-slate-400 dark:text-slate-300 border border-slate-100 dark:border-slate-800 px-2.5 py-1 rounded-full font-bold">
+              قابل افزودن
+            </span>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {COMPONENT_LIBRARY.map((cat, idx) => (
+              <div key={idx} className="space-y-3">
+                <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{cat.category}</span>
+                <div className="grid grid-cols-2 gap-2">
+                  {cat.items.map((item) => (
+                    <button 
+                      key={item.id}
+                      onClick={() => addElement(item)}
+                      className={`flex flex-col items-center justify-center p-3 border border-slate-100 dark:border-slate-800/80 rounded-xl bg-slate-50 dark:bg-slate-950/40 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/20 hover:border-${brandColor}-200 dark:hover:border-${brandColor}-800 transition-all group text-center gap-2`}
+                    >
+                      <div className={`p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm text-slate-500 dark:text-slate-400 group-hover:text-${brandColor}-600 dark:group-hover:text-${brandColor}-400 transition-colors`}>
+                        {item.icon}
+                      </div>
+                      <span className={`text-[10px] font-medium text-slate-600 dark:text-slate-300 group-hover:text-${brandColor}-700 dark:group-hover:text-${brandColor}-300`}>{item.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Lower Panel: Photoshop Design Layers */}
+        <div className="h-[45%] flex flex-col bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden">
+          <div className="p-4 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between shrink-0">
+            <h3 className="font-black text-slate-800 dark:text-slate-100 text-xs flex items-center gap-2">
+              <Layers className={`w-4 h-4 text-${brandColor}-600`} />
+              لایه‌های طراحی (بخش‌ها)
+            </h3>
+            <span className={`text-[10px] bg-${brandColor}-50 dark:bg-${brandColor}-950/40 text-${brandColor}-700 dark:text-${brandColor}-300 border border-${brandColor}-100 dark:border-${brandColor}-800/80 px-2 py-0.5 rounded-full font-bold`}>
+              {canvasElements.length} لایه
+            </span>
+          </div>
+          
+          <div className="flex-1 overflow-hidden flex flex-col">
+            {canvasElements.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center p-4 text-center opacity-40">
+                <Layers className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-1" />
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400">هیچ لایه‌ای وجود ندارد</p>
+              </div>
+            ) : (
+              <Reorder.Group
+                axis="y"
+                values={canvasElements}
+                onReorder={setCanvasElements}
+                className="flex-1 overflow-y-auto p-3 space-y-2 select-none"
+              >
+                {canvasElements.map((el, index) => {
+                  const isSelected = selectedElementIds.includes(el.id);
+                  const isActiveSelected = selectedElementId === el.id;
+                  const isEditing = editingLayerId === el.id;
+                  
+                  return (
+                    <Reorder.Item
+                      key={el.id}
+                      value={el}
+                      dragListener={!isEditing}
+                      onDragStart={() => setDraggingId(el.id)}
+                      onDragEnd={() => setDraggingId(null)}
+                      initial={{ scale: 1, rotate: 0, zIndex: 1, boxShadow: "0px 0px 0px rgba(0,0,0,0)" }}
+                      animate={{
+                        scale: draggingId === el.id ? 1.04 : 1,
+                        rotate: draggingId === el.id ? -3.5 : 0,
+                        zIndex: draggingId === el.id ? 50 : 1,
+                        boxShadow: draggingId === el.id 
+                          ? "0 15px 30px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.1)" 
+                          : "0px 0px 0px rgba(0, 0, 0, 0)"
+                      }}
+                      style={{
+                        cursor: draggingId === el.id ? "grabbing" : "grab"
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 28,
+                        mass: 0.5
+                      }}
+                      onClick={(e) => handleElementClick(e, el.id)}
+                      className={`flex items-center justify-between p-2 rounded-xl border transition-colors duration-200 cursor-pointer group select-none ${
+                        isActiveSelected
+                          ? `bg-${brandColor}-50/90 dark:bg-${brandColor}-950/40 border-${brandColor}-500 shadow-sm`
+                          : isSelected
+                          ? `bg-${brandColor}-50/40 dark:bg-${brandColor}-950/20 border-${brandColor}-200 dark:border-${brandColor}-800/60`
+                          : 'bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-800/80 hover:border-slate-200 dark:hover:border-slate-750 hover:bg-slate-50/50 dark:hover:bg-slate-850/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {/* Order indicator */}
+                        <div className="text-[10px] text-slate-300 dark:text-slate-600 font-bold w-4 text-center shrink-0">
+                          {index + 1}
+                        </div>
+
+                        {/* Visibility Toggle */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleVisibility(el.id);
+                          }}
+                          className={`p-1 rounded transition-colors shrink-0 cursor-pointer ${
+                            el.hidden 
+                              ? 'text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' 
+                              : `text-${brandColor}-500 hover:text-${brandColor}-600 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/40`
+                          }`}
+                          title={el.hidden ? "نمایش لایه" : "مخفی کردن لایه"}
+                        >
+                          {el.hidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                        
+                        {/* Icon */}
+                        <div className={`p-1.5 rounded-lg shrink-0 ${isSelected ? `bg-white dark:bg-slate-800 text-${brandColor}-600 shadow-sm` : 'bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400'}`}>
+                          {el.type === 'hero' && <Sparkles className="w-3.5 h-3.5" />}
+                          {el.type === 'featured' && <Star className="w-3.5 h-3.5" />}
+                          {el.type === 'category-display' && <LayoutGrid className="w-3.5 h-3.5" />}
+                          {el.type === 'footer' && <Smartphone className="w-3.5 h-3.5" />}
+                          {el.type !== 'hero' && el.type !== 'featured' && el.type !== 'category-display' && el.type !== 'footer' && <List className="w-3.5 h-3.5" />}
+                        </div>
+
+                        {/* Name / Inline Rename Input */}
+                        <div className="min-w-0 flex-1 text-right">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editingLayerLabel}
+                              onChange={(e) => setEditingLayerLabel(e.target.value)}
+                              onBlur={() => saveEditingLabel(el.id)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') saveEditingLabel(el.id);
+                                if (e.key === 'Escape') setEditingLayerId(null);
+                              }}
+                              autoFocus
+                              className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded px-1.5 py-0.5 text-[11px] font-bold outline-none text-right"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          ) : (
+                            <div className="flex items-center justify-end gap-1 group/text">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditingLabel(el.id, el.label);
+                                }}
+                                className="opacity-0 group-hover/text:opacity-100 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 p-0.5 transition-opacity"
+                                title="ویرایش نام لایه"
+                              >
+                                <Edit2 className="w-2.5 h-2.5" />
+                              </button>
+                              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate block">
+                                {el.label}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                        {/* Duplicate */}
+                        <button
+                          onClick={() => duplicateElement(index)}
+                          className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+                          title="کپی کردن"
+                        >
+                          <Copy className="w-3 h-3" />
+                        </button>
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => removeElement(el.id)}
+                          className="p-1 text-rose-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition-colors cursor-pointer"
+                          title="حذف لایه"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </Reorder.Item>
+                  );
+                })}
+              </Reorder.Group>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Center: Canvas */}
-      <div className="flex-1 flex flex-col bg-slate-100 relative overflow-hidden">
+      <div className="flex-1 flex flex-col bg-slate-100 dark:bg-slate-950/40 relative overflow-hidden">
         {/* Toolbar */}
-        <div className="h-14 bg-white/80 backdrop-blur border-b border-slate-200 flex items-center justify-between px-6 z-20">
-          <div className="flex items-center gap-2 bg-slate-200/50 p-1 rounded-lg">
-            <button onClick={() => setDevice('mobile')} className={`p-1.5 rounded ${device === 'mobile' ? `bg-white shadow-sm text-${brandColor}-600` : 'text-slate-500'}`}><Smartphone className="w-4 h-4" /></button>
-            <button onClick={() => setDevice('tablet')} className={`p-1.5 rounded ${device === 'tablet' ? `bg-white shadow-sm text-${brandColor}-600` : 'text-slate-500'}`}><Tablet className="w-4 h-4" /></button>
+        <div className="h-14 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between px-6 z-20">
+          <div className="flex items-center gap-2 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-lg">
+            <button onClick={() => setDevice('mobile')} className={`p-1.5 rounded transition-all ${device === 'mobile' ? `bg-white dark:bg-slate-750 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-500 dark:text-slate-400'}`}><Smartphone className="w-4 h-4" /></button>
+            <button onClick={() => setDevice('tablet')} className={`p-1.5 rounded transition-all ${device === 'tablet' ? `bg-white dark:bg-slate-750 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-500 dark:text-slate-400'}`}><Tablet className="w-4 h-4" /></button>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
+          <div className="flex items-center gap-4 text-xs font-medium text-slate-500 dark:text-slate-400">
             <div className="flex items-center gap-2">
-              <button onClick={() => setZoom(Math.max(50, zoom - 10))}><ZoomOut className="w-4 h-4" /></button>
-              <span className="w-10 text-center">{zoom}%</span>
-              <button onClick={() => setZoom(Math.min(200, zoom + 10))}><ZoomIn className="w-4 h-4" /></button>
+              <button onClick={() => setZoom(Math.max(50, zoom - 10))} className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"><ZoomOut className="w-4 h-4" /></button>
+              <span className="w-10 text-center font-mono">{zoom}%</span>
+              <button onClick={() => setZoom(Math.min(200, zoom + 10))} className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors"><ZoomIn className="w-4 h-4" /></button>
             </div>
-            <button className={`flex items-center gap-1 hover:text-${brandColor}-600`}><Maximize2 className="w-4 h-4" /> تمام صفحه</button>
+            <button className={`flex items-center gap-1 hover:text-${brandColor}-600 transition-colors`}><Maximize2 className="w-4 h-4" /> تمام صفحه</button>
           </div>
         </div>
 
@@ -918,37 +506,73 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
             <div className="p-4 pt-10 h-full overflow-y-auto space-y-4 relative z-10 scrollbar-hide pb-24">
               {canvasElements.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-10 space-y-4 opacity-30">
-                  <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center">
-                    <Plus className="w-8 h-8 text-slate-400" />
+                  <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center">
+                    <Plus className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                   </div>
-                  <p className="text-sm font-bold">برای شروع، اجزای مورد نظر را از پنل سمت راست اضافه کنید</p>
+                  <p className="text-sm font-bold text-slate-600 dark:text-slate-300">برای شروع، اجزای مورد نظر را از پنل سمت راست اضافه کنید</p>
                 </div>
               ) : (
                 canvasElements.map((el) => {
-                  const commonProps = {
-                    element: el,
-                    isSelected: selectedElementId === el.id,
-                    onClick: () => setSelectedElementId(el.id),
-                    onProductClick: setActiveProduct,
-                    cart: cart,
-                    device: device,
-                    brandColor: brandColor
-                  };
+                  if (el.hidden) return null;
+                  
+                  const isElSelected = selectedElementIds.includes(el.id);
+                  const isElActive = selectedElementId === el.id;
 
                   if (el.type === 'hero') {
-                    return <HeroRenderer key={el.id} element={el} isSelected={selectedElementId === el.id} onClick={() => setSelectedElementId(el.id)} device={device} brandColor={brandColor} />;
-                  }
-
-                  if (el.type === 'product-grid') {
-                    return <ProductGridRenderer key={el.id} {...commonProps} />;
-                  }
-                  
-                  if (el.type === 'product-list') {
-                    return <ProductListRenderer key={el.id} {...commonProps} />;
+                    return (
+                      <HeroBlock 
+                        key={el.id} 
+                        element={el} 
+                        brandColor={brandColor} 
+                        mode="edit" 
+                        isSelected={isElSelected} 
+                        onClick={(e) => handleElementClick(e, el.id)} 
+                        device={device} 
+                      />
+                    );
                   }
 
                   if (el.type === 'featured') {
-                    return <FeaturedRenderer key={el.id} {...commonProps} />;
+                    return (
+                      <FeaturedBlock 
+                        key={el.id} 
+                        element={el} 
+                        brandColor={brandColor} 
+                        mode="edit" 
+                        isSelected={isElSelected} 
+                        onClick={(e) => handleElementClick(e, el.id)} 
+                        onProductClick={setActiveProduct}
+                        cart={cart}
+                        device={device}
+                      />
+                    );
+                  }
+
+                  if (el.type === 'category-display') {
+                    return (
+                      <CategoryDisplayBlock 
+                        key={el.id} 
+                        element={el} 
+                        brandColor={brandColor} 
+                        mode="edit" 
+                        isSelected={isElSelected} 
+                        onClick={(e) => handleElementClick(e, el.id)} 
+                        onCategoryClick={(catId) => setPreviewCategoryId(catId)} 
+                      />
+                    );
+                  }
+
+                  if (el.type === 'footer') {
+                    return (
+                      <FooterBlock 
+                        key={el.id} 
+                        element={el} 
+                        brandColor={brandColor} 
+                        mode="edit" 
+                        isSelected={isElSelected} 
+                        onClick={(e) => handleElementClick(e, el.id)} 
+                      />
+                    );
                   }
 
                   // Default Fallback
@@ -956,9 +580,13 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
                     <motion.div 
                       key={el.id}
                       layoutId={el.id}
-                      onClick={() => setSelectedElementId(el.id)}
+                      onClick={(e) => handleElementClick(e, el.id)}
                       className={`relative p-6 rounded-2xl cursor-pointer border-2 transition-all bg-white text-center ${
-                        selectedElementId === el.id ? `border-${brandColor}-500 bg-${brandColor}-50/30` : `border-transparent hover:border-${brandColor}-200 shadow-sm`
+                        isElActive 
+                          ? `border-${brandColor}-500 bg-${brandColor}-50/30 shadow-md` 
+                          : isElSelected 
+                          ? `border-${brandColor}-300 bg-${brandColor}-50/10` 
+                          : `border-transparent hover:border-${brandColor}-200 shadow-sm`
                       }`}
                     >
                       <div className="flex items-center justify-between mb-4">
@@ -981,27 +609,51 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
               )}
             </div>
 
+            {/* Live Category Products Slide-in Preview */}
+            <AnimatePresence>
+              {previewCategoryId && (
+                <CategoryProductsScreen
+                  categoryId={previewCategoryId}
+                  onBack={() => setPreviewCategoryId(null)}
+                  onProductClick={setActiveProduct}
+                  brandColor={brandColor}
+                  mode="edit"
+                  layoutStyle={categoryPageLayout}
+                  columns={categoryPageColumns}
+                />
+              )}
+            </AnimatePresence>
+
             {/* Overlays for Interaction */}
-            <CartFloatingBar cart={cart} products={MOCK_PRODUCTS} onClick={() => setIsCartOpen(true)} device={device} brandColor={brandColor} />
+            <CartBar 
+              cart={cart} 
+              products={products} 
+              brandColor={brandColor} 
+              mode="edit" 
+              device={device} 
+              onClick={() => setIsCartOpen(true)} 
+            />
             
-            <ProductDetailModal 
+            <ProductDetailSheet 
               product={activeProduct} 
               isOpen={!!activeProduct} 
               onClose={() => setActiveProduct(null)} 
               onAddToCart={addToCart}
-              device={device}
               brandColor={brandColor}
+              mode="edit"
+              device={device}
             />
 
             <CartDrawer 
                isOpen={isCartOpen}
                onClose={() => setIsCartOpen(false)}
                cart={cart}
-               products={MOCK_PRODUCTS}
+               products={products}
                onRemoveItem={removeFromCart}
                onUpdateQty={updateCartQty}
                device={device}
                brandColor={brandColor}
+               mode="edit"
             />
 
           </motion.div>
@@ -1009,24 +661,108 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
       </div>
 
       {/* Left Sidebar: Property Inspector */}
-      <div className="w-80 bg-white border-r border-slate-200 flex flex-col shadow-sm">
-        <div className="p-4 border-b border-slate-100 flex items-center gap-2">
-          <Settings2 className="w-4 h-4 text-slate-500" />
-          <h3 className="font-bold text-slate-800">تنظیمات المان</h3>
+      <div className="w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800/80 flex flex-col shadow-sm">
+        {/* Tab switcher at the top of the Left Property Inspector */}
+        <div className="flex border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
+          <button 
+            onClick={() => setInspectorTab('home')}
+            className={`flex-1 py-3 text-xs font-black transition-all border-b-2 flex items-center justify-center gap-1.5 ${
+              inspectorTab === 'home' ? `border-${brandColor}-500 text-${brandColor}-600 dark:text-${brandColor}-400 bg-white dark:bg-slate-900` : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            بلوک‌های صفحه اصلی
+          </button>
+          <button 
+            onClick={() => setInspectorTab('categories')}
+            className={`flex-1 py-3 text-xs font-black transition-all border-b-2 flex items-center justify-center gap-1.5 ${
+              inspectorTab === 'categories' ? `border-${brandColor}-500 text-${brandColor}-600 dark:text-${brandColor}-400 bg-white dark:bg-slate-900` : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+            }`}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            صفحه دسته‌بندی‌ها
+          </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-5">
           <AnimatePresence mode="wait">
-            {selectedElement ? (
+            {inspectorTab === 'categories' ? (
+              <motion.div
+                key="categories-screen-settings"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6 text-right"
+                dir="rtl"
+              >
+                <div className="p-4 bg-slate-50 dark:bg-slate-950/40 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+                  <h4 className="font-black text-slate-800 dark:text-slate-100 text-xs mb-1.5 flex items-center gap-1.5">
+                    <LayoutGrid className={`w-3.5 h-3.5 text-${brandColor}-600`} />
+                    تنظیمات صفحه دسته‌بندی محصولات
+                  </h4>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-relaxed">این تنظیمات نحوه نمایش محصولات را هنگامی که مشتری یکی از دسته‌ها را باز می‌کند به صورت سراسری کنترل می‌کنند.</p>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">چیدمان نمایش محصولات (Layout Style)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button 
+                      onClick={() => setCategoryPageLayout('grid')}
+                      className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                        categoryPageLayout === 'grid' 
+                          ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                      }`}
+                    >
+                      <LayoutGrid className="w-3.5 h-3.5" />
+                      نمای شبکه‌ای
+                    </button>
+                    <button 
+                      onClick={() => setCategoryPageLayout('list')}
+                      className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                        categoryPageLayout === 'list' 
+                          ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                      }`}
+                    >
+                      <List className="w-3.5 h-3.5" />
+                      نمای لیستی
+                    </button>
+                  </div>
+                </div>
+
+                {categoryPageLayout === 'grid' && (
+                  <div className="space-y-3">
+                    <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">تعداد ستون‌ها در نمای شبکه‌ای</label>
+                    <div className="flex gap-2">
+                      {[2, 3, 4].map(num => (
+                        <button 
+                          key={num}
+                          onClick={() => setCategoryPageColumns(num)}
+                          className={`flex-1 py-2 border rounded-xl text-xs font-bold transition-all ${
+                            categoryPageColumns === num 
+                              ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                          }`}
+                        >
+                          {num} ستونه
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            ) : selectedElement ? (
               <motion.div
                 key={selectedElement.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="space-y-6"
+                className="space-y-6 text-right"
+                dir="rtl"
               >
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500">عنوان المان</label>
+                  <label className="text-xs font-black text-slate-500 dark:text-slate-400">عنوان المان</label>
                   <input 
                     type="text" 
                     value={selectedElement.settings.title}
@@ -1034,13 +770,13 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
                       const val = e.target.value;
                       setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, title: val }} : el));
                     }}
-                    className={`w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-${brandColor}-500 outline-none`}
+                    className={`w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-${brandColor}-500 outline-none`}
                   />
                 </div>
 
                 {selectedElement.settings.subtitle !== undefined && (
                    <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500">توضیحات کوتاه</label>
+                    <label className="text-xs font-black text-slate-500 dark:text-slate-400">توضیحات کوتاه</label>
                     <input 
                       type="text" 
                       value={selectedElement.settings.subtitle}
@@ -1048,14 +784,204 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
                         const val = e.target.value;
                         setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, subtitle: val }} : el));
                       }}
-                      className={`w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-${brandColor}-500 outline-none`}
+                      className={`w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-${brandColor}-500 outline-none`}
                     />
                   </div>
                 )}
 
+                {/* Category Display Settings inside property inspector */}
+                {selectedElement.type === 'category-display' && (
+                  <>
+                    <div className="space-y-3">
+                      <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">چیدمان دسته‌ها در صفحه اصلی</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button 
+                          onClick={() => {
+                            setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, layout: 'grid' }} : el));
+                          }}
+                          className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                            selectedElement.settings.layout === 'grid' || !selectedElement.settings.layout
+                              ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                          }`}
+                        >
+                          <LayoutGrid className="w-3.5 h-3.5" />
+                          نمای شبکه‌ای
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, layout: 'scroll' }} : el));
+                          }}
+                          className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                            selectedElement.settings.layout === 'scroll' 
+                              ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                          }`}
+                        >
+                          <List className="w-3.5 h-3.5" />
+                          اسکرول افقی
+                        </button>
+                      </div>
+                    </div>
+
+                    {(selectedElement.settings.layout === 'grid' || !selectedElement.settings.layout) && (
+                      <div className="space-y-3">
+                        <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">تعداد ستون‌ها</label>
+                        <div className="flex gap-2">
+                          {[2, 3, 4].map(num => (
+                            <button 
+                              key={num}
+                              onClick={() => {
+                                setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, columns: num }} : el));
+                              }}
+                              className={`flex-1 py-2 border rounded-xl text-xs font-bold transition-all ${
+                                (selectedElement.settings.columns || 2) === num 
+                                  ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                              }`}
+                            >
+                              {num} ستونه
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      <label className="text-xs font-black text-slate-700 dark:text-slate-300 block border-b border-slate-100 dark:border-slate-800 pb-2">مدیریت و چیدمان دسته‌بندی‌ها</label>
+                      <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        {(() => {
+                          const orderList = selectedElement.settings.categoriesOrder || cats.map(c => c.id);
+                          const visibleList = selectedElement.settings.visibleCategories || cats.map(c => c.id);
+
+                          const sortedCats = [...cats].sort((a, b) => {
+                            const idxA = orderList.indexOf(a.id);
+                            const idxB = orderList.indexOf(b.id);
+                            if (idxA === -1 && idxB === -1) return a.order - b.order;
+                            if (idxA === -1) return 1;
+                            if (idxB === -1) return -1;
+                            return idxA - idxB;
+                          });
+
+                          return sortedCats.map((cat, index) => {
+                            const isVisible = visibleList.includes(cat.id);
+                            
+                            const handleToggleVisibility = () => {
+                              let nextVisible = [...visibleList];
+                              if (isVisible) {
+                                nextVisible = nextVisible.filter(id => id !== cat.id);
+                              } else {
+                                nextVisible = [...nextVisible, cat.id];
+                              }
+                              setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, visibleCategories: nextVisible }} : el));
+                            };
+
+                            const handleMove = (direction: 'up' | 'down') => {
+                              const currentOrder = orderList.length > 0 ? [...orderList] : cats.map(c => c.id);
+                              const idx = currentOrder.indexOf(cat.id);
+                              if (idx === -1) return;
+                              
+                              if (direction === 'up' && idx > 0) {
+                                const temp = currentOrder[idx - 1];
+                                currentOrder[idx - 1] = currentOrder[idx];
+                                currentOrder[idx] = temp;
+                              } else if (direction === 'down' && idx < currentOrder.length - 1) {
+                                const temp = currentOrder[idx + 1];
+                                currentOrder[idx + 1] = currentOrder[idx];
+                                currentOrder[idx] = temp;
+                              }
+                              
+                              setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, categoriesOrder: currentOrder }} : el));
+                            };
+
+                            return (
+                              <div key={cat.id} className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl">
+                                <div className="flex items-center gap-2">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={isVisible} 
+                                    onChange={handleToggleVisibility}
+                                    className={`rounded border-slate-300 dark:border-slate-700 accent-${brandColor}-600 cursor-pointer h-4 w-4 bg-transparent`}
+                                  />
+                                  <div className="w-8 h-8 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+                                    <img src={cat.image || undefined} className="w-full h-full object-cover" />
+                                  </div>
+                                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{cat.name}</span>
+                                </div>
+                                <div className="flex gap-1">
+                                  <button 
+                                    onClick={() => handleMove('up')} 
+                                    disabled={index === 0}
+                                    className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-800 rounded disabled:opacity-30"
+                                  >
+                                    <ChevronUp className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button 
+                                    onClick={() => handleMove('down')} 
+                                    disabled={index === sortedCats.length - 1}
+                                    className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-slate-800 rounded disabled:opacity-30"
+                                  >
+                                    <ChevronDown className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Footer block settings inside property inspector */}
+                {selectedElement.type === 'footer' && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-slate-500 dark:text-slate-400">متن دلخواه فوتر</label>
+                      <textarea 
+                        value={selectedElement.settings.customText || ''}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, customText: val }} : el));
+                        }}
+                        className={`w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-${brandColor}-500 outline-none h-20 resize-none`}
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-xs font-black text-slate-700 dark:text-slate-300 block border-b border-slate-100 dark:border-slate-800 pb-2">اطلاعات تماس و شبکه‌های اجتماعی</label>
+                      <div className="space-y-2">
+                        {[
+                          { key: 'phone', label: 'تلفن تماس رستوران' },
+                          { key: 'address', label: 'آدرس حضوری' },
+                          { key: 'showInstagram', label: 'آیکون اینستاگرام' },
+                          { key: 'showTwitter', label: 'آیکون توییتر' },
+                          { key: 'showWhatsapp', label: 'آیکون واتس‌اپ' }
+                        ].map((item) => {
+                          const isChecked = !!selectedElement.settings[item.key];
+                          return (
+                            <label key={item.key} className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-850/50">
+                              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{item.label}</span>
+                              <input 
+                                type="checkbox" 
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  const val = e.target.checked;
+                                  setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, [item.key]: val }} : el));
+                                }}
+                                className={`rounded border-slate-300 dark:border-slate-700 accent-${brandColor}-600 h-4 w-4 bg-transparent`}
+                              />
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {selectedElement.settings.imageUrl !== undefined && (
                    <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500">لینک تصویر</label>
+                    <label className="text-xs font-black text-slate-500 dark:text-slate-400">لینک تصویر</label>
                     <input 
                       type="text" 
                       value={selectedElement.settings.imageUrl}
@@ -1063,20 +989,20 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
                         const val = e.target.value;
                         setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, imageUrl: val }} : el));
                       }}
-                      className={`w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-${brandColor}-500 outline-none text-left`}
+                      className={`w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-${brandColor}-500 outline-none text-left`}
                       dir="ltr"
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-500">رنگ متن</label>
+                  <label className="text-xs font-black text-slate-500 dark:text-slate-400">رنگ متن</label>
                   <div className="flex gap-2">
                     {['#ffffff', '#0f172a', '#10b981', '#3b82f6', '#f59e0b', '#ef4444'].map(color => (
                       <button 
                         key={color}
                         style={{ backgroundColor: color }}
-                        className={`w-8 h-8 rounded-full border-2 shadow-sm ${selectedElement.settings.color === color ? 'border-slate-800 scale-110' : 'border-slate-200'} transition-transform`}
+                        className={`w-8 h-8 rounded-full border-2 shadow-sm ${selectedElement.settings.color === color ? 'border-slate-800 dark:border-slate-100 scale-110' : 'border-slate-200 dark:border-slate-700'} transition-transform`}
                         onClick={() => {
                           setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, color }} : el));
                         }}
@@ -1087,8 +1013,8 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <label className="text-xs font-bold text-slate-500">اندازه فونت</label>
-                    <span className="text-xs text-slate-400">{selectedElement.settings.fontSize}px</span>
+                    <label className="text-xs font-black text-slate-500 dark:text-slate-400">اندازه فونت</label>
+                    <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">{selectedElement.settings.fontSize}px</span>
                   </div>
                   <input 
                     type="range" 
@@ -1099,14 +1025,14 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
                       const val = parseInt(e.target.value);
                       setCanvasElements(prev => prev.map(el => el.id === selectedElement.id ? { ...el, settings: { ...el.settings, fontSize: val }} : el));
                     }}
-                    className={`w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-${brandColor}-600`}
+                    className={`w-full h-1.5 bg-slate-100 dark:bg-slate-850 rounded-lg appearance-none cursor-pointer accent-${brandColor}-600`}
                   />
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                   <button 
                     onClick={() => removeElement(selectedElement.id)}
-                    className="w-full py-3 bg-red-50 text-red-600 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-colors"
+                    className="w-full py-3 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-red-100 dark:hover:bg-red-950/40 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                     حذف المان
@@ -1115,8 +1041,8 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
               </motion.div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-20">
-                <Smartphone className="w-12 h-12 mb-4 text-slate-300" />
-                <p className="text-sm">یک المان را برای ویرایش انتخاب کنید</p>
+                <Smartphone className="w-12 h-12 mb-4 text-slate-300 dark:text-slate-650" />
+                <p className="text-sm font-bold text-slate-600 dark:text-slate-400">برای ویرایش هر بخش، روی آن در گوشی کلیک کنید یا یک المان انتخاب کنید.</p>
               </div>
             )}
           </AnimatePresence>

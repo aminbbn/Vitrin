@@ -136,11 +136,11 @@ const getMockStats = (range: string, brandColor: string) => {
 const CustomTooltip = ({ active, payload, label, brandColor }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white text-slate-800 p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 text-xs z-[100] relative">
-        <p className="font-bold mb-2 text-slate-500">{label}</p>
+      <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 dark:border-slate-800 text-xs z-[100] relative">
+        <p className="font-bold mb-2 text-slate-500 dark:text-slate-400">{label}</p>
         <div className="flex items-center gap-2 mb-1">
           <div className={`w-2 h-2 rounded-full bg-${brandColor}-500`} />
-          <span className={`text-${brandColor}-600 font-black text-sm`}>{payload[0].value.toLocaleString()} تومان</span>
+          <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-black text-sm`}>{payload[0].value.toLocaleString()} تومان</span>
         </div>
       </div>
     );
@@ -152,6 +152,7 @@ interface DashboardProps {
   restaurantName: string;
   searchQuery?: string;
   brandColor: string;
+  theme?: 'light' | 'dark';
 }
 
 // --- SUMMARY CARD COMPONENT ---
@@ -169,7 +170,11 @@ const SummaryCard = ({
 }: any) => {
   
   // Basic theme construction for standard colors
-  const theme = { bg: `bg-${color}-50`, text: `text-${color}-600`, border: `border-${color}-200` };
+  const theme = { 
+    bg: `bg-${color}-50 dark:bg-${color}-950/30`, 
+    text: `text-${color}-600 dark:text-${color}-400`, 
+    border: `border-${color}-200 dark:border-${color}-850` 
+  };
 
   return (
     <motion.div 
@@ -178,31 +183,31 @@ const SummaryCard = ({
       transition={{ delay: index * 0.1, type: "spring", stiffness: 200, damping: 20 }}
       onClick={onClick}
       whileHover={{ scale: 1.02, y: -2 }}
-      className="bg-white/90 backdrop-blur-md border border-slate-100 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all cursor-pointer group h-[180px] flex flex-col justify-between relative overflow-hidden"
+      className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-100 dark:border-slate-800 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all cursor-pointer group h-[180px] flex flex-col justify-between relative overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-start justify-between">
          <div className={`p-2.5 rounded-2xl ${theme.bg} ${theme.text} transition-transform group-hover:scale-110 shadow-sm`}>
             <Icon className="w-6 h-6" />
          </div>
-         <span className="text-xs font-bold text-slate-500 mt-1.5">{label}</span>
+         <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1.5">{label}</span>
       </div>
 
       {/* Main Metric */}
       <div className="flex flex-col items-center justify-center flex-1 py-2">
-         <h3 className="text-4xl font-black text-slate-900 tracking-tight">
-           {value}
+         <h3 className="text-4xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+            {value}
          </h3>
       </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between gap-4">
-         <div className={`flex items-center gap-1.5 text-[10px] font-black px-3 py-1.5 rounded-full border ${up ? `text-emerald-600 bg-emerald-50 border-emerald-100` : 'text-rose-600 bg-rose-50 border-rose-100'}`}>
+         <div className={`flex items-center gap-1.5 text-[10px] font-black px-3 py-1.5 rounded-full border ${up ? `text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40` : 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/40'}`}>
             {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
             {trend}
          </div>
-         <span className="text-[10px] text-slate-400 font-bold bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-full">
-           {unit}
+         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 px-3 py-1.5 rounded-full">
+            {unit}
          </span>
       </div>
 
@@ -238,18 +243,18 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="bg-white w-full max-w-sm rounded-[1.5rem] shadow-2xl relative overflow-hidden border border-slate-100 flex flex-col z-10"
+        className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[1.5rem] shadow-2xl relative overflow-hidden border border-slate-100 dark:border-slate-800 flex flex-col z-10 transition-colors"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 relative">
            <div className="flex items-center justify-between mb-8">
                <div className="flex items-center gap-3">
-                  <div className={`p-3.5 rounded-2xl bg-${color}-50 text-${color}-600 shadow-sm`}>
+                  <div className={`p-3.5 rounded-2xl bg-${color}-50 dark:bg-${color}-950/30 text-${color}-600 dark:text-${color}-400 shadow-sm`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <span className="text-lg font-black text-slate-700">{stat.label}</span>
+                  <span className="text-lg font-black text-slate-700 dark:text-slate-200">{stat.label}</span>
                </div>
-               <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+               <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
                   <X className="w-5 h-5" />
                </button>
            </div>
@@ -259,16 +264,16 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
                  transition={{ delay: 0.1 }}
-                 className="text-5xl font-black text-slate-900 tracking-tight"
+                 className="text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight"
                >
                  {stat.value}
                </motion.h2>
                <div className="flex items-center gap-3 mt-3">
-                  <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}`}>
+                  <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-850' : 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-850'}`}>
                       {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
                       {stat.trend}
                   </span>
-                  <span className="text-xs text-slate-500 font-bold bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{stat.unit}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-bold bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-100 dark:border-slate-800">{stat.unit}</span>
                </div>
            </div>
 
@@ -284,10 +289,10 @@ const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => 
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 + (i * 0.1) }}
-                      className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors"
+                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800/60 hover:border-slate-200 dark:hover:border-slate-700 transition-colors"
                     >
-                       <span className="text-xs font-bold text-slate-600">{detail.label}</span>
-                       <span className="text-sm font-black text-slate-800">{detail.value}</span>
+                       <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{detail.label}</span>
+                       <span className="text-sm font-black text-slate-800 dark:text-slate-200">{detail.value}</span>
                     </motion.div>
                  ))}
               </div>
@@ -411,7 +416,23 @@ const AllProductsModal = ({ isOpen, onClose, brandColor }: any) => {
 };
 
 
-const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '', brandColor }) => {
+const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '', brandColor, theme }) => {
+  const [isDark, setIsDark] = useState(() => theme === 'dark' || document.documentElement.classList.contains('dark'));
+
+  React.useEffect(() => {
+    setIsDark(theme === 'dark' || document.documentElement.classList.contains('dark'));
+  }, [theme]);
+
+  React.useEffect(() => {
+    const checkDark = () => {
+      setIsDark(document.documentElement.classList.contains('dark') || localStorage.getItem('vitrin_theme') === 'dark');
+    };
+    checkDark();
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
   const [dateRange, setDateRange] = useState<'24h' | '7days' | '30days'>('7days');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [statsData, setStatsData] = useState(getMockStats('7days', brandColor));
@@ -507,10 +528,10 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
   const chartHexColor = chartColorMap[brandColor] || '#10b981';
 
   return (
-    <div className="p-8 h-full overflow-y-auto space-y-8 bg-[#F8FAFC] relative font-['Vazirmatn']" onClick={() => setIsDropdownOpen(false)}>
+    <div className="p-8 h-full overflow-y-auto space-y-8 bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-['Vazirmatn'] transition-colors" onClick={() => setIsDropdownOpen(false)}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">سلام، {restaurantName} 👋</h1>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100">سلام، {restaurantName} 👋</h1>
           <p className="text-sm text-slate-400 mt-1">امروز تا الان وضعیت فروش شما فوق‌العاده بوده است!</p>
         </div>
         <div className="flex gap-4 relative">
@@ -519,7 +540,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
           <div className="relative">
             <button 
               onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
-              className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl flex items-center gap-2 text-xs font-bold text-slate-600 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors min-w-[140px] justify-between"
+              className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors min-w-[140px] justify-between"
             >
               <div className="flex items-center gap-2">
                  <CalendarIcon className={`w-4 h-4 text-${brandColor}-600`} /> 
@@ -533,11 +554,11 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
-                    className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden z-50"
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden z-50"
                   >
-                    <button onClick={() => handleDateConfirm('24h')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۲۴ ساعت گذشته</button>
-                    <button onClick={() => handleDateConfirm('7days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۷ روز گذشته</button>
-                    <button onClick={() => handleDateConfirm('30days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-${brandColor}-600`}>۳۰ روز گذشته</button>
+                    <button onClick={() => handleDateConfirm('24h')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>۲۴ ساعت گذشته</button>
+                    <button onClick={() => handleDateConfirm('7days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>۷ روز گذشته</button>
+                    <button onClick={() => handleDateConfirm('30days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>۳۰ روز گذشته</button>
                   </motion.div>
                )}
             </AnimatePresence>
@@ -547,7 +568,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
           <button 
             onClick={handleDownloadReport}
             disabled={isGeneratingReport}
-            className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-100 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed min-w-[160px] justify-center`}
+            className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-100 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed min-w-[160px] justify-center`}
           >
             {isGeneratingReport ? (
                <>
@@ -580,41 +601,45 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
       <AnimatePresence>
         {selectedStat && (
            <ExpandedCard stat={selectedStat} onClose={() => setSelectedStatId(null)} />
-        )}
+         )}
       </AnimatePresence>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col">
-          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800">آمار فروش</h2><div className="flex gap-2 bg-slate-100 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white shadow-sm text-${brandColor}-600` : 'text-slate-400 hover:text-slate-600'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white shadow-sm text-${brandColor}-600` : 'text-slate-400 hover:text-slate-600'}`}>روزانه</button></div></div>
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col transition-colors">
+          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800 dark:text-slate-100">آمار فروش</h2><div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>روزانه</button></div></div>
           <div className="h-80 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA}>
                  <defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={chartHexColor} stopOpacity={0.2}/><stop offset="95%" stopColor={chartHexColor} stopOpacity={0}/></linearGradient></defs>
-                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#26262b' : '#f1f5f9'} />
                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
                  <YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => `${value / 1000000} م`} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
-                 <Tooltip content={<CustomTooltip brandColor={brandColor} />} wrapperStyle={{ zIndex: 1000 }} />
+                 <Tooltip 
+                    cursor={{ stroke: isDark ? '#26262b' : '#e2e8f0', strokeWidth: 1, strokeDasharray: '4 4' }}
+                    content={<CustomTooltip brandColor={brandColor} />} 
+                    wrapperStyle={{ zIndex: 1000 }} 
+                 />
                  <Area type="monotone" dataKey="revenue" stroke={chartHexColor} strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
-              </AreaChart>
+               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
-          <h2 className="text-lg font-black text-slate-800 mb-6">پرفروش‌ترین‌ها</h2>
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
+          <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">پرفروش‌ترین‌ها</h2>
           <div className="space-y-6">
             {filteredPopularProducts.slice(0, 4).map((prod, i) => (
-              <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 p-2 rounded-xl transition-colors -mx-2">
+              <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40 p-2 rounded-xl transition-colors -mx-2">
                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-2xl bg-${prod.color}-50 flex items-center justify-center text-${prod.color}-600 group-hover:scale-110 transition-transform`}>
+                    <div className={`w-12 h-12 rounded-2xl bg-${prod.color}-50 dark:bg-${prod.color}-950/30 flex items-center justify-center text-${prod.color}-600 dark:text-${prod.color}-400 group-hover:scale-110 transition-transform`}>
                        <ShoppingBag className="w-6 h-6" />
                     </div>
                     <div>
-                       <h4 className="text-sm font-bold text-slate-800">{prod.name}</h4>
-                       <span className="text-[10px] font-medium text-slate-400">{prod.category}</span>
+                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{prod.name}</h4>
+                       <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">{prod.category}</span>
                     </div>
                  </div>
                  <div className="text-left">
-                    <p className="text-sm font-black text-slate-700">{prod.price}</p>
+                    <p className="text-sm font-black text-slate-700 dark:text-slate-300">{prod.price}</p>
                     <span className={`text-[10px] text-${brandColor}-500 font-bold`}>{prod.count} فروش</span>
                  </div>
               </div>
@@ -622,7 +647,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
           </div>
           <button 
              onClick={() => setShowAllProductsModal(true)}
-             className="w-full mt-8 py-3 bg-slate-50 text-slate-500 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors"
+             className="w-full mt-8 py-3 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
              مشاهده کل لیست <ChevronLeft className="w-4 h-4" />
           </button>

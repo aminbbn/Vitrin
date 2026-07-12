@@ -18,10 +18,95 @@ import {
   Smartphone
 } from 'lucide-react';
 
+import { Category, Product } from './types';
+
+export const INITIAL_CATEGORIES: Category[] = [
+  { id: 'c1', name: 'پیتزا', image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=1000&auto=format&fit=crop', order: 0 },
+  { id: 'c2', name: 'برگر', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop', order: 1 },
+  { id: 'c3', name: 'سالاد', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop', order: 2 },
+  { id: 'c4', name: 'پاستا', image: 'https://images.unsplash.com/photo-1621996311239-531f0b50395d?q=80&w=1000&auto=format&fit=crop', order: 3 },
+  { id: 'c5', name: 'پیش‌غذا', image: 'https://images.unsplash.com/photo-1573080496987-8198cb7fcd48?q=80&w=1000&auto=format&fit=crop', order: 4 },
+  { id: 'c6', name: 'نوشیدنی', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=1000&auto=format&fit=crop', order: 5 },
+];
+
+export const INITIAL_PRODUCTS: Product[] = [
+  {
+    id: '1',
+    name: 'پیتزا پپرونی',
+    category: 'پیتزا',
+    categoryId: 'c1',
+    price: 245000,
+    description: 'پیتزای کلاسیک با پپرونی تند و پنیر موزارلا.',
+    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=1000&auto=format&fit=crop',
+    estimatedTime: '۲۰ دقیقه',
+    rawMaterials: ['خمیر', 'سس گوجه', 'پپرونی', 'پنیر'],
+    modifiers: [
+      {
+        id: 'm1', name: 'سایز', type: 'mandatory',
+        options: [{ id: 'o1', name: 'متوسط', price: 0 }, { id: 'o2', name: 'بزرگ', price: 85000 }]
+      }
+    ]
+  },
+  {
+    id: '2',
+    name: 'برگر کلاسیک',
+    category: 'برگر',
+    categoryId: 'c2',
+    price: 185000,
+    description: 'گوشت گوساله ۱۰۰٪ خالص با نان بریوش.',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop',
+    estimatedTime: '۱۵ دقیقه',
+    rawMaterials: ['نان', 'گوشت', 'کاهو', 'گوجه'],
+    modifiers: [
+       {
+        id: 'm3', name: 'پخت', type: 'mandatory',
+        options: [{ id: 'o5', name: 'مدیوم', price: 0 }, { id: 'o6', name: 'ول‌دان', price: 0 }]
+      }
+    ]
+  },
+  {
+    id: '3',
+    name: 'سیب‌زمینی سرخ‌کرده',
+    category: 'پیش‌غذا',
+    categoryId: 'c5',
+    price: 85000,
+    description: 'سیب‌زمینی تازه با ادویه مخصوص.',
+    image: 'https://images.unsplash.com/photo-1573080496987-8198cb7fcd48?q=80&w=1000&auto=format&fit=crop',
+    estimatedTime: '۱۰ دقیقه',
+    rawMaterials: ['سیب‌زمینی', 'روغن', 'نمک'],
+    modifiers: []
+  },
+  {
+    id: '4',
+    name: 'سالاد سزار',
+    category: 'سالاد',
+    categoryId: 'c3',
+    price: 120000,
+    description: 'کاهو پیچ، مرغ گریل، پنیر پارمزان و سس مخصوص.',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop',
+    estimatedTime: '۱۰ دقیقه',
+    rawMaterials: ['کاهو', 'مرغ', 'پنیر', 'سس', 'نان کروتون'],
+    modifiers: []
+  },
+  {
+    id: '5',
+    name: 'پاستا آلفردو',
+    category: 'پاستا',
+    categoryId: 'c4',
+    price: 190000,
+    description: 'پنه، مرغ، قارچ، سس آلفردو خامه ای و پنیر پارمزان.',
+    image: 'https://images.unsplash.com/photo-1621996311239-531f0b50395d?q=80&w=1000&auto=format&fit=crop',
+    estimatedTime: '۲۵ دقیقه',
+    rawMaterials: ['پاستا', 'مرغ', 'قارچ', 'خامه', 'پنیر'],
+    modifiers: []
+  }
+];
+
 export const SIDEBAR_LINKS = [
   { id: 'dashboard', label: 'داشبورد', icon: <LayoutDashboard className="w-5 h-5" /> },
   { id: 'designer', label: 'طراحی منو', icon: <Palette className="w-5 h-5" /> },
   { id: 'products', label: 'محصولات', icon: <Package className="w-5 h-5" /> },
+  { id: 'categories', label: 'دسته‌بندی‌ها', icon: <Layers className="w-5 h-5" /> },
   { id: 'orders', label: 'سفارشات', icon: <ClipboardList className="w-5 h-5" /> },
   { id: 'analytics', label: 'تحلیل و آمار', icon: <BarChart3 className="w-5 h-5" /> },
   { id: 'settings', label: 'تنظیمات', icon: <Settings className="w-5 h-5" /> },
@@ -29,7 +114,7 @@ export const SIDEBAR_LINKS = [
 
 export const COMPONENT_LIBRARY = [
   { 
-    category: 'هیرو (بخش معرفی رستوران)',
+    category: 'بخش هیرو (معرفی)',
     items: [
       { 
         id: 'hero-overlay', 
@@ -76,34 +161,24 @@ export const COMPONENT_LIBRARY = [
     ]
   },
   { 
-    category: 'چیدمان محصولات (Menu Layout)',
+    category: 'بخش‌های اصلی (Blocks)',
     items: [
       { 
-        id: 'prod-grid', 
-        type: 'product-grid', 
-        label: 'نمای شبکه‌ای', 
+        id: 'category-display', 
+        type: 'category-display', 
+        label: 'نمایش دسته‌بندی‌ها', 
         icon: <LayoutGrid className="w-4 h-4" />,
         defaults: {
-          title: 'پیشنهادات ویژه',
-          subtitle: 'انتخاب‌های محبوب مشتریان ما',
-          fontSize: 18
-        }
-      },
-      { 
-        id: 'prod-list', 
-        type: 'product-list', 
-        label: 'نمای لیستی (کلاسیک)', 
-        icon: <ListIcon className="w-4 h-4" />,
-        defaults: {
-          title: 'نوشیدنی‌های سرد و گرم',
-          subtitle: 'طعم‌های تازه و طبیعی',
-          fontSize: 18
+          layout: 'grid',
+          columns: 2,
+          title: 'دسته‌بندی‌های منو',
+          fontSize: 20
         }
       },
       { 
         id: 'prod-feat', 
         type: 'featured', 
-        label: 'محصول ویژه (Spotlight)', 
+        label: 'محصول ویژه (Promo)', 
         icon: <Star className="w-4 h-4" />,
         defaults: {
           title: 'امضای سرآشپز',
@@ -113,6 +188,22 @@ export const COMPONENT_LIBRARY = [
           fontSize: 24
         }
       },
+      { 
+        id: 'footer-block', 
+        type: 'footer', 
+        label: 'فوتر و اطلاعات تماس', 
+        icon: <Smartphone className="w-4 h-4" />,
+        defaults: {
+          title: 'اطلاعات تماس',
+          customText: 'طراحی شده توسط پلتفرم هوشمند ویترین',
+          phone: true,
+          address: true,
+          showInstagram: true,
+          showTwitter: false,
+          showWhatsapp: true,
+          fontSize: 14
+        }
+      }
     ]
   }
 ];
@@ -140,6 +231,7 @@ export const SEARCH_ITEMS = [
   // App views/pages
   { id: 'dashboard', type: 'navigation', title: 'صفحه داشبورد مدیریت', subtitle: 'منوی اصلی > خلاصه عملکرد روزانه رستوران', detail: 'صفحات و منوها', icon: 'dashboard', keywords: 'داشبورد خلاصه گزارش خانه صفحه اصلی آمار روزانه داشبورد مدیریت dashboard home stats' },
   { id: 'designer', type: 'navigation', title: 'طراحی بصری منو و قالب', subtitle: 'منوی اصلی > ویرایشگر هیرو، قالب و چیدمان محصولات', detail: 'صفحات و منوها', icon: 'palette', keywords: 'طراحی طراحی منو قالب هیرو چیدمان محصولات ظاهر منو ویرایشگر بصری هیرو بخش معرفی designer menu templates layout canvas designer' },
+  { id: 'categories', type: 'navigation', title: 'مدیریت دسته‌بندی‌ها', subtitle: 'منوی اصلی > تعریف دسته‌های منو', detail: 'صفحات و منوها', icon: 'layers', keywords: 'دسته بندی دسته ها منو categories' },
   { id: 'products', type: 'navigation', title: 'مدیریت محصولات و منو', subtitle: 'منوی اصلی > تعریف غذاها، قیمت‌ها و دسته‌بندی‌ها', detail: 'صفحات و منوها', icon: 'package', keywords: 'محصولات منو غذا غذاها قیمت دسته بندی قیمت ها محصولات مدیر کالا کالاها تعریف غذاها محصولات و منو products items category price' },
   { id: 'orders', type: 'navigation', title: 'برد مدیریت سفارشات', subtitle: 'منوی اصلی > پیگیری سفارش‌های دریافتی، میزها و وضعیت آماده‌سازی', detail: 'صفحات و منوها', icon: 'clipboard', keywords: 'سفارشات برد سفارشات پیگیری سفارش میز وضعیت آماده سازی سفارش ها مدیریت سفارشات orders board status tables' },
   { id: 'analytics', type: 'navigation', title: 'تحلیل، آمار و گزارشات', subtitle: 'منوی اصلی > گزارش فروش، درآمد و رفتار مشتریان', detail: 'صفحات و منوها', icon: 'barchart', keywords: 'تحلیل آمار گزارش نمودار فروش درآمد سود مشتریان گزارشات عملکرد آمارها تحلیل و آمار analytics charts sales revenue reports' },

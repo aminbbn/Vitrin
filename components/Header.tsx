@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Power, Eye, Sparkles, CheckCircle2, Bell, User,
   LogOut, Store, MapPin, Phone, Clock, X, ChevronDown,
-  Check, Trash2
+  Check, Trash2, Sun, Moon, Menu
 } from 'lucide-react';
 import { Notification } from '../types';
 
@@ -27,6 +27,9 @@ interface HeaderProps {
   onNotificationClick: (n: Notification) => void;
   onMarkRead?: (id: string) => void;
   onDelete?: (id: string) => void;
+  theme?: 'light' | 'dark';
+  toggleTheme?: () => void;
+  onMenuToggle?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -47,7 +50,10 @@ const Header: React.FC<HeaderProps> = ({
   brandColor,
   onNotificationClick,
   onMarkRead,
-  onDelete
+  onDelete,
+  theme = 'light',
+  toggleTheme,
+  onMenuToggle
 }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -71,42 +77,55 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 z-40 relative font-['Vazirmatn'] shrink-0">
+      <header className="h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-8 z-40 relative font-['Vazirmatn'] shrink-0 transition-colors duration-300">
         
-        {/* Left: Search Section */}
-        <div className="flex items-center flex-1 max-w-md" ref={searchRef}>
-          <div className="relative w-full group">
-            <Search className={`w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isSearchFocused ? `text-${brandColor}-500` : 'text-slate-400'}`} />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setIsSearchFocused(true)}
-              placeholder="جستجو در پنل مدیریت..." 
-              className={`bg-slate-100/50 border border-transparent rounded-2xl pr-11 pl-4 py-2.5 w-full text-sm outline-none transition-all ${isSearchFocused ? `bg-white border-${brandColor}-500/30 ring-4 ring-${brandColor}-500/5 shadow-sm` : 'hover:bg-slate-100'}`}
-            />
+        {/* Rightmost in RTL: Hamburger & Search Section */}
+        <div className="flex items-center gap-3 flex-1 max-w-xs sm:max-w-md">
+          {onMenuToggle && (
+            <button 
+              onClick={onMenuToggle}
+              className="p-2 -mr-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 md:hidden block shrink-0 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
+              title="منوی اصلی"
+            >
+              <Menu className="w-5.5 h-5.5" />
+            </button>
+          )}
+
+          {/* Search Section */}
+          <div className="hidden sm:flex items-center flex-1" ref={searchRef}>
+            <div className="relative w-full group">
+              <Search className={`w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isSearchFocused ? `text-${brandColor}-500` : 'text-slate-400'}`} />
+              <input 
+                type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                placeholder="جستجو در پنل مدیریت..." 
+                className={`bg-slate-100/50 dark:bg-slate-800/40 border border-transparent dark:text-slate-200 rounded-2xl pr-11 pl-4 py-2.5 w-full text-sm outline-none transition-all ${isSearchFocused ? `bg-white dark:bg-slate-900 border-${brandColor}-500/30 ring-4 ring-${brandColor}-500/5 shadow-sm` : 'hover:bg-slate-100 dark:hover:bg-slate-800/60'}`}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Right: Actions & Profile */}
+        {/* Left: Actions & Profile */}
         <div className="flex items-center gap-2">
           
           {/* Action Group 1: Status & Preview */}
-          <div className="flex items-center gap-1 bg-slate-100/50 p-1 rounded-2xl border border-slate-200/50 mr-2">
-            <div className="flex items-center gap-2 px-3 py-1.5">
+          <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-slate-800/30 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-800 mr-1 sm:mr-2">
+            <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5">
                <div className={`w-2 h-2 rounded-full ${isRestaurantOpen ? `bg-${brandColor}-500` : 'bg-rose-500'} animate-pulse`} />
-               <span className="text-[11px] font-bold text-slate-600">رستوران {isRestaurantOpen ? 'باز' : 'بسته'}</span>
+               <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 hidden sm:inline">رستوران {isRestaurantOpen ? 'باز' : 'بسته'}</span>
                <button 
-                onClick={() => setIsRestaurantOpen(!isRestaurantOpen)}
-                className={`p-1 hover:bg-white hover:shadow-sm rounded-lg transition-all text-slate-400 hover:text-${brandColor}-600`}
+                 onClick={() => setIsRestaurantOpen(!isRestaurantOpen)}
+                 className={`p-1 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm rounded-lg transition-all text-slate-400 hover:text-${brandColor}-600`}
                >
                  <Power className="w-3.5 h-3.5" />
                </button>
             </div>
-            <div className="w-px h-4 bg-slate-200 mx-1" />
+            <div className="w-px h-4 bg-slate-200 dark:bg-slate-800 mx-1" />
             <button 
               onClick={onPreviewShop}
-              className={`p-2 rounded-xl text-slate-500 hover:text-${brandColor}-600 hover:bg-white transition-all group`}
+              className={`p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-${brandColor}-600 hover:bg-white dark:hover:bg-slate-800 transition-all group`}
               title="مشاهده سایت"
             >
               <Eye className="w-4 h-4 group-hover:scale-110" />
@@ -118,14 +137,14 @@ const Header: React.FC<HeaderProps> = ({
             <button 
               onClick={onPublish} 
               disabled={isPublishing} 
-              className={`px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all ${isPublishing ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : `bg-${brandColor}-600 text-white hover:bg-${brandColor}-700 shadow-lg shadow-${brandColor}-600/20 active:scale-95`}`}
+              className={`px-3 sm:px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all ${isPublishing ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : `bg-${brandColor}-600 text-white hover:bg-${brandColor}-700 shadow-lg shadow-${brandColor}-600/20 active:scale-95`}`}
             >
               {isPublishing ? (
                 <div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
               ) : (
                 <Sparkles className="w-3.5 h-3.5" />
               )}
-              <span>انتشار تغییرات</span>
+              <span className="hidden md:inline">انتشار تغییرات</span>
             </button>
             
             <AnimatePresence>
@@ -134,7 +153,7 @@ const Header: React.FC<HeaderProps> = ({
                   initial={{ opacity: 0, y: 15 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   exit={{ opacity: 0, scale: 0.9 }} 
-                  className="absolute top-full mt-3 left-0 bg-slate-900 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-2xl z-50 whitespace-nowrap"
+                  className="absolute top-full mt-3 left-0 bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-2xl z-50 whitespace-nowrap"
                 >
                   <CheckCircle2 className={`w-4 h-4 text-${brandColor}-400`} />
                   <span className="text-[11px] font-bold">تغییرات با موفقیت اعمال شد</span>
@@ -143,17 +162,32 @@ const Header: React.FC<HeaderProps> = ({
             </AnimatePresence>
           </div>
 
-          <div className="w-[1px] h-8 bg-slate-200 mx-2" />
+          <div className="w-[1px] h-8 bg-slate-200 dark:bg-slate-800 mx-1 sm:mx-2" />
+
+          {/* Dark Mode Toggle */}
+          {toggleTheme && (
+            <button 
+               onClick={toggleTheme} 
+               className="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shrink-0"
+               title={theme === 'dark' ? "پوسته روشن" : "پوسته تاریک"}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5 text-amber-500 hover:scale-110 transition-transform" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-600 dark:text-slate-400 hover:scale-110 transition-transform" />
+              )}
+            </button>
+          )}
 
           {/* Notification Bell */}
           <div className="relative" ref={notifRef}>
             <button 
                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} 
-               className={`p-2.5 rounded-xl relative transition-all ${isNotificationsOpen ? `bg-${brandColor}-50 text-${brandColor}-600 shadow-inner` : 'text-slate-500 hover:bg-slate-100'}`}
+               className={`p-2.5 rounded-xl relative transition-all ${isNotificationsOpen ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 shadow-inner` : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-2 right-2 w-4 h-4 bg-rose-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-black text-white shadow-sm">
+                <span className="absolute top-2 right-2 w-4 h-4 bg-rose-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-[8px] font-black text-white shadow-sm">
                   {unreadCount}
                 </span>
               )}
@@ -165,17 +199,17 @@ const Header: React.FC<HeaderProps> = ({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute top-full left-0 mt-4 w-80 bg-white rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-200 z-[60] overflow-hidden origin-top-left"
+                  className="absolute top-full left-0 mt-4 w-80 bg-white dark:bg-slate-900 rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-200 dark:border-slate-800 z-[60] overflow-hidden origin-top-left"
                 >
-                   <div className="p-4 border-b border-slate-100 flex justify-between items-center">
-                      <h3 className="font-black text-slate-800 text-sm">اعلان‌های سیستم</h3>
-                      <span className={`text-[10px] bg-${brandColor}-100 text-${brandColor}-700 px-2.5 py-1 rounded-lg font-bold`}>
+                   <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                      <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm">اعلان‌های سیستم</h3>
+                      <span className={`text-[10px] bg-${brandColor}-100 dark:bg-${brandColor}-950/50 text-${brandColor}-700 dark:text-${brandColor}-400 px-2.5 py-1 rounded-lg font-bold`}>
                         {unreadCount} مورد جدید
                       </span>
                    </div>
                    <div className="max-h-[320px] overflow-y-auto">
                       {notifications.length === 0 ? (
-                        <div className="p-10 text-center text-slate-400 text-xs">پیامی برای نمایش وجود ندارد</div>
+                        <div className="p-10 text-center text-slate-400 dark:text-slate-500 text-xs">پیامی برای نمایش وجود ندارد</div>
                       ) : (
                         notifications.map(n => (
                           <div 
@@ -184,14 +218,14 @@ const Header: React.FC<HeaderProps> = ({
                               onNotificationClick(n);
                               setIsNotificationsOpen(false);
                             }}
-                            className={`p-4 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer text-right flex items-start gap-3 relative group ${!n.read ? `bg-${brandColor}-50/10` : ''}`}
+                            className={`p-4 border-b border-slate-50 dark:border-slate-800/40 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer text-right flex items-start gap-3 relative group ${!n.read ? `bg-${brandColor}-50/10 dark:bg-${brandColor}-950/10` : ''}`}
                           >
                              <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-center mb-1">
-                                   <span className="font-bold text-xs text-slate-800 truncate">{n.title}</span>
-                                   <span className="text-[9px] text-slate-400 font-medium shrink-0 mr-1">{n.time}</span>
+                                   <span className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{n.title}</span>
+                                   <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium shrink-0 mr-1">{n.time}</span>
                                 </div>
-                                <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">{n.message}</p>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2">{n.message}</p>
                              </div>
                              
                              <div className="flex items-center gap-1 opacity-60 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 self-center">
@@ -201,7 +235,7 @@ const Header: React.FC<HeaderProps> = ({
                                          e.stopPropagation();
                                          onMarkRead(n.id);
                                       }}
-                                      className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                      className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg transition-colors"
                                       title="علامت‌گذاری به عنوان خوانده شده"
                                    >
                                       <Check className="w-3.5 h-3.5" />
@@ -213,7 +247,7 @@ const Header: React.FC<HeaderProps> = ({
                                          e.stopPropagation();
                                          onDelete(n.id);
                                       }}
-                                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg transition-colors"
                                       title="حذف"
                                    >
                                       <Trash2 className="w-3.5 h-3.5" />
@@ -226,7 +260,7 @@ const Header: React.FC<HeaderProps> = ({
                    </div>
                    <button 
                     onClick={() => { onViewAllNotifications(); setIsNotificationsOpen(false); }}
-                    className={`w-full p-4 bg-slate-50 text-[11px] font-black text-${brandColor}-600 hover:text-${brandColor}-700 hover:bg-slate-100 transition-colors border-t border-slate-100`}
+                    className={`w-full p-4 bg-slate-50 dark:bg-slate-800/50 text-[11px] font-black text-${brandColor}-600 dark:text-${brandColor}-400 hover:text-${brandColor}-700 dark:hover:text-${brandColor}-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-t border-slate-100 dark:border-slate-800`}
                    >
                       مشاهده تمام اعلان‌ها
                    </button>
@@ -244,15 +278,15 @@ const Header: React.FC<HeaderProps> = ({
           >
             <div 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className={`flex items-center gap-3 px-3 py-1.5 rounded-2xl border transition-all cursor-pointer group select-none ${
+              className={`flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 rounded-2xl border transition-all cursor-pointer group select-none ${
                 isProfileOpen 
-                  ? `border-${brandColor}-500 bg-${brandColor}-50/50 shadow-inner` 
-                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50'
+                  ? `border-${brandColor}-500 bg-${brandColor}-50/50 dark:bg-${brandColor}-950/20 shadow-inner` 
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-850/50'
               }`}
             >
               <div className="text-left hidden md:flex flex-col items-end pl-1">
                 <div className="flex items-center gap-1.5">
-                    <span className={`text-sm font-black text-slate-800 group-hover:text-${brandColor}-600 transition-colors`}>{restaurantName}</span>
+                    <span className={`text-sm font-black text-slate-800 dark:text-slate-200 group-hover:text-${brandColor}-600 dark:group-hover:text-${brandColor}-400 transition-colors`}>{restaurantName}</span>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 group-hover:translate-y-0.5" />
                 </div>
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">شعبه مرکزی</span>
@@ -260,12 +294,12 @@ const Header: React.FC<HeaderProps> = ({
               <div 
                 className={`w-9 h-9 rounded-xl border shadow-sm flex items-center justify-center transition-all overflow-hidden shrink-0 ${
                   isProfileOpen 
-                    ? `border-${brandColor}-500 bg-white` 
-                    : 'bg-slate-100 border-slate-200'
+                    ? `border-${brandColor}-500 bg-white dark:bg-slate-900` 
+                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
                 }`}
               >
-                {restaurantLogo ? (
-                  <img src={restaurantLogo} alt="Logo" className="w-full h-full object-cover" />
+                {restaurantLogo && restaurantLogo.trim() !== '' ? (
+                  <img src={restaurantLogo || undefined} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 ) : (
                   <User className={`w-4 h-4 ${isProfileOpen ? `text-${brandColor}-600` : 'text-slate-400'}`} />
                 )}
@@ -278,16 +312,16 @@ const Header: React.FC<HeaderProps> = ({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 w-60 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-200 z-[60] p-2 origin-top-left mt-2"
+                    className="absolute top-full left-0 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-200 dark:border-slate-800 z-[60] p-2 origin-top-left mt-2"
                  >
-                    <div className="px-4 py-3 bg-slate-50 rounded-xl mb-1.5">
-                       <p className="font-black text-xs text-slate-800 uppercase tracking-tight">پنل مدیریت</p>
-                       <p className="text-[10px] text-slate-400 mt-0.5">admin@vitrin.com</p>
+                    <div className="px-4 py-3 bg-slate-50 dark:bg-slate-850 rounded-xl mb-1.5">
+                       <p className="font-black text-xs text-slate-800 dark:text-slate-200 uppercase tracking-tight">پنل مدیریت</p>
+                       <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">admin@vitrin.com</p>
                     </div>
                     
                     <button 
                       onClick={() => { setIsRestaurantInfoOpen(true); setIsProfileOpen(false); }}
-                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-between group mb-1"
+                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-center justify-between group mb-1"
                     >
                        <span>اطلاعات فروشگاه</span>
                        <Store className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
@@ -295,17 +329,17 @@ const Header: React.FC<HeaderProps> = ({
 
                     <button 
                       onClick={() => { onProfileClick(); setIsProfileOpen(false); }}
-                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-between group mb-1"
+                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-center justify-between group mb-1"
                     >
                        <span>تنظیمات سیستم</span>
                        <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
                     </button>
 
-                    <div className="h-px bg-slate-100 my-1 mx-2" />
+                    <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
 
                     <button 
                       onClick={() => { onLogout(); setIsProfileOpen(false); }}
-                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-black text-rose-500 hover:bg-rose-50 transition-colors flex items-center justify-between group"
+                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-black text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors flex items-center justify-between group"
                     >
                        <span>خروج از حساب</span>
                        <LogOut className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -333,29 +367,29 @@ const Header: React.FC<HeaderProps> = ({
                initial={{ scale: 0.9, opacity: 0, y: 20 }}
                animate={{ scale: 1, opacity: 1, y: 0 }}
                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-               className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden border border-slate-100 flex flex-col"
+               className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden border border-slate-100 dark:border-slate-800 flex flex-col"
                onClick={(e) => e.stopPropagation()}
              >
                <div className="p-8 relative">
                   <div className="flex items-center justify-between mb-8">
                      <div className="flex items-center gap-4">
-                        <div className={`p-4 rounded-[1.25rem] bg-${brandColor}-50 text-${brandColor}-600 shadow-inner`}>
+                        <div className={`p-4 rounded-[1.25rem] bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 shadow-inner`}>
                            <Store className="w-6 h-6" />
                         </div>
-                        <h3 className="text-xl font-black text-slate-800">اطلاعات فروشگاه</h3>
+                        <h3 className="text-xl font-black text-slate-800 dark:text-slate-100">اطلاعات فروشگاه</h3>
                      </div>
-                     <button onClick={() => setIsRestaurantInfoOpen(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400">
+                     <button onClick={() => setIsRestaurantInfoOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
                         <X className="w-5 h-5" />
                      </button>
                   </div>
 
                   <div className="space-y-5">
-                     <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-200/50">
+                     <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-850 rounded-2xl border border-slate-200/50 dark:border-slate-800">
                         <div className="flex flex-col">
-                           <span className="text-[10px] font-bold text-slate-400 mb-1">نام رسمی</span>
-                           <span className="text-lg font-black text-slate-800">{restaurantName}</span>
+                           <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1">نام رسمی</span>
+                           <span className="text-lg font-black text-slate-800 dark:text-slate-100">{restaurantName}</span>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-[10px] font-black border ${isRestaurantOpen ? `bg-${brandColor}-100 text-${brandColor}-700 border-${brandColor}-200` : 'bg-rose-100 text-rose-700 border-rose-200'}`}>
+                        <div className={`px-3 py-1 rounded-full text-[10px] font-black border ${isRestaurantOpen ? `bg-${brandColor}-100 text-${brandColor}-700 border-${brandColor}-200 dark:bg-${brandColor}-950/50 dark:text-${brandColor}-400 dark:border-${brandColor}-800` : 'bg-rose-100 text-rose-700 border-rose-200'}`}>
                            {isRestaurantOpen ? 'فعال' : 'غیرفعال'}
                         </div>
                      </div>
@@ -366,11 +400,11 @@ const Header: React.FC<HeaderProps> = ({
                           { icon: Phone, label: "تلفن", value: "۰۲۱-۸۸۹۹۰۰۰۰" },
                           { icon: Clock, label: "ساعت کار", value: "همه روزه ۱۱:۰۰ صبح تا ۱۱:۳۰ شب" }
                         ].map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100">
+                          <div key={idx} className="flex items-start gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-2xl transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
                              <item.icon className="w-5 h-5 text-slate-400 mt-0.5" />
                              <div>
-                                <span className="block text-[10px] font-bold text-slate-400 mb-0.5">{item.label}</span>
-                                <p className="text-xs font-bold text-slate-700 leading-relaxed">{item.value}</p>
+                                <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-0.5">{item.label}</span>
+                                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 leading-relaxed">{item.value}</p>
                              </div>
                           </div>
                         ))}
@@ -378,7 +412,7 @@ const Header: React.FC<HeaderProps> = ({
 
                      <button 
                         onClick={() => { setIsRestaurantInfoOpen(false); onProfileClick(); }} 
-                        className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95 mt-4"
+                        className="w-full py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-2xl font-black text-sm hover:bg-slate-800 dark:hover:bg-slate-700 transition-all shadow-xl shadow-slate-900/10 active:scale-95 mt-4"
                      >
                         ویرایش تنظیمات فروشگاه
                      </button>
