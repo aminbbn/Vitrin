@@ -224,7 +224,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
     <div className="min-h-screen bg-[#F7F7F8] text-[#18181B] font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed" style={{ direction: 'rtl' }}>
       
       {/* Header / Hero of Features */}
-      <header className="relative py-20 lg:py-28 bg-[#0A0A0A] text-white overflow-hidden border-b border-white/10">
+      <header className="relative py-12 lg:py-16 bg-[#0A0A0A] text-white overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(16, 185, 129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16, 185, 129,0.02)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
           
@@ -292,7 +292,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </header>
 
       {/* 1. SECTION: استودیو طراحی منو */}
-      <section id="studio" ref={studioSectionRef} className="py-24 bg-white border-b border-slate-200/50 scroll-mt-20">
+      <section id="studio" ref={studioSectionRef} className="py-12 lg:py-16 bg-white border-b border-slate-200/50 scroll-mt-20">
         <motion.div 
           variants={sectionViewportVariants}
           initial="hidden"
@@ -597,7 +597,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </section>
 
       {/* 2. SECTION: مدیریت محصولات */}
-      <section id="products" className="py-24 bg-[#0A0A0A] text-white relative border-b border-white/10 scroll-mt-20">
+      <section id="products" className="py-12 lg:py-16 bg-[#0A0A0A] text-white relative border-b border-white/10 scroll-mt-20">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16, 185, 129,0.01)_0%,transparent_70%)] pointer-events-none" />
         <motion.div 
           variants={sectionViewportVariants}
@@ -906,7 +906,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </section>
 
       {/* 3. SECTION: تجربه مشتری */}
-      <section id="flow" className="py-24 bg-white border-b border-slate-200/50 scroll-mt-20">
+      <section id="flow" className="py-12 lg:py-16 bg-white border-b border-slate-200/50 scroll-mt-20">
         <motion.div 
           variants={sectionViewportVariants}
           initial="hidden"
@@ -1400,7 +1400,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </section>
 
       {/* 4. SECTION: مدیریت سفارشها */}
-      <section id="orders" className="py-24 bg-[#0A0A0A] text-white relative border-b border-white/10 scroll-mt-20">
+      <section id="orders" className="py-12 lg:py-16 bg-[#0A0A0A] text-white relative border-b border-white/10 scroll-mt-20">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(16, 185, 129,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(16, 185, 129,0.015)_1px,transparent_1px)] bg-[size:40px_40px] opacity-40 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -1528,7 +1528,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </section>
 
       {/* COMPARISON SECTION: قبل از ویترین vs با ویترین */}
-      <section className="py-24 bg-[#F7F7F8] border-b border-slate-200/50">
+      <section className="py-12 lg:py-16 bg-[#F7F7F8] border-b border-slate-200/50">
         <div className="max-w-4xl mx-auto px-6">
           
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -1595,7 +1595,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </section>
 
       {/* Testimonials Teaser */}
-      <section className="py-20 bg-[#0A0A0A] text-white text-center border-b border-white/10 relative overflow-hidden">
+      <section className="py-12 lg:py-16 bg-[#0A0A0A] text-white text-center border-b border-white/10 relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 relative z-10 space-y-4">
           <HeartHandshake className="w-10 h-10 text-[#10b981] mx-auto" />
           <h2 className="text-2xl sm:text-3xl font-black text-white">رضایت مشتری مایه افتخار ماست</h2>
@@ -1604,7 +1604,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </section>
 
       {/* Final CTA band */}
-      <section id="final-cta" className="relative py-24 bg-[#10b981] text-white overflow-hidden text-center">
+      <section id="final-cta" className="relative py-12 lg:py-16 bg-[#10b981] text-white overflow-hidden text-center">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.15)_0%,transparent_80%)]" />
         <div className="max-w-4xl mx-auto px-6 relative z-10">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 leading-none tracking-tight">آماده‌اید منوی خود را متحول کنید؟</h2>
@@ -1623,7 +1623,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
       </section>
 
       {/* Footer */}
-      <footer id="marketing-footer" className="bg-[#0A0A0A] text-slate-400 py-16 border-t border-white/10 text-right">
+      <footer id="marketing-footer" className="bg-[#0A0A0A] text-slate-400 py-12 border-t border-white/10 text-right">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
             

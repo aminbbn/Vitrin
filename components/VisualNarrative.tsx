@@ -95,7 +95,7 @@ const OrbitItem = ({ item, index, total, rotation, onHover, hoveredId, isActive 
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: [0.35, 0.65, 0.35], scale: [1.1, 1.28, 1.1] }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut', type: 'tween' }}
             className="absolute -inset-3 rounded-2xl border border-dashed"
             style={{ borderColor: item.color }}
           />

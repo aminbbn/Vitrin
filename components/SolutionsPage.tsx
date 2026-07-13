@@ -157,7 +157,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
     <div className="min-h-screen bg-[#F7F7F8] text-[#18181B] font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed" style={{ direction: 'rtl' }}>
       
       {/* Hero Header Section */}
-      <header className="relative py-20 lg:py-28 bg-[#0A0A0A] text-white overflow-hidden border-b border-white/10">
+      <header className="relative py-12 lg:py-16 bg-[#0A0A0A] text-white overflow-hidden border-b border-white/10">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(16, 185, 129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16, 185, 129,0.02)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
           
@@ -222,7 +222,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </header>
 
       {/* SOLUTIONS TAB SWITCHER & PANEL SECTION */}
-      <section id="solutions-tabs" className="py-20 bg-white border-b border-slate-200/50 scroll-mt-24">
+      <section id="solutions-tabs" className="py-12 lg:py-16 bg-white border-b border-slate-200/50 scroll-mt-24">
         <div className="max-w-7xl mx-auto px-6">
           
           {/* Animated Tab Switcher Container */}
@@ -798,7 +798,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </section>
 
       {/* PAIN POINT COMPARISON SECTION (قبل از ویترین vs با ویترین) */}
-      <section className="py-24 bg-[#F7F7F8] border-b border-slate-200/50">
+      <section className="py-12 lg:py-16 bg-[#F7F7F8] border-b border-slate-200/50">
         <div className="max-w-7xl mx-auto px-6">
           
           <div className="text-center max-w-2xl mx-auto mb-16">
@@ -960,7 +960,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </section>
 
       {/* DEMO REQUEST SECTION (Primary Conversion) */}
-      <section id="demo-form" className="py-24 bg-white relative scroll-mt-20">
+      <section id="demo-form" className="py-12 lg:py-16 bg-white relative scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
             
@@ -1175,7 +1175,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </section>
 
       {/* FINAL CTA RED BAND */}
-      <section id="final-cta" className="relative py-20 bg-[#10b981] text-white overflow-hidden text-center">
+      <section id="final-cta" className="relative py-12 lg:py-16 bg-[#10b981] text-white overflow-hidden text-center">
         {/* Dynamic mesh circles */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-black/10 rounded-full blur-3xl pointer-events-none" />
@@ -1209,7 +1209,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </section>
 
       {/* Footer Section */}
-      <footer id="solutions-footer" className="bg-[#0A0A0A] text-[#71717A] pt-20 pb-10 border-t border-white/5">
+      <footer id="solutions-footer" className="bg-[#0A0A0A] text-[#71717A] pt-12 pb-10 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16 text-right">
             
