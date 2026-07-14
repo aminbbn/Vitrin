@@ -1,63 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring, useReducedMotion } from 'framer-motion';
-import { ChevronDown, ChevronLeft, Menu, X, ArrowLeft } from 'lucide-react';
-
-export type NavigationChild = {
-  label: string;
-  targetId?: string;
-  route?: 'home' | 'features' | 'solutions';
-};
+import { Menu, X, ArrowLeft } from 'lucide-react';
 
 export type NavigationItem = {
   label: string;
-  route?: 'home' | 'features' | 'solutions';
-  targetId?: string;
-  children?: NavigationChild[];
+  targetId: string;
 };
 
 const NAVIGATION_DATA: NavigationItem[] = [
   {
-    label: 'صفحه اصلی',
-    route: 'home',
-    targetId: 'hero'
-  },
-  {
     label: 'امکانات',
-    route: 'features',
-    targetId: 'studio',
-    children: [
-      { label: 'امکانات فوق‌پیشرفته', route: 'features' },
-      { label: 'استودیو طراحی زنده', route: 'features', targetId: 'studio' },
-      { label: 'مدیریت منو و غذاها', route: 'features', targetId: 'products' },
-      { label: 'شبیه‌ساز سفارش مشتری', route: 'features', targetId: 'flow' },
-      { label: 'داشبورد سفارشات هوشمند', route: 'features', targetId: 'orders' }
-    ]
+    targetId: 'studio'
   },
   {
     label: 'راهکارها',
-    route: 'solutions',
-    targetId: 'solutions-tabs',
-    children: [
-      { label: 'کافه‌ها', route: 'solutions', targetId: 'solutions-tabs' },
-      { label: 'رستوران‌ها', route: 'solutions', targetId: 'solutions-tabs' },
-      { label: 'فست‌فودها', route: 'solutions', targetId: 'solutions-tabs' },
-      { label: 'فودکورت‌ها', route: 'solutions', targetId: 'solutions-tabs' },
-      { label: 'مجموعه‌های زنجیره‌ای', route: 'solutions', targetId: 'solutions-tabs' }
-    ]
+    targetId: 'solutions-tabs'
   },
   {
-    label: 'تعرفه‌ها',
-    route: 'home',
-    targetId: 'pricing'
-  },
-  {
-    label: 'منابع',
-    children: [
-      { label: 'مرکز راهنما', route: 'home', targetId: 'faq' },
-      { label: 'درخواست دمو', route: 'solutions', targetId: 'demo-form' },
-      { label: 'تماس با ما', route: 'solutions', targetId: 'demo-form' },
-      { label: 'قوانین و مقررات', route: 'home', targetId: 'faq' }
-    ]
+    label: 'سوالات متداول',
+    targetId: 'faq'
   }
 ];
 
@@ -82,28 +43,24 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
   const [hasScrolled, setHasScrolled] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [expandedMobileGroup, setExpandedMobileGroup] = useState<string | null>(null);
-  const [activeSectionTab, setActiveSectionTab] = useState<string>('صفحه اصلی');
+  const [activeSectionTab, setActiveSectionTab] = useState<string | null>(null);
   const [isWindowLarge, setIsWindowLarge] = useState(true);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Monitor viewport size to switch mobile breakpoints gracefully
+  // Monitor window resize
   useEffect(() => {
     const handleResize = () => {
-      setIsWindowLarge(window.innerWidth >= 950);
+      setIsWindowLarge(window.innerWidth >= 1024);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Sticky header scroll monitoring
+  // Monitor scroll for sticky style
   useEffect(() => {
     const handleScroll = () => {
-      setHasScrolled(window.scrollY > 60);
+      setHasScrolled(window.scrollY > 40);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -114,7 +71,6 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
     const sectionIds = [
       'hero',
       'how-it-works',
-      'pricing',
       'faq',
       'studio',
       'products',
@@ -131,9 +87,9 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
         if (visibleEntry) {
           const id = visibleEntry.target.id;
           if (id === 'hero' || id === 'how-it-works') {
-            setActiveSectionTab('صفحه اصلی');
-          } else if (id === 'pricing' || id === 'faq') {
-            setActiveSectionTab('تعرفه‌ها');
+            setActiveSectionTab(null);
+          } else if (id === 'faq') {
+            setActiveSectionTab('سوالات متداول');
           } else if (['studio', 'products', 'flow', 'orders'].includes(id)) {
             setActiveSectionTab('امکانات');
           } else if (['solutions-tabs', 'demo-form'].includes(id)) {
@@ -142,8 +98,8 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
         }
       },
       {
-        rootMargin: '-80px 0px -60% 0px',
-        threshold: 0.1
+        rootMargin: '-10% 0px -60% 0px',
+        threshold: 0.15
       }
     );
 
@@ -159,7 +115,7 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
       observedElements.forEach((el) => observer.unobserve(el));
       observer.disconnect();
     };
-  }, [marketingRoute]);
+  }, []);
 
   // Lock scroll when mobile menu is active
   useEffect(() => {
@@ -173,286 +129,245 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
     };
   }, [isMobileMenuOpen]);
 
-  // Escape key closes menus
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setActiveDropdown(null);
-        setIsMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Click outside to close dropdowns
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Universal Navigation and Scroll logic
-  const handleNavigation = (item: NavigationItem | NavigationChild) => {
-    setActiveDropdown(null);
+  // Handle section smooth scroll and sync state
+  const handleNavigation = (targetId: string) => {
     setIsMobileMenuOpen(false);
 
-    const targetRoute = item.route;
-    const targetId = item.targetId;
-
-    if (targetRoute) {
-      if (targetRoute === 'features' && onNavigateFeatures) {
-        onNavigateFeatures();
-      } else if (targetRoute === 'solutions' && onNavigateSolutions) {
-        onNavigateSolutions();
-      } else {
-        setMarketingRoute(targetRoute);
-      }
-    }
-
-    if (targetId) {
+    if (marketingRoute !== 'home') {
+      setMarketingRoute('home');
+      // Wait for route change to mount LandingPage and render elements
       setTimeout(() => {
         const el = document.getElementById(targetId);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 150);
-    } else if (targetRoute) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
 
-  // Scroll Progress calculations
+  const handleLogoClick = () => {
+    setIsMobileMenuOpen(false);
+    if (marketingRoute !== 'home') {
+      setMarketingRoute('home');
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    setActiveSectionTab(null);
+  };
+
+  // Scroll Progress logic for elegant top beam
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
+    stiffness: 120,
+    damping: 24,
     restDelta: 0.001
   });
 
-  // Animation constants for entrance sequence
-  const entranceTransition = (delay: number) => ({
-    y: shouldReduceMotion ? 0 : 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1],
-      delay: shouldReduceMotion ? 0 : delay
+  // Framer Motion Entrance Animation Variants
+  const headerEntranceVariants = {
+    hidden: { y: shouldReduceMotion ? 0 : -24, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.7,
+        ease: [0.16, 1, 0.3, 1],
+        staggerChildren: 0.08,
+        delayChildren: 0.1
+      }
     }
-  });
+  };
+
+  const staggerItemVariants = {
+    hidden: { y: shouldReduceMotion ? 0 : -10, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
 
   return (
     <>
-      {/* 2px Page scroll indicator at the absolute top */}
+      {/* 1. Sleek Scroll Progress beam at the absolute top */}
       <motion.div
         style={{ scaleX }}
-        className="fixed top-0 left-0 right-0 h-[2px] bg-emerald-500 z-[9999] origin-right"
+        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-l from-emerald-500 via-[#10b981] to-emerald-300 shadow-[0_1px_10px_rgba(16,185,129,0.5)] z-[9999] origin-right"
       />
 
+      {/* 2. Marketing Sticky Header */}
       <motion.header
         id="marketing-header"
-        initial={{ y: shouldReduceMotion ? 0 : -12, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        variants={headerEntranceVariants}
+        initial="hidden"
+        animate="visible"
         className={`sticky top-0 z-50 w-full transition-all duration-300 font-['Vazirmatn'] ${
           hasScrolled
-            ? 'h-16 bg-[#111312]/88 backdrop-blur-[20px] border-b border-white/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.3)]'
-            : 'h-[76px] bg-[#111312] border-b border-white/[0.06]'
+            ? 'h-14 bg-[#080908]/92 backdrop-blur-[16px] border-b border-[#10b981]/15 shadow-[0_8px_32px_-10px_rgba(0,0,0,0.6)]'
+            : 'h-[72px] bg-[#0c0e0d] border-b border-white/[0.03]'
         } text-white flex items-center justify-between select-none`}
         style={{ direction: 'rtl' }}
       >
-        <div className="w-full max-w-[1280px] mx-auto px-6 md:px-8 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[1200px] mx-auto px-6 md:px-8 flex items-center justify-between gap-4">
           
-          {/* RIGHT SIDE: BRAND LOCKUP */}
+          {/* RIGHT SIDE: PREMIUM BRAND LOCKUP */}
           <motion.div
-            initial={{ scale: shouldReduceMotion ? 1 : 0.92, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
+            variants={staggerItemVariants}
             className="flex items-center shrink-0"
           >
             <button
-              onClick={() => handleNavigation({ route: 'home', targetId: 'hero' })}
+              onClick={handleLogoClick}
               onMouseEnter={() => setIsLogoHovered(true)}
               onMouseLeave={() => setIsLogoHovered(false)}
-              className="flex items-center gap-3 text-right group focus:outline-none focus:ring-2 focus:ring-[#10b981]/30 rounded-xl p-1 bg-transparent border-0 cursor-pointer text-white"
+              className="flex items-center gap-2.5 text-right group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#10b981]/30 rounded-xl p-1 bg-transparent border-0 cursor-pointer text-white"
             >
-              <motion.div
-                animate={{
-                  y: isLogoHovered && !shouldReduceMotion ? -1 : 0,
-                  scale: isLogoHovered && !shouldReduceMotion ? 1.03 : 1,
-                  boxShadow: isLogoHovered && !shouldReduceMotion
-                    ? '0 0 16px rgba(16, 185, 129, 0.45)'
-                    : '0 2px 8px rgba(16, 185, 129, 0.15)'
-                }}
-                className={`transition-all bg-[#10b981] rounded-[11px] flex items-center justify-center shadow-lg shadow-[#10b981]/20 shrink-0 ${
-                  hasScrolled ? 'w-[36px] h-[36px]' : 'w-[40px] h-[40px]'
+              {/* Premium monogram tile with concentric gradients */}
+              <div
+                className={`bg-gradient-to-br from-[#10b981] via-[#059669] to-[#047857] flex items-center justify-center shadow-lg shadow-[#10b981]/10 shrink-0 relative overflow-hidden transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.35)] ${
+                  hasScrolled ? 'w-8 h-8 rounded-[10px]' : 'w-10 h-10 rounded-[12px]'
                 }`}
               >
-                <span className="text-white font-extrabold text-lg leading-none select-none">وی</span>
-              </motion.div>
+                {/* Subtle inner highlight rim */}
+                <div className="absolute inset-0 border border-white/20 rounded-[inherit] pointer-events-none" />
+                <span className={`text-white font-black leading-none select-none ${
+                  hasScrolled ? 'text-xs' : 'text-sm'
+                }`}>وی</span>
+              </div>
+
+              {/* Wordmark & Tagline */}
               <div className="flex flex-col">
-                <motion.span
-                  animate={{
-                    color: isLogoHovered ? '#ffffff' : 'rgba(255, 255, 255, 0.95)'
-                  }}
-                  className="text-base md:text-lg font-black tracking-tight leading-none text-white select-none"
-                >
+                <span className={`font-black tracking-tight text-white/90 group-hover:text-white transition-all duration-300 ${
+                  hasScrolled ? 'text-sm' : 'text-base'
+                }`}>
                   ویترین
-                </motion.span>
+                </span>
                 {isWindowLarge && (
-                  <span className="text-[9px] font-medium text-slate-400 mt-0.5 select-none tracking-normal">
+                  <motion.span 
+                    animate={{ opacity: hasScrolled ? 0 : 0.8 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-[9px] font-black text-emerald-400/80 tracking-wide leading-none mt-0.5 select-none"
+                  >
                     پلتفرم منوی دیجیتال
-                  </span>
+                  </motion.span>
                 )}
               </div>
             </button>
           </motion.div>
 
-          {/* CENTER: DESKTOP NAVIGATION */}
-          {isWindowLarge ? (
-            <nav className="flex items-center" ref={dropdownRef}>
-              <div className={`flex items-center transition-all duration-300 ${hasScrolled ? 'gap-6' : 'gap-8'}`}>
-                {NAVIGATION_DATA.map((item, index) => {
-                  const hasChildren = !!item.children;
-                  const isCurrentActive =
-                    marketingRoute === item.route || activeSectionTab === item.label;
+          {/* CENTER: DESKTOP FLOATING NAV RAIL ("Vitrin Signal Header") */}
+          {isWindowLarge && (
+            <motion.div
+              variants={staggerItemVariants}
+              className="flex items-center justify-center relative"
+            >
+              <nav
+                className={`bg-white/[0.02] border border-white/[0.05] rounded-full px-1.5 py-1 flex items-center relative shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 ${
+                  hasScrolled ? 'gap-1 h-9' : 'gap-1.5 h-11'
+                }`}
+              >
+                {NAVIGATION_DATA.map((item) => {
+                  const isCurrentActive = activeSectionTab === item.label;
 
                   return (
-                    <div
+                    <button
                       key={item.label}
-                      className="relative"
-                      onMouseEnter={() => {
-                        setHoveredLink(item.label);
-                        if (hasChildren) setActiveDropdown(item.label);
-                      }}
-                      onMouseLeave={() => {
-                        setHoveredLink(null);
-                        if (hasChildren) setActiveDropdown(null);
-                      }}
+                      onClick={() => handleNavigation(item.targetId)}
+                      onMouseEnter={() => setHoveredLink(item.label)}
+                      onMouseLeave={() => setHoveredLink(null)}
+                      className={`relative text-[13px] font-black px-4 h-full rounded-full transition-colors border-0 bg-transparent cursor-pointer flex items-center justify-center gap-1.5 select-none focus:outline-none focus-visible:ring-1 focus-visible:ring-[#10b981]/50 ${
+                        isCurrentActive ? 'text-white' : 'text-slate-400 hover:text-white'
+                      }`}
                     >
-                      <motion.button
-                        aria-expanded={activeDropdown === item.label}
-                        aria-haspopup={hasChildren ? 'true' : undefined}
-                        initial={{ y: shouldReduceMotion ? 0 : -8, opacity: 0 }}
-                        animate={entranceTransition(0.2 + index * 0.08)}
-                        onClick={() => !hasChildren && handleNavigation(item)}
-                        className={`relative text-[13px] md:text-sm font-bold py-2 px-1 rounded-lg transition-colors border-0 bg-transparent cursor-pointer flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-[#10b981]/30 ${
-                          isCurrentActive ? 'text-emerald-400' : 'text-slate-300 hover:text-white'
-                        }`}
-                      >
-                        <motion.span
-                          animate={{
-                            y: hoveredLink === item.label && !shouldReduceMotion ? -1 : 0
+                      {/* Subtly reacting label */}
+                      <span className="relative z-10 transition-transform duration-200">
+                        {item.label}
+                      </span>
+
+                      {/* ACTIVE STATE: Premium Sliding Signal Capsule */}
+                      {isCurrentActive && !shouldReduceMotion && (
+                        <motion.div
+                          layoutId="activeNavSignalCapsule"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 300,
+                            damping: 30
                           }}
-                          transition={{ duration: 0.18, ease: 'easeOut' }}
-                          className="inline-flex items-center gap-1"
+                          className="absolute inset-0 bg-[#10b981]/10 border border-[#10b981]/20 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.08)] z-0 flex items-center justify-center"
                         >
-                          {item.label}
-                          {hasChildren && (
-                            <ChevronDown
-                              className={`w-3.5 h-3.5 transition-transform duration-200 text-slate-400 group-hover:text-white ${
-                                activeDropdown === item.label ? 'rotate-180' : ''
-                              }`}
-                            />
-                          )}
-                        </motion.span>
+                          {/* Inner glowing pulse dot representing signal lock */}
+                          <span className="w-1 h-1 rounded-full bg-[#10b981] absolute bottom-0.5 left-1/2 -translate-x-1/2 shadow-[0_0_6px_#10b981] animate-pulse" />
+                        </motion.div>
+                      )}
 
-                        {/* UNDERLINE ACTIVE NAVIGATION STATE */}
-                        {isCurrentActive && (
-                          <motion.span
-                            layoutId="activeNavUnderline"
-                            className="absolute bottom-0 right-1/2 translate-x-1/2 w-5 h-[3px] bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                          />
-                        )}
+                      {/* Backup static layout for reduced motion */}
+                      {isCurrentActive && shouldReduceMotion && (
+                        <div className="absolute inset-0 bg-[#10b981]/15 border border-[#10b981]/25 rounded-full z-0" />
+                      )}
 
-                        {/* NORMAL HOVER UNDERLINE */}
-                        {!isCurrentActive && hoveredLink === item.label && (
-                          <span className="absolute bottom-0 right-0 left-0 h-[1.5px] bg-white/40 origin-right transition-transform duration-150" />
-                        )}
-                      </motion.button>
-
-                      {/* DROPDOWN MENU */}
-                      <AnimatePresence>
-                        {hasChildren && activeDropdown === item.label && (
-                          <motion.div
-                            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -6, scale: shouldReduceMotion ? 1 : 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -4, scale: shouldReduceMotion ? 1 : 0.98 }}
-                            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                            className="absolute right-0 top-full mt-2 w-[240px] bg-[#121413] border border-white/10 rounded-2xl shadow-2xl p-2 z-[100] text-right overflow-hidden backdrop-blur-xl"
-                          >
-                            <div className="flex flex-col gap-1">
-                              {item.children?.map((child) => (
-                                <button
-                                  key={child.label}
-                                  onClick={() => handleNavigation(child)}
-                                  className="group flex items-center justify-between w-full h-11 px-3.5 rounded-xl text-right text-[13px] font-bold text-slate-300 hover:text-white hover:bg-white/[0.05] transition-all cursor-pointer border-0 bg-transparent"
-                                >
-                                  <span>{child.label}</span>
-                                  <ChevronLeft className="w-3.5 h-3.5 text-[#10b981] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150" />
-                                </button>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                      {/* HOVER TRACE AURA */}
+                      {!isCurrentActive && hoveredLink === item.label && !shouldReduceMotion && (
+                        <motion.div
+                          layoutId="hoverNavAura"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 400,
+                            damping: 32
+                          }}
+                          className="absolute inset-0 bg-white/[0.03] border border-white/[0.04] rounded-full z-0"
+                        />
+                      )}
+                    </button>
                   );
                 })}
-              </div>
-            </nav>
-          ) : (
-            <div />
+              </nav>
+            </motion.div>
           )}
 
           {/* LEFT SIDE: ACTIONS (CTA & LOGIN) */}
-          <div className="flex items-center gap-3">
-            {/* Login button: hidden on small views, visible if there's enough space */}
-            <motion.button
-              initial={{ x: shouldReduceMotion ? 0 : -10, opacity: 0 }}
-              animate={entranceTransition(0.7)}
+          <motion.div
+            variants={staggerItemVariants}
+            className="flex items-center gap-3"
+          >
+            {/* Ghost style login button */}
+            <button
               onClick={onLoginClick}
-              className="hidden sm:inline-flex px-4 py-2 text-[13px] font-bold text-white/[0.8] hover:text-white hover:bg-white/[0.05] active:scale-[0.98] transition-all rounded-xl cursor-pointer bg-transparent border-0 outline-none focus:ring-2 focus:ring-white/15"
+              className="hidden sm:inline-flex px-3.5 py-1.5 text-xs font-black text-slate-300 hover:text-white hover:bg-white/[0.04] rounded-xl transition-all border-0 bg-transparent cursor-pointer select-none focus:outline-none focus-visible:ring-1 focus-visible:ring-white/20 active:scale-95"
             >
               ورود به پنل
-            </motion.button>
+            </button>
 
-            {/* Primary CTA: "شروع رایگان" */}
-            <motion.button
-              initial={{ scale: shouldReduceMotion ? 1 : 0.95, opacity: 0 }}
-              animate={entranceTransition(0.8)}
+            {/* High-end primary CTA: "شروع رایگان" */}
+            <button
               onClick={onStartFreeClick}
-              className={`bg-[#10b981] hover:bg-[#12cb8d] text-white font-extrabold text-[13px] rounded-xl flex items-center gap-2 group shadow-lg shadow-[#10b981]/20 border-0 cursor-pointer active:scale-[0.97] outline-none focus:ring-2 focus:ring-[#10b981] transition-all ${
-                hasScrolled ? 'h-[38px] px-4' : 'h-[42px] px-5'
+              className={`bg-[#10b981] hover:bg-emerald-500 text-white font-black text-xs rounded-xl flex items-center gap-2 shadow-[0_4px_16px_rgba(16,185,129,0.15)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.3)] border-0 cursor-pointer active:scale-95 outline-none focus:ring-2 focus:ring-[#10b981]/50 group transition-all duration-300 ${
+                hasScrolled ? 'h-9 px-4 rounded-lg' : 'h-10 px-5'
               }`}
             >
               <span>شروع رایگان</span>
-              <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center transition-transform group-hover:-translate-x-1">
-                <ArrowLeft className="w-3 h-3 text-white" />
+              <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center transition-transform group-hover:-translate-x-0.5">
+                <ArrowLeft className="w-3.5 h-3.5 text-white" />
               </span>
-            </motion.button>
+            </button>
 
-            {/* Mobile menu trigger */}
+            {/* Mobile Menu Trigger */}
             {!isWindowLarge && (
-              <motion.button
-                aria-expanded={isMobileMenuOpen}
-                aria-label="منوی اصلی"
+              <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="w-10 h-10 flex items-center justify-center bg-white/[0.05] hover:bg-white/[0.08] active:scale-[0.96] rounded-xl border border-white/10 text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#10b981]"
+                className="w-10 h-10 flex items-center justify-center bg-white/[0.03] hover:bg-white/[0.06] active:scale-95 rounded-xl border border-white/10 text-white cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[#10b981] transition-all"
               >
-                {isMobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </motion.button>
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             )}
-          </div>
+          </motion.div>
+
         </div>
       </motion.header>
 
@@ -460,115 +375,77 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            {/* Backdrop overlay */}
+            {/* Backdrop Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 z-[190] bg-[#050505]/80 backdrop-blur-md"
+              className="fixed inset-0 z-[190] bg-[#050605]/80 backdrop-blur-md"
             />
 
-            {/* Right side sheet drawer */}
+            {/* Sliding Panel Drawer */}
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="fixed top-0 bottom-0 right-0 w-[88%] max-w-[400px] bg-[#0e100f] z-[200] shadow-2xl border-l border-white/10 flex flex-col justify-between overflow-y-auto"
+              transition={{ type: 'spring', damping: 26, stiffness: 220 }}
+              className="fixed top-0 bottom-0 right-0 w-[85%] max-w-[340px] bg-[#0b0c0b] z-[200] shadow-2xl border-l border-white/[0.06] flex flex-col justify-between overflow-y-auto"
               style={{ direction: 'rtl' }}
             >
-              {/* Top Bar with brand and close action */}
-              <div className="p-6 flex items-center justify-between border-b border-white/[0.08]">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-[#10b981] rounded-xl flex items-center justify-center">
-                    <span className="text-white font-extrabold text-sm">وی</span>
+              {/* Top lockup block */}
+              <div className="p-6 flex items-center justify-between border-b border-white/[0.05]">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 bg-gradient-to-br from-[#10b981] to-[#047857] rounded-xl flex items-center justify-center shadow-md shadow-[#10b981]/15">
+                    <span className="text-white font-black text-sm">وی</span>
                   </div>
-                  <span className="text-base font-black text-white">ویترین</span>
+                  <span className="text-base font-black text-white/95">ویترین</span>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-9 h-9 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 text-white cursor-pointer"
+                  className="w-9 h-9 flex items-center justify-center bg-white/5 rounded-xl border border-white/10 text-white cursor-pointer hover:bg-white/10 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Navigation list */}
-              <div className="flex-1 py-6 px-6 overflow-y-auto">
-                <nav className="flex flex-col gap-4">
+              {/* Navigation Items (Coherent vertical rails aligned with concept) */}
+              <div className="flex-1 py-8 px-6">
+                <nav className="flex flex-col gap-3">
                   {NAVIGATION_DATA.map((item, index) => {
-                    const hasChildren = !!item.children;
-                    const isExpanded = expandedMobileGroup === item.label;
+                    const isCurrentActive = activeSectionTab === item.label;
 
                     return (
-                      <motion.div
-                        initial={{ x: shouldReduceMotion ? 0 : 20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: shouldReduceMotion ? 0 : index * 0.05 }}
+                      <motion.button
                         key={item.label}
-                        className="flex flex-col"
+                        initial={{ x: shouldReduceMotion ? 0 : 16, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: shouldReduceMotion ? 0 : index * 0.06, ease: 'easeOut' }}
+                        onClick={() => handleNavigation(item.targetId)}
+                        className={`w-full py-3.5 px-4 rounded-xl text-right font-black text-sm flex items-center justify-between transition-all border-0 bg-transparent cursor-pointer ${
+                          isCurrentActive
+                            ? 'bg-[#10b981]/10 text-white border border-[#10b981]/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.02)]'
+                            : 'text-slate-300 hover:text-white hover:bg-white/[0.02]'
+                        }`}
                       >
-                        {hasChildren ? (
-                          <>
-                            <button
-                              onClick={() =>
-                                setExpandedMobileGroup(isExpanded ? null : item.label)
-                              }
-                              className="flex items-center justify-between py-3.5 text-right font-black text-base text-slate-100 hover:text-white border-0 bg-transparent cursor-pointer"
-                            >
-                              <span>{item.label}</span>
-                              <ChevronDown
-                                className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
-                                  isExpanded ? 'rotate-180' : ''
-                                }`}
-                              />
-                            </button>
-
-                            <AnimatePresence initial={false}>
-                              {isExpanded && (
-                                <motion.div
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: 'auto', opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.25, ease: 'easeInOut' }}
-                                  className="overflow-hidden pr-4 mr-1 border-r border-white/10 flex flex-col gap-2 mt-1 mb-2"
-                                >
-                                  {item.children?.map((child) => (
-                                    <button
-                                      key={child.label}
-                                      onClick={() => handleNavigation(child)}
-                                      className="py-2.5 text-right font-bold text-sm text-slate-400 hover:text-[#10b981] border-0 bg-transparent cursor-pointer block"
-                                    >
-                                      {child.label}
-                                    </button>
-                                  ))}
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => handleNavigation(item)}
-                            className="py-3.5 text-right font-black text-base text-slate-100 hover:text-white border-0 bg-transparent cursor-pointer block"
-                          >
-                            {item.label}
-                          </button>
+                        <span>{item.label}</span>
+                        {isCurrentActive && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981] animate-pulse" />
                         )}
-                      </motion.div>
+                      </motion.button>
                     );
                   })}
                 </nav>
               </div>
 
-              {/* Bottom Actions Area */}
-              <div className="p-6 border-t border-white/[0.08] flex flex-col gap-3 bg-white/[0.02]">
+              {/* Bottom Actions Block */}
+              <div className="p-6 border-t border-white/[0.05] flex flex-col gap-3 bg-white/[0.01]">
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     onLoginClick();
                   }}
-                  className="w-full h-11 border border-white/10 hover:bg-white/5 active:scale-95 text-white font-bold text-sm rounded-xl cursor-pointer bg-transparent transition-all"
+                  className="w-full h-11 border border-white/10 hover:bg-white/5 active:scale-95 text-slate-300 hover:text-white font-black text-xs rounded-xl cursor-pointer bg-transparent transition-all"
                 >
                   ورود به پنل کاربری
                 </button>
@@ -577,7 +454,7 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
                     setIsMobileMenuOpen(false);
                     onStartFreeClick();
                   }}
-                  className="w-full h-11 bg-[#10b981] hover:bg-[#12cb8d] active:scale-95 text-white font-black text-sm rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#10b981]/15 cursor-pointer border-0 transition-all"
+                  className="w-full h-11 bg-[#10b981] hover:bg-emerald-500 active:scale-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#10b981]/15 cursor-pointer border-0 transition-all"
                 >
                   <span>شروع رایگان</span>
                   <ArrowLeft className="w-4 h-4 text-white" />

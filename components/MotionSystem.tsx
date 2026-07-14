@@ -534,7 +534,7 @@ export const MotionButton: React.FC<MotionButtonProps> = ({
       whileHover={getHoverStyle()}
       whileTap={getPressStyle()}
       transition={SPRING_PRESET}
-      className="inline-block"
+      className="inline-flex items-center justify-center gap-2.5 w-full h-full"
     >
       {children}
     </motion.div>
