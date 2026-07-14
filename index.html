@@ -12,6 +12,24 @@
         theme: {
           extend: {
             colors: {
+              app: {
+                bg: 'var(--app-bg)',
+                'bg-subtle': 'var(--app-bg-subtle)',
+                surface: 'var(--app-surface)',
+                'surface-elevated': 'var(--app-surface-elevated)',
+                'surface-inset': 'var(--app-surface-inset)',
+                'surface-hover': 'var(--app-surface-hover)',
+                text: 'var(--app-text)',
+                'text-muted': 'var(--app-text-muted)',
+                'text-subtle': 'var(--app-text-subtle)',
+                border: 'var(--app-border)',
+                'border-strong': 'var(--app-border-strong)',
+                accent: 'var(--app-accent)',
+                'accent-strong': 'var(--app-accent-strong)',
+                'accent-soft': 'var(--app-accent-soft)',
+                grid: 'var(--app-grid)',
+                'grid-node': 'var(--app-grid-node)'
+              },
               slate: {
                 50: '#f8fafc',
                 100: '#f1f5f9',
@@ -39,17 +57,60 @@
       }
       try {
         var savedTheme = localStorage.getItem('vitrin_theme');
-        if (savedTheme === 'dark') {
+        var isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) {
           document.documentElement.classList.add('dark');
+          document.documentElement.style.colorScheme = 'dark';
         } else {
           document.documentElement.classList.remove('dark');
+          document.documentElement.style.colorScheme = 'light';
         }
       } catch (e) {}
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --app-bg: #F5F7F6;
+        --app-bg-subtle: #EEF2F0;
+        --app-surface: #FFFFFF;
+        --app-surface-elevated: #FFFFFF;
+        --app-surface-inset: #F2F5F3;
+        --app-surface-hover: #F8FBF9;
+        --app-text: #161917;
+        --app-text-muted: #626A66;
+        --app-text-subtle: #8A938E;
+        --app-border: rgba(17, 31, 24, 0.08);
+        --app-border-strong: rgba(17, 31, 24, 0.14);
+        --app-accent: #10B981;
+        --app-accent-strong: #059669;
+        --app-accent-soft: rgba(16, 185, 129, 0.08);
+        --app-grid: rgba(13, 94, 70, 0.045);
+        --app-grid-node: rgba(16, 185, 129, 0.16);
+      }
+
+      .dark {
+        --app-bg: #070A09;
+        --app-bg-subtle: #0B0F0D;
+        --app-surface: #101512;
+        --app-surface-elevated: #141A16;
+        --app-surface-inset: #090D0B;
+        --app-surface-hover: #18201B;
+        --app-text: #F3F7F4;
+        --app-text-muted: #A0AAA4;
+        --app-text-subtle: #6F7A74;
+        --app-border: rgba(255, 255, 255, 0.07);
+        --app-border-strong: rgba(255, 255, 255, 0.12);
+        --app-accent: #19C78C;
+        --app-accent-strong: #20D99A;
+        --app-accent-soft: rgba(25, 199, 140, 0.11);
+        --app-grid: rgba(45, 213, 158, 0.035);
+        --app-grid-node: rgba(45, 213, 158, 0.14);
+      }
+
       body {
         font-family: 'Vazirmatn', 'Inter', sans-serif;
+        background-color: var(--app-bg);
+        color: var(--app-text);
         overflow-x: hidden;
       }
       html, body {

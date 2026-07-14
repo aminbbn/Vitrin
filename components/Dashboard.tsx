@@ -31,23 +31,23 @@ const WEEKLY_DATA = [
 ];
 
 const DAILY_DATA = [
-  { name: '۱۰:۰۰', revenue: 2500000 },
-  { name: '۱۲:۰۰', revenue: 8900000 },
-  { name: '۱۴:۰۰', revenue: 15400000 },
-  { name: '۱۶:۰۰', revenue: 6500000 },
-  { name: '۱۸:۰۰', revenue: 12800000 },
-  { name: '۲۰:۰۰', revenue: 38600000 },
-  { name: '۲۲:۰۰', revenue: 24400000 },
+  { name: '10:00', revenue: 2500000 },
+  { name: '12:00', revenue: 8900000 },
+  { name: '14:00', revenue: 15400000 },
+  { name: '16:00', revenue: 6500000 },
+  { name: '18:00', revenue: 12800000 },
+  { name: '20:00', revenue: 38600000 },
+  { name: '22:00', revenue: 24400000 },
 ];
 
 const MOCK_POPULAR_PRODUCTS = [
-  { name: 'پیتزا پپرونی', category: 'پیتزا', price: '۲۴۵,۰۰۰', count: 128, color: 'emerald' },
-  { name: 'چیزبرگر مخصوص', category: 'همبرگر', price: '۱۶۵,۰۰۰', count: 95, color: 'blue' },
-  { name: 'سالاد سزار', category: 'سالاد', price: '۱۲۰,۰۰۰', count: 84, color: 'purple' },
-  { name: 'سیب‌زمینی ویژه', category: 'پیش‌غذا', price: '۸۵,۰۰۰', count: 76, color: 'orange' },
-  { name: 'پاستا آلفردو', category: 'پاستا', price: '۱۹۰,۰۰۰', count: 65, color: 'emerald' },
-  { name: 'نوشابه کوکا', category: 'نوشیدنی', price: '۲۵,۰۰۰', count: 210, color: 'red' },
-  { name: 'نان سیر', category: 'پیش‌غذا', price: '۶۵,۰۰۰', count: 45, color: 'orange' },
+  { name: 'پیتزا پپرونی', category: 'پیتزا', price: '245,000', count: 128, color: 'emerald' },
+  { name: 'چیزبرگر مخصوص', category: 'همبرگر', price: '165,000', count: 95, color: 'blue' },
+  { name: 'سالاد سزار', category: 'سالاد', price: '120,000', count: 84, color: 'purple' },
+  { name: 'سیب‌زمینی ویژه', category: 'پیش‌غذا', price: '85,000', count: 76, color: 'orange' },
+  { name: 'پاستا آلفردو', category: 'پاستا', price: '190,000', count: 65, color: 'emerald' },
+  { name: 'نوشابه کوکا', category: 'نوشیدنی', price: '25,000', count: 210, color: 'red' },
+  { name: 'نان سیر', category: 'پیش‌غذا', price: '65,000', count: 45, color: 'orange' },
 ];
 
 // Helper to generate mock stats based on range
@@ -56,75 +56,75 @@ const getMockStats = (range: string, brandColor: string) => {
     { 
       id: 'revenue', 
       label: 'کل فروش', 
-      value: '۳۸,۴۵۰,۰۰۰', 
+      value: '38,450,000', 
       unit: 'تومان', 
-      trend: '+۱۲٪', 
+      trend: '+12%', 
       up: true, 
       icon: TrendingUp, 
       color: brandColor,
       insights: [
-        { label: 'میانگین فاکتور', value: '۴۵۰,۰۰۰ تومان' },
-        { label: 'فروش سالن', value: '۲۸,۴۵۰,۰۰۰' },
-        { label: 'بیرون‌بر', value: '۱۰,۰۰۰,۰۰۰' }
+        { label: 'میانگین فاکتور', value: '450,000 تومان' },
+        { label: 'فروش سالن', value: '28,450,000' },
+        { label: 'بیرون‌بر', value: '10,000,000' }
       ]
     },
     { 
       id: 'orders', 
       label: 'سفارشات جدید', 
-      value: '۴۸', 
+      value: '48', 
       unit: 'سفارش امروز', 
-      trend: '+۵٪', 
+      trend: '+5%', 
       up: true, 
       icon: ShoppingBag, 
       color: 'blue',
       insights: [
-         { label: 'تکمیل شده', value: '۲۴' },
-         { label: 'در انتظار', value: '۱۲' },
-         { label: 'لغو شده', value: '۲' }
+         { label: 'تکمیل شده', value: '24' },
+         { label: 'در انتظار', value: '12' },
+         { label: 'لغو شده', value: '2' }
       ]
     },
     { 
       id: 'customers', 
       label: 'مشتریان جدید', 
-      value: '۱۲', 
+      value: '12', 
       unit: 'نفر', 
-      trend: '-۲٪', 
+      trend: '-2%', 
       up: false, 
       icon: Users, 
       color: 'purple',
       insights: [
-         { label: 'مشتریان وفادار', value: '۱۰۵' },
-         { label: 'مشتریان جدید', value: '۱۲' }
+         { label: 'مشتریان وفادار', value: '105' },
+         { label: 'مشتریان جدید', value: '12' }
       ]
     },
     { 
       id: 'prep', 
       label: 'زمان آماده‌سازی', 
-      value: '۱۸', 
+      value: '18', 
       unit: 'دقیقه میانگین', 
-      trend: '-۳ دقیقه', 
+      trend: '-3 دقیقه', 
       up: true, 
       icon: Clock, 
       color: 'orange',
       insights: [
-         { label: 'پیش‌غذا', value: '۸ دقیقه' },
-         { label: 'غذای اصلی', value: '۲۰ دقیقه' }
+         { label: 'پیش‌غذا', value: '8 دقیقه' },
+         { label: 'غذای اصلی', value: '20 دقیقه' }
       ]
     },
   ];
 
   if (range === '24h' || range === '۲۴ ساعت گذشته') {
     return baseStats.map(s => {
-      if (s.id === 'revenue') return { ...s, value: '۳,۸۵۰,۰۰۰', trend: '+۲٪' };
-      if (s.id === 'orders') return { ...s, value: '۱۲', trend: '۰٪' };
+      if (s.id === 'revenue') return { ...s, value: '3,850,000', trend: '+2%' };
+      if (s.id === 'orders') return { ...s, value: '12', trend: '0%' };
       return s;
     });
   }
   if (range === '30days' || range === '۳۰ روز گذشته') {
     return baseStats.map(s => {
-      if (s.id === 'revenue') return { ...s, value: '۴۵۰,۰۰۰,۰۰۰', trend: '+۱۵٪' };
-      if (s.id === 'orders') return { ...s, value: '۱,۲۰۰', trend: '+۱۰٪' };
-      if (s.id === 'customers') return { ...s, value: '۱۴۰', trend: '+۸٪', up: true };
+      if (s.id === 'revenue') return { ...s, value: '450,000,000', trend: '+15%' };
+      if (s.id === 'orders') return { ...s, value: '1,200', trend: '+10%' };
+      if (s.id === 'customers') return { ...s, value: '140', trend: '+8%', up: true };
       return s;
     });
   }

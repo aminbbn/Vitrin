@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Maximize2
 } from 'lucide-react';
+import { IPhone17ProMaxFrame } from './IPhone17ProMaxFrame';
 
 // ==========================================
 // TYPES & CONSTANTS
@@ -52,9 +53,9 @@ const ALL_ADDONS = [
   { id: "سس ویژه", label: "سس ویژه دست‌ساز", price: 10000 }
 ];
 
-// Helper to format prices to Persian Numerals with comma separators
+// Helper to format prices to English Numerals with comma separators
 const toPersianNumber = (num: number): string => {
-  return num.toLocaleString('fa-IR');
+  return num.toLocaleString('en-US');
 };
 
 export function InteractiveProductShowcase() {
@@ -513,31 +514,21 @@ export function InteractiveProductShowcase() {
                      ========================================== */}
                   <div className={`md:col-span-4 flex flex-col justify-start ${activeTab === 'preview' ? 'block' : 'hidden md:block'}`}>
                     
-                    {/* Realistic Customer Mobile Viewport */}
-                    <div className="w-full bg-slate-200/40 p-1.5 rounded-[2.6rem] ring-1 ring-white/5 shadow-2xl relative max-w-[280px] mx-auto">
-                      <div className="bg-white rounded-[2.3rem] border-[4px] border-slate-100 overflow-hidden relative shadow-inner text-slate-800">
-                        
-                        {/* Status Bar */}
-                        <div className="pt-4 pb-2 px-4 flex items-center justify-between text-[8px] font-extrabold border-b border-slate-100 bg-[#FAFBFB]">
-                          <div className="flex items-center gap-1 text-[#10b981]">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-ping" />
-                            <span>زنده روی موبایل مشتری</span>
-                          </div>
-                          <span className="text-slate-400 font-mono">۱۲:۴۵</span>
-                        </div>
-
-                        {/* Customer Live Menu View */}
-                        <div className="p-3 bg-[#F4F6F6] h-[340px] overflow-y-auto flex flex-col justify-between relative space-y-2 text-right">
+                    {/* High-fidelity CSS iPhone 17 Pro Max Frame */}
+                    <IPhone17ProMaxFrame variant="standard" className="z-10">
+                      
+                      {/* Customer Live Menu View */}
+                      <div className="p-3 bg-[#F4F6F6] dark:bg-[#0B0E0C] h-[340px] overflow-y-auto flex flex-col justify-between relative space-y-2 text-right">
                           
                           {/* Inner Product Detail Block */}
                           <motion.div 
                             layout
-                            className={`bg-white border border-slate-100 rounded-2xl p-3 shadow-sm flex flex-col gap-2.5 relative transition-all duration-300 ${
+                            className={`bg-white dark:bg-[#161B18] border border-slate-100 dark:border-white/5 rounded-2xl p-3 shadow-sm flex flex-col gap-2.5 relative transition-all duration-300 ${
                               !state.available ? 'opacity-65 grayscale-[35%]' : ''
                             }`}
                           >
                             {/* Product Image Panel */}
-                            <div className="h-20 w-full rounded-xl overflow-hidden relative bg-slate-100">
+                            <div className="h-20 w-full rounded-xl overflow-hidden relative bg-slate-100 dark:bg-slate-900">
                               <img
                                 src="https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&auto=format&fit=crop&q=80"
                                 alt={state.name}
@@ -584,41 +575,41 @@ export function InteractiveProductShowcase() {
 
                             {/* Product Info Block */}
                             <div className="space-y-1">
-                              <h4 className="text-[11px] font-black text-slate-800 tracking-tight leading-tight min-h-[14px]">
+                              <h4 className="text-[11px] font-black text-slate-800 dark:text-white tracking-tight leading-tight min-h-[14px]">
                                 {state.name || "بدون نام"}
                               </h4>
-                              <p className="text-[8px] text-slate-400 mt-0.5 leading-tight">
+                              <p className="text-[8px] text-slate-400 dark:text-slate-400 mt-0.5 leading-tight">
                                 کوکتل پپرونی، پنیر موزارلا، سس مخصوص تند طبیعی
                               </p>
                             </div>
 
                             {/* Live Enabled Add-Ons List on Customer card */}
-                            <div className="min-h-[12px] border-t border-slate-50 pt-1.5">
+                            <div className="min-h-[12px] border-t border-slate-50 dark:border-white/5 pt-1.5">
                               {state.enabledAddOns.length > 0 ? (
                                 <div className="flex flex-wrap gap-1 justify-end">
-                                  <span className="text-[6.5px] text-slate-400 font-extrabold ml-1">افزودنی:</span>
+                                  <span className="text-[6.5px] text-slate-400 dark:text-slate-500 font-extrabold ml-1">افزودنی:</span>
                                   {state.enabledAddOns.map(addonId => (
-                                    <span key={addonId} className="text-[6.5px] bg-slate-100 text-slate-600 px-1 py-0.5 rounded">
+                                    <span key={addonId} className="text-[6.5px] bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 px-1 py-0.5 rounded">
                                       {addonId}
                                     </span>
                                   ))}
                                 </div>
                               ) : (
-                                <span className="text-[6.5px] text-slate-300 font-bold block">بدون افزودنی جانبی</span>
+                                <span className="text-[6.5px] text-slate-300 dark:text-slate-600 font-bold block">بدون افزودنی جانبی</span>
                               )}
                             </div>
 
                             {/* Dynamic synced footer pricing and status button */}
-                            <div className="flex justify-between items-center mt-1 pt-2 border-t border-slate-100">
+                            <div className="flex justify-between items-center mt-1 pt-2 border-t border-slate-100 dark:border-white/5">
                               {state.available ? (
                                 <button
                                   onClick={handleAddToCart}
-                                  className="w-5.5 h-5.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg flex items-center justify-center text-xs font-black shadow-md border-0 cursor-pointer active:scale-90 transition-all"
+                                  className="w-5.5 h-5.5 bg-emerald-500 hover:bg-emerald-600 dark:bg-[#19C78C] dark:hover:bg-[#12cb8d] text-white rounded-lg flex items-center justify-center text-xs font-black shadow-md border-0 cursor-pointer active:scale-90 transition-all"
                                 >
                                   +
                                 </button>
                               ) : (
-                                <span className="text-[8px] text-red-500 font-black bg-red-50 border border-red-100 px-2 py-0.5 rounded-md">
+                                <span className="text-[8px] text-red-500 font-black bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 px-2 py-0.5 rounded-md">
                                   ناموجود
                                 </span>
                               )}
@@ -626,15 +617,15 @@ export function InteractiveProductShowcase() {
                               <div className="text-left font-mono">
                                 {state.discountEnabled ? (
                                   <div className="flex flex-col items-start leading-none">
-                                    <span className="text-[8px] text-slate-400 line-through">
+                                    <span className="text-[8px] text-slate-400 dark:text-slate-500 line-through">
                                       {toPersianNumber(state.price)}
                                     </span>
-                                    <span className="text-[10px] font-black text-red-600">
+                                    <span className="text-[10px] font-black text-red-600 dark:text-rose-400">
                                       {toPersianNumber(finalPrice)} <span className="text-[6.5px] font-sans">تومان</span>
                                     </span>
                                   </div>
                                 ) : (
-                                  <span className="text-[10px] font-black text-slate-800">
+                                  <span className="text-[10px] font-black text-slate-800 dark:text-slate-200">
                                     {toPersianNumber(state.price)} <span className="text-[6.5px] font-sans">تومان</span>
                                   </span>
                                 )}
@@ -644,18 +635,18 @@ export function InteractiveProductShowcase() {
                           </motion.div>
 
                           {/* Fast-sync informational card */}
-                          <div className="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl flex items-center gap-2 justify-between text-right">
-                            <p className="text-[8px] text-slate-600 leading-tight">
+                          <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 p-2.5 rounded-xl flex items-center gap-2 justify-between text-right">
+                            <p className="text-[8px] text-slate-600 dark:text-slate-300 leading-tight">
                               تغییر منو بدون ثانیه‌ای معطلی روی موبایل مشتریان اعمال می‌شود.
                             </p>
-                            <Zap className="w-3.5 h-3.5 text-emerald-500 shrink-0 animate-bounce" />
+                            <Zap className="w-3.5 h-3.5 text-emerald-500 dark:text-[#19C78C] shrink-0 animate-bounce" />
                           </div>
 
                         </div>
 
                         {/* Customer Basket Footer Navigation */}
-                        <div className="bg-white px-5 py-2 border-t border-slate-200/60 flex items-center justify-between text-slate-400 rounded-b-[2rem] shadow-sm">
-                          <div className="flex flex-col items-center gap-0.5 text-emerald-500">
+                        <div className="bg-white dark:bg-[#111312] px-5 py-2 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-slate-400 dark:text-slate-500 rounded-b-[2rem] shadow-sm">
+                          <div className="flex flex-col items-center gap-0.5 text-emerald-500 dark:text-[#19C78C]">
                             <Sliders className="w-3.5 h-3.5" />
                             <span className="text-[7px] font-black">منو</span>
                           </div>
@@ -665,16 +656,15 @@ export function InteractiveProductShowcase() {
                             transition={{ duration: 0.3 }}
                             className="relative flex flex-col items-center gap-0.5"
                           >
-                            <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[7px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold border border-white">
+                            <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[7px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold border border-white dark:border-[#111312]">
                               {toPersianNumber(cartCount)}
                             </span>
-                            <ShoppingBag className="w-3.5 h-3.5 text-slate-500" />
+                            <ShoppingBag className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                             <span className="text-[7px] font-extrabold">سبد خرید</span>
                           </motion.div>
                         </div>
 
-                      </div>
-                    </div>
+                      </IPhone17ProMaxFrame>
 
                   </div>
 

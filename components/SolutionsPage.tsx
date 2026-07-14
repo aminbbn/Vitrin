@@ -154,7 +154,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F8] text-[#18181B] font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed" style={{ direction: 'rtl' }}>
+    <div className="min-h-screen bg-[#F7F7F8] dark:bg-[#070a08] text-[#18181B] dark:text-zinc-100 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed transition-colors duration-300" style={{ direction: 'rtl' }}>
       
       {/* Hero Header Section */}
       <header className="relative py-12 lg:py-16 bg-[#0A0A0A] text-white overflow-hidden border-b border-white/10">
@@ -222,12 +222,12 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </header>
 
       {/* SOLUTIONS TAB SWITCHER & PANEL SECTION */}
-      <section id="solutions-tabs" className="py-12 lg:py-16 bg-white border-b border-slate-200/50 scroll-mt-24">
+      <section id="solutions-tabs" className="py-12 lg:py-16 bg-white dark:bg-[#0a0c0b] border-b border-slate-200/50 dark:border-zinc-800/80 scroll-mt-24 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           
           {/* Animated Tab Switcher Container */}
           <div className="flex justify-center mb-16">
-            <div className="relative w-full max-w-lg bg-[#F7F7F8] p-1.5 rounded-[2rem] border border-slate-200/50 shadow-inner flex overflow-x-auto no-scrollbar scroll-smooth">
+            <div className="relative w-full max-w-lg bg-[#F7F7F8] dark:bg-zinc-900/40 p-1.5 rounded-[2rem] border border-slate-200/50 dark:border-zinc-800/60 shadow-inner flex overflow-x-auto no-scrollbar scroll-smooth">
               
               <div className="flex w-full min-w-[320px] md:min-w-0">
                 {/* Cafe Tab */}
@@ -251,7 +251,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   {activeTab === 'cafe' && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute inset-0 bg-white rounded-[1.8rem] border border-slate-200 shadow-md -z-10"
+                      className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-[1.8rem] border border-slate-200 dark:border-zinc-850 shadow-md -z-10"
                       transition={springTransition}
                     />
                   )}
@@ -278,7 +278,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   {activeTab === 'restaurant' && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute inset-0 bg-white rounded-[1.8rem] border border-slate-200 shadow-md -z-10"
+                      className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-[1.8rem] border border-slate-200 dark:border-zinc-850 shadow-md -z-10"
                       transition={springTransition}
                     />
                   )}
@@ -305,7 +305,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   {activeTab === 'chain' && (
                     <motion.div
                       layoutId="activeTabIndicator"
-                      className="absolute inset-0 bg-white rounded-[1.8rem] border border-slate-200 shadow-md -z-10"
+                      className="absolute inset-0 bg-white dark:bg-zinc-900 rounded-[1.8rem] border border-slate-200 dark:border-zinc-850 shadow-md -z-10"
                       transition={springTransition}
                     />
                   )}
@@ -332,14 +332,14 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                 {activeTab === 'cafe' && (
                   <div className="space-y-6">
                     <span className="text-[10px] font-black text-[#10b981] bg-[#10b981]/5 px-3 py-1 rounded-full border border-[#10b981]/10 uppercase tracking-[0.1em]">راهکار کافی‌شاپ</span>
-                    <h2 className="text-2xl md:text-3xl font-black text-[#18181B] tracking-tight leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-black text-[#18181B] dark:text-zinc-100 tracking-tight leading-tight">
                       منوی نوشیدنی که مدام تغییر می‌کنه، بدون نیاز به طراح گرافیک آپدیت میشه
                     </h2>
-                    <p className="text-[#71717A] text-sm md:text-base font-medium">
+                    <p className="text-[#71717A] dark:text-zinc-400 text-sm md:text-base font-medium">
                       یکی از بزرگترین چالش‌های کافه، نوسان موجودی دان قهوه یا میوه‌های استوایی در فصول مختلف است. در ویترین نیازی به طراحی بنر جدید یا چاپ مجدد نیست؛ در کمتر از ۱۰ ثانیه افزودنی، سس یا چاشنی جدید اضافه کرده یا قیمت‌ها را اصلاح کنید.
                     </p>
 
-                    <div className="space-y-3 pt-4 border-t border-slate-100">
+                    <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-zinc-800/80">
                       
                       {/* Capability 1 */}
                       <div className="flex items-start gap-3">
@@ -347,8 +347,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">استودیو زنده کافه‌ها (Design Studio)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">شبیه‌سازی تم مینیمال و تیره، مناسب فضاهای دنج و کم‌نور بارهای شبانه.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">استودیو زنده کافه‌ها (Design Studio)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">شبیه‌سازی تم مینیمال و تیره، مناسب فضاهای دنج و کم‌نور بارهای شبانه.</p>
                         </div>
                       </div>
 
@@ -358,8 +358,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">طبقه‌بندی ساختاریافته منو (Categories)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">تفکیک ساده بارهای گرم، سرد، ماکتیل‌ها، دسته‌بندی دسرها و بار گرم قهوه دمی.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">طبقه‌بندی ساختاریافته منو (Categories)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">تفکیک ساده بارهای گرم، سرد، ماکتیل‌ها، دسته‌بندی دسرها و بار گرم قهوه دمی.</p>
                         </div>
                       </div>
 
@@ -369,8 +369,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">تخفیف‌ها و برچسب‌های ویژه (Tags & Discounts)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">تعریف برچسب "امضا کافه" یا "قهوه کلمبیا ۱۰۰٪ عربیکا" برای جلب توجه مشتریان خاص‌پسند.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">تخفیف‌ها و برچسب‌های ویژه (Tags & Discounts)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">تعریف برچسب "امضا کافه" یا "قهوه کلمبیا ۱۰۰٪ عربیکا" برای جلب توجه مشتریان خاص‌پسند.</p>
                         </div>
                       </div>
 
@@ -381,14 +381,14 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                 {activeTab === 'restaurant' && (
                   <div className="space-y-6">
                     <span className="text-[10px] font-black text-[#10b981] bg-[#10b981]/5 px-3 py-1 rounded-full border border-[#10b981]/10 uppercase tracking-[0.1em]">راهکار رستوران‌های سنتی و فرنگی</span>
-                    <h2 className="text-2xl md:text-3xl font-black text-[#18181B] tracking-tight leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-black text-[#18181B] dark:text-zinc-100 tracking-tight leading-tight">
                       مدیریت میزها و سفارش‌های همزمان، بدون سردرگمی پرسنل
                     </h2>
-                    <p className="text-[#71717A] text-sm md:text-base font-medium">
+                    <p className="text-[#71717A] dark:text-zinc-400 text-sm md:text-base font-medium">
                       دیگر پرسنل سالن نیازی به دویدن مکرر بین آشپزخانه و صندوق ندارند. با ویترین، مشتریان روی میز خود با اسکن بارکد اختصاصی سفارش ثبت می‌کنند. شماره میز روی سفارش قفل می‌شود و مستقیماً روی مانیتور سالن قرار می‌گیرد.
                     </p>
 
-                    <div className="space-y-3 pt-4 border-t border-slate-100">
+                    <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-zinc-800/80">
                       
                       {/* Capability 1 */}
                       <div className="flex items-start gap-3">
@@ -396,8 +396,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">قفل هوشمند شماره میز (Table Lock)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">هر میز QR Code منحصر‌به‌فرد دارد تا از ثبت اشتباه میز توسط مشتری کاملاً جلوگیری شود.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">قفل هوشمند شماره میز (Table Lock)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">هر میز QR Code منحصر‌به‌فرد دارد تا از ثبت اشتباه میز توسط مشتری کاملاً جلوگیری شود.</p>
                         </div>
                       </div>
 
@@ -407,8 +407,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">افزودنی‌های اختیاری و اجباری (Modifiers)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">تعیین میزان پخت استیک یا نوع سس دورچین به عنوان انتخاب‌های الزامی مشتری.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">افزودنی‌های اختیاری و اجباری (Modifiers)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">تعیین میزان پخت استیک یا نوع سس دورچین به عنوان انتخاب‌های الزامی مشتری.</p>
                         </div>
                       </div>
 
@@ -418,8 +418,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">داشبورد مدیریت زنده سفارشات (Kitchen Display)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">اتاق کنترل یکپارچه وضعیت سفارشات با فیلتر ترتیبی آماده‌سازی جهت بهبود زمان پاسخگویی.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">داشبورد مدیریت زنده سفارشات (Kitchen Display)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">اتاق کنترل یکپارچه وضعیت سفارشات با فیلتر ترتیبی آماده‌سازی جهت بهبود زمان پاسخگویی.</p>
                         </div>
                       </div>
 
@@ -430,14 +430,14 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                 {activeTab === 'chain' && (
                   <div className="space-y-6">
                     <span className="text-[10px] font-black text-[#10b981] bg-[#10b981]/5 px-3 py-1 rounded-full border border-[#10b981]/10 uppercase tracking-[0.1em]">راهکار فست‌فود و برندهای زنجیره‌ای</span>
-                    <h2 className="text-2xl md:text-3xl font-black text-[#18181B] tracking-tight leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-black text-[#18181B] dark:text-zinc-100 tracking-tight leading-tight">
                       چند شعبه، یک پنل مدیریت واحد با کنترل همزمان مرکزی
                     </h2>
-                    <p className="text-[#71717A] text-sm md:text-base font-medium">
+                    <p className="text-[#71717A] dark:text-zinc-400 text-sm md:text-base font-medium">
                       هماهنگ کردن منوی فست‌فودهای زنجیره‌ای، کنترل موجودی‌ها، قیمت‌های متغیر محلی و جشنواره‌های تخفیف چندگانه فرآیندی فرسایشی است. در ویترین، مفهوم متمایز "شعبه مرکزی" به شما اجازه مدیریت کل شبکه شعب را تنها با چند کلیک ساده می‌دهد.
                     </p>
 
-                    <div className="space-y-3 pt-4 border-t border-slate-100">
+                    <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-zinc-800/80">
                       
                       {/* Capability 1 */}
                       <div className="flex items-start gap-3">
@@ -445,8 +445,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">همگام‌سازی شعبه مرکزی (Master Sync)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">تغییر سراسری قیمت‌ها یا افزودن یک دسته جدید به کل شعب به طور آنی و ایمن.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">همگام‌سازی شعبه مرکزی (Master Sync)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">تغییر سراسری قیمت‌ها یا افزودن یک دسته جدید به کل شعب به طور آنی و ایمن.</p>
                         </div>
                       </div>
 
@@ -456,8 +456,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">تخفیف‌های مستقل و جشنواره‌ای (Branch Discounts)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">تعیین قیمت یا تخفیف ویژه اختصاصی برای یک شعبه خاص جهت تحریک تقاضای محلی.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">تخفیف‌های مستقل و جشنواره‌ای (Branch Discounts)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">تعیین قیمت یا تخفیف ویژه اختصاصی برای یک شعبه خاص جهت تحریک تقاضای محلی.</p>
                         </div>
                       </div>
 
@@ -467,8 +467,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                           <Check className="w-3.5 h-3.5" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-xs text-[#18181B]">سوئیچر سریع مدیریتی شعب (Branch Switcher)</h4>
-                          <p className="text-[11px] text-[#71717A] mt-0.5">داشبورد یکپارچه برای مدیران برند با امکان سوئیچ سریع جهت تحلیل آمار مستقل فروش.</p>
+                          <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">سوئیچر سریع مدیریتی شعب (Branch Switcher)</h4>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">داشبورد یکپارچه برای مدیران برند با امکان سوئیچ سریع جهت تحلیل آمار مستقل فروش.</p>
                         </div>
                       </div>
 
@@ -798,13 +798,13 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </section>
 
       {/* PAIN POINT COMPARISON SECTION (قبل از ویترین vs با ویترین) */}
-      <section className="py-12 lg:py-16 bg-[#F7F7F8] border-b border-slate-200/50">
+      <section className="py-12 lg:py-16 bg-[#F7F7F8] dark:bg-[#070a08] border-b border-slate-200/50 dark:border-zinc-800/80 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-[10px] font-black text-[#10b981] bg-[#10b981]/5 px-3 py-1 rounded-full border border-[#10b981]/10 uppercase tracking-[0.25em]">تفاوت از زمین تا آسمان</span>
-            <h2 className="text-3xl md:text-4xl font-black text-[#18181B] tracking-tight mt-4 mb-5">تغییر شگفت‌انگیز در مدیریت منوی شما</h2>
-            <p className="text-slate-500 text-sm md:text-base font-medium">
+            <h2 className="text-3xl md:text-4xl font-black text-[#18181B] dark:text-zinc-100 tracking-tight mt-4 mb-5">تغییر شگفت‌انگیز در مدیریت منوی شما</h2>
+            <p className="text-slate-500 dark:text-zinc-400 text-sm md:text-base font-medium">
               چرا روش‌های سنتی گرافیکی و ارسال فایل‌های حجم بالا در شبکه‌های اجتماعی دیگر مشتری‌آور نیست؟ این مقایسه واقعی را ببینید.
             </p>
           </div>
@@ -872,7 +872,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                     hidden: { opacity: 0, y: 20 },
                     visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 150, damping: 20 } }
                   }}
-                  className="bg-white rounded-[1.8rem] border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white dark:bg-[#121614] rounded-[1.8rem] border border-slate-200 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
                   {/* Accordion Row Header */}
                   <button
@@ -900,8 +900,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                         <CheckCircle2 className="w-4.5 h-4.5" />
                       </motion.div>
                       <div>
-                        <h3 className="text-sm sm:text-base font-black text-[#18181B] group-hover:text-[#10b981] transition-colors">{feat.title}</h3>
-                        <p className="text-[11px] text-slate-400 font-bold mt-0.5">{feat.desc}</p>
+                        <h3 className="text-sm sm:text-base font-black text-[#18181B] dark:text-zinc-100 group-hover:text-[#10b981] transition-colors">{feat.title}</h3>
+                        <p className="text-[11px] text-slate-400 dark:text-zinc-500 font-bold mt-0.5">{feat.desc}</p>
                       </div>
                     </div>
                     <motion.span
@@ -922,27 +922,27 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       >
-                        <div className="px-6 pb-6 pt-3 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FBFBFA]">
+                        <div className="px-6 pb-6 pt-3 border-t border-slate-100 dark:border-zinc-850 grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#FBFBFA] dark:bg-[#090b0a] transition-colors duration-300">
                           
                           {/* Before Side */}
-                          <div className="p-5 bg-white rounded-2xl border border-slate-100 text-right space-y-2">
+                          <div className="p-5 bg-white dark:bg-zinc-900/50 rounded-2xl border border-slate-100 dark:border-zinc-800 text-right space-y-2">
                             <h4 className="font-black text-xs text-slate-500 flex items-center gap-2">
                               <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
                               <span>{feat.beforeTitle}</span>
                             </h4>
-                            <p className="text-xs text-slate-500 leading-relaxed font-semibold">
+                            <p className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed font-semibold">
                               {feat.beforeText}
                             </p>
                           </div>
 
                           {/* After Side */}
-                          <div className="p-5 bg-slate-900 text-white rounded-2xl border border-white/5 text-right relative overflow-hidden space-y-2">
+                          <div className="p-5 bg-slate-900 dark:bg-zinc-950 text-white rounded-2xl border border-white/5 text-right relative overflow-hidden space-y-2">
                             <div className="absolute top-0 left-0 w-1.5 h-full bg-[#10b981]" />
                             <h4 className="font-black text-xs text-[#10b981] flex items-center gap-2">
                               <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
                               <span>{feat.afterTitle}</span>
                             </h4>
-                            <p className="text-xs text-slate-300 leading-relaxed font-semibold">
+                            <p className="text-xs text-slate-300 dark:text-zinc-300 leading-relaxed font-semibold">
                               {feat.afterText}
                             </p>
                           </div>
@@ -960,7 +960,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </section>
 
       {/* DEMO REQUEST SECTION (Primary Conversion) */}
-      <section id="demo-form" className="py-12 lg:py-16 bg-white relative scroll-mt-20">
+      <section id="demo-form" className="py-12 lg:py-16 bg-white dark:bg-[#0a0c0b] relative scroll-mt-20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
             
@@ -970,7 +970,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ type: "spring", stiffness: 100, damping: 15 }}
-              className="lg:col-span-7 bg-[#0A0A0A] text-white p-8 md:p-10 rounded-[2.5rem] border border-white/10 shadow-2xl relative"
+              className="lg:col-span-7 bg-[#0A0A0A] dark:bg-[#050605] text-white p-8 md:p-10 rounded-[2.5rem] border border-white/10 dark:border-zinc-800/80 shadow-2xl relative"
             >
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16, 185, 129,0.02)_0%,transparent_60%)] pointer-events-none" />
               
@@ -1094,8 +1094,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                 }}
               >
                 <span className="text-[10px] font-black text-[#10b981] bg-[#10b981]/5 px-3 py-1 rounded-full border border-[#10b981]/10 uppercase tracking-[0.25em]">ارتباط بدون معطلی</span>
-                <h3 className="text-2xl font-black text-[#18181B] mt-4 mb-4">آفیس پشتیبانی و همکاران تجاری</h3>
-                <p className="text-[#71717A] text-xs sm:text-sm font-medium leading-relaxed">
+                <h3 className="text-2xl font-black text-[#18181B] dark:text-zinc-100 mt-4 mb-4">آفیس پشتیبانی و همکاران تجاری</h3>
+                <p className="text-[#71717A] dark:text-zinc-400 text-xs sm:text-sm font-medium leading-relaxed">
                   اگر مایل هستید قرارداد رسمی خدمات زنجیره‌ای امضا کنید، یا نیاز به دموی حضوری در کافی‌شاپ خود دارید، می‌توانید مستقیماً با خطوط تلفن ارتباطی یا ایمیل توسعه سازمانی ویترین تماس حاصل فرمایید.
                 </p>
               </motion.div>
@@ -1109,14 +1109,14 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                     hidden: { opacity: 0, x: -30, y: 10 },
                     visible: { opacity: 1, x: 0, y: 0, transition: { type: "spring", stiffness: 120, damping: 14 } }
                   }}
-                  className="flex gap-4 p-5 bg-[#F7F7F8] rounded-2xl border border-slate-200/50"
+                  className="flex gap-4 p-5 bg-[#F7F7F8] dark:bg-[#121614] rounded-2xl border border-slate-200/50 dark:border-zinc-800 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#10b981] border border-slate-100 shrink-0 shadow-sm">
+                  <div className="w-10 h-10 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-[#10b981] border border-slate-100 dark:border-zinc-800 shrink-0 shadow-sm">
                     <Phone className="w-5 h-5" />
                   </div>
                   <div className="text-right">
-                    <span className="text-[9px] text-slate-400 font-bold block">شماره تلفن مستقیم استودیو ویترین</span>
-                    <span className="text-xs font-mono font-black text-[#18181B] block mt-1" style={{ direction: 'ltr' }}>+۹۸ (۲۱) ۸۸۹۷-۶۵۴۳</span>
+                    <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-bold block">شماره تلفن مستقیم استودیو ویترین</span>
+                    <span className="text-xs font-mono font-black text-[#18181B] dark:text-zinc-100 block mt-1" style={{ direction: 'ltr' }}>+۹۸ (۲۱) ۸۸۹۷-۶۵۴۳</span>
                   </div>
                 </motion.div>
 
@@ -1126,14 +1126,14 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                     hidden: { opacity: 0, x: -30, y: 10 },
                     visible: { opacity: 1, x: 0, y: 0, transition: { type: "spring", stiffness: 120, damping: 14 } }
                   }}
-                  className="flex gap-4 p-5 bg-[#F7F7F8] rounded-2xl border border-slate-200/50"
+                  className="flex gap-4 p-5 bg-[#F7F7F8] dark:bg-[#121614] rounded-2xl border border-slate-200/50 dark:border-zinc-800 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#10b981] border border-slate-100 shrink-0 shadow-sm">
+                  <div className="w-10 h-10 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-[#10b981] border border-slate-100 dark:border-zinc-800 shrink-0 shadow-sm">
                     <Mail className="w-5 h-5" />
                   </div>
                   <div className="text-right">
-                    <span className="text-[9px] text-slate-400 font-bold block">مکاتبات تجاری و اداری</span>
-                    <span className="text-xs font-mono font-black text-[#18181B] block mt-1">support@vitrinstudio.ir</span>
+                    <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-bold block">مکاتبات تجاری و اداری</span>
+                    <span className="text-xs font-mono font-black text-[#18181B] dark:text-zinc-100 block mt-1">support@vitrinstudio.ir</span>
                   </div>
                 </motion.div>
 
@@ -1143,14 +1143,14 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                     hidden: { opacity: 0, x: -30, y: 10 },
                     visible: { opacity: 1, x: 0, y: 0, transition: { type: "spring", stiffness: 120, damping: 14 } }
                   }}
-                  className="flex gap-4 p-5 bg-[#F7F7F8] rounded-2xl border border-slate-200/50"
+                  className="flex gap-4 p-5 bg-[#F7F7F8] dark:bg-[#121614] rounded-2xl border border-slate-200/50 dark:border-zinc-800 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#10b981] border border-slate-100 shrink-0 shadow-sm">
+                  <div className="w-10 h-10 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center text-[#10b981] border border-slate-100 dark:border-zinc-800 shrink-0 shadow-sm">
                     <MapPinIcon className="w-5 h-5" />
                   </div>
                   <div className="text-right">
-                    <span className="text-[9px] text-slate-400 font-bold block">دفتر هماهنگی مرکزی</span>
-                    <span className="text-xs font-bold text-[#18181B] block mt-1">تهران، پارک فناوری اطلاعات، برج ارم، طبقه چهارم</span>
+                    <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-bold block">دفتر هماهنگی مرکزی</span>
+                    <span className="text-xs font-bold text-[#18181B] dark:text-zinc-200 block mt-1">تهران، پارک فناوری اطلاعات، برج ارم، طبقه چهارم</span>
                   </div>
                 </motion.div>
 
@@ -1162,10 +1162,10 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   hidden: { opacity: 0, x: -30, y: 10 },
                   visible: { opacity: 1, x: 0, y: 0, transition: { type: "spring", stiffness: 120, damping: 14 } }
                 }}
-                className="p-5 bg-pink-50/50 border border-pink-100 rounded-2xl text-right flex items-center gap-3"
+                className="p-5 bg-pink-50/50 dark:bg-pink-950/10 border border-pink-100 dark:border-pink-900/20 rounded-2xl text-right flex items-center gap-3"
               >
                 <Heart className="w-5 h-5 text-[#10b981] fill-[#10b981]" />
-                <span className="text-[10px] text-pink-700 font-black">پشتیبانی همه‌روزه، حتی ایام تعطیل سال نو به صورت بیست‌وچهار ساعته.</span>
+                <span className="text-[10px] text-pink-700 dark:text-pink-400 font-black">پشتیبانی همه‌روزه، حتی ایام تعطیل سال نو به صورت بیست‌وچهار ساعته.</span>
               </motion.div>
 
             </motion.div>

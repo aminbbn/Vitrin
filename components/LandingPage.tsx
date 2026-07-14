@@ -14,6 +14,8 @@ import { TrustStripSection } from './TrustStripSection';
 import { ThreeStepSection } from './ThreeStepSection';
 import { InteractiveProductShowcase } from './InteractiveProductShowcase';
 import { LivingMenuEngine } from './LivingMenuEngine';
+import { ReactiveGridBackground } from './ReactiveGridBackground';
+import { IPhone17ProMaxFrame } from './IPhone17ProMaxFrame';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -133,9 +135,9 @@ const TEMPLATES: TemplateItem[] = [
     accent: 'emerald',
     bgType: 'warm',
     items: [
-      { name: 'اسپرسو دبل کمربند', price: '۷۵,۰۰۰' },
-      { name: 'کورتادو با شیر بادام', price: '۹۰,۰۰۰' },
-      { name: 'تارت بلوبری تازه', price: '۱۲۰,۰۰۰' },
+      { name: 'اسپرسو دبل کمربند', price: '75,000' },
+      { name: 'کورتادو با شیر بادام', price: '90,000' },
+      { name: 'تارت بلوبری تازه', price: '120,000' },
     ],
   },
   {
@@ -145,9 +147,9 @@ const TEMPLATES: TemplateItem[] = [
     accent: 'red',
     bgType: 'dark',
     items: [
-      { name: 'دبل برگر با پنیر سوئیسی', price: '۳۸۰,۰۰۰' },
-      { name: 'سیب‌زمینی سرخ‌کرده با پنیر چدار', price: '۱۴۰,۰۰۰' },
-      { name: 'پیتزا پپرونی تند ایتالیایی', price: '۳۴۰,۰۰۰', isSpicy: true },
+      { name: 'دبل برگر با پنیر سوئیسی', price: '380,000' },
+      { name: 'سیب‌زمینی سرخ‌کرده با پنیر چدار', price: '140,000' },
+      { name: 'پیتزا پپرونی تند ایتالیایی', price: '340,000', isSpicy: true },
     ],
   },
   {
@@ -157,9 +159,9 @@ const TEMPLATES: TemplateItem[] = [
     accent: 'amber',
     bgType: 'light',
     items: [
-      { name: 'چلوکباب کوبیده مخصوص', price: '۴۲۰,۰۰۰' },
-      { name: 'کباب برگ گوسفندی ممتاز', price: '۵۸۰,۰۰۰' },
-      { name: 'ماست کوزه‌ای محلی با نعنا', price: '۴۵,۰۰۰' },
+      { name: 'چلوکباب کوبیده مخصوص', price: '420,000' },
+      { name: 'کباب برگ گوسفندی ممتاز', price: '580,000' },
+      { name: 'ماست کوزه‌ای محلی با نعنا', price: '45,000' },
     ],
   },
   {
@@ -169,9 +171,9 @@ const TEMPLATES: TemplateItem[] = [
     accent: 'rose',
     bgType: 'warm',
     items: [
-      { name: 'کیک هویج و گردو کلاسیک', price: '۲۹۰,۰۰۰' },
-      { name: 'ماکارون فرانسوی (جعبه ۶ عددی)', price: '۱۸۰,۰۰۰' },
-      { name: 'دسر چیزکیک سن‌سباستین', price: '۱۶۰,۰۰۰' },
+      { name: 'کیک هویج و گردو کلاسیک', price: '290,000' },
+      { name: 'ماکارون فرانسوی (جعبه ۶ عددی)', price: '180,000' },
+      { name: 'دسر چیزکیک سن‌سباستین', price: '160,000' },
     ],
   },
 ];
@@ -234,7 +236,7 @@ const PLANS: PlanItem[] = [
   {
     id: 'free',
     name: 'طرح آغازین (رایگان)',
-    price: '۰',
+    price: '0',
     period: 'همیشگی',
     description: 'مناسب برای کافه‌ها و کیوسک‌های کوچک که تازه کسب‌و‌کار خود را راه‌اندازی کرده‌اند و منوی دیجیتال ساده می‌خواهند.',
     features: [
@@ -249,7 +251,7 @@ const PLANS: PlanItem[] = [
   {
     id: 'growth',
     name: 'طرح رشد (حرفه‌ای)',
-    price: '۵۵۰,۰۰۰',
+    price: '550,000',
     period: 'ماهانه',
     description: 'پیشنهاد اصلی برای کافه‌ها و رستوران‌های پرمخاطب که خواهان تجربه کامل سفارش‌گیری هوشمند بدون واسطه هستند.',
     isPopular: true,
@@ -315,7 +317,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-[#18181B] font-['Vazirmatn'] selection:bg-[#10b981]/15 selection:text-[#10b981] overflow-x-hidden leading-relaxed">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#121614] text-[#18181B] dark:text-slate-200 font-['Vazirmatn'] selection:bg-[#10b981]/15 selection:text-[#10b981] overflow-x-hidden leading-relaxed">
       
       {/* ==========================================
           SECTION 2: INTERACTIVE HERO SECTION
@@ -323,13 +325,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 2: INTERACTIVE HERO SECTION
          ========================================== */}
-      <header ref={heroRef} id="hero" className="relative py-20 lg:py-32 border-b border-slate-200/50 bg-[#F9FAF9] overflow-hidden">
+      <header ref={heroRef} id="hero" className="relative py-20 lg:py-32 border-b border-slate-200/50 dark:border-white/5 bg-[#F9FAF9] dark:bg-[#0B0E0C] overflow-hidden">
+        {/* Elastic Interactive Grid Background */}
+        <ReactiveGridBackground containerRef={heroRef} />
+
         {/* Cinematic ambient background glow and stage atmosphere */}
         <div className="absolute top-1/2 left-1/4 w-[700px] h-[700px] -translate-y-1/2 bg-gradient-radial from-[#10b981]/8 to-transparent rounded-full blur-[140px] pointer-events-none z-0 animate-pulse" />
         <div className="absolute -top-40 right-1/3 w-[500px] h-[500px] bg-[#10b981]/4 rounded-full blur-[120px] pointer-events-none z-0" />
-        
-        {/* Subtle geometric stage backdrop grid lines */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]" />
 
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center relative z-10">
           
@@ -338,15 +340,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             
             {/* Elegant Micro-badge tag (RTL) */}
             <StaggerChild>
-              <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-800 px-4 py-1.5 rounded-full border border-emerald-500/15 text-[11px] font-black tracking-wide mb-6">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+              <div className="inline-flex items-center gap-2 bg-emerald-500/10 dark:bg-emerald-500/5 text-emerald-800 dark:text-[#19C78C] px-4 py-1.5 rounded-full border border-emerald-500/15 dark:border-emerald-500/10 text-[11px] font-black tracking-wide mb-6">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-[#19C78C] animate-pulse" />
                 <span>منوی دیجیتال و سفارشگیری مستقیم برای کافه و رستوران</span>
               </div>
             </StaggerChild>
 
             {/* Main Headline (Enforcing <= 3 lines wrap limit on desktop) */}
             <StaggerChild>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl xl:text-[52px] font-black text-slate-900 tracking-tighter leading-[1.1] mb-4 max-w-2xl text-right">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl xl:text-[52px] font-black text-slate-900 dark:text-white tracking-tighter leading-[1.1] mb-4 max-w-2xl text-right">
                 منوی دیجیتال خودت را بساز؛
                 <br />
                 سفارش مستقیم بگیر
@@ -355,14 +357,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
             {/* Accent sub-headline highlighting sync speed */}
             <StaggerChild>
-              <p className="text-[#10b981] text-base sm:text-lg md:text-xl font-black mb-5 tracking-tight leading-snug">
+              <p className="text-[#10b981] dark:text-[#19C78C] text-base sm:text-lg md:text-xl font-black mb-5 tracking-tight leading-snug">
                 هر تغییری، همان لحظه در ویترین زنده میشود
               </p>
             </StaggerChild>
 
             {/* Secondary supporting copy */}
             <StaggerChild>
-              <p className="text-sm sm:text-base text-slate-500 mb-8 leading-relaxed max-w-[55ch] text-right font-medium">
+              <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mb-8 leading-relaxed max-w-[55ch] text-right font-medium">
                 قیمت، موجودی، تخفیف، افزودنیها و ظاهر منو را بدون کدنویسی مدیریت کن و سفارشهای مشتریان را مستقیم و بیواسطه دریافت کن.
               </p>
             </StaggerChild>
@@ -373,7 +375,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <MotionButton 
                   id="hero-cta-main"
                   onClick={onStartFreeClick}
-                  className="h-14 px-8 bg-[#10b981] hover:bg-emerald-600 text-white rounded-2xl text-sm font-black shadow-[0_12px_24px_-8px_rgba(16,185,129,0.3)] hover:shadow-[0_16px_32px_-6px_rgba(16,185,129,0.4)] active:scale-95 transition-all flex items-center justify-center gap-2.5 group cursor-pointer border-0"
+                  className="h-14 px-8 bg-[#10b981] hover:bg-emerald-600 dark:bg-[#19C78C] dark:hover:bg-[#12cb8d] text-white rounded-2xl text-sm font-black shadow-[0_12px_24px_-8px_rgba(16,185,129,0.3)] hover:shadow-[0_16px_32px_-6px_rgba(16,185,129,0.4)] active:scale-95 transition-all flex items-center justify-center gap-2.5 group cursor-pointer border-0"
                 >
                   <span>ساخت اولین منو</span>
                   <span className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center transition-transform group-hover:translate-x-[-3px]">
@@ -383,29 +385,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 
                 <a 
                   href="#how-it-works"
-                  className="h-14 px-6 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/60 rounded-2xl text-sm font-black active:scale-95 transition-all flex items-center justify-center gap-2.5 group shadow-sm"
+                  className="h-14 px-6 bg-white hover:bg-slate-50 dark:bg-[#161B18] dark:hover:bg-[#1C221E] text-slate-800 dark:text-white border border-slate-200/60 dark:border-white/5 rounded-2xl text-sm font-black active:scale-95 transition-all flex items-center justify-center gap-2.5 group shadow-sm"
                 >
-                  <span className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center transition-transform group-hover:scale-105">
-                    <Play className="w-2.5 h-2.5 fill-slate-800 text-slate-800" />
+                  <span className="w-6 h-6 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center transition-transform group-hover:scale-105">
+                    <Play className="w-2.5 h-2.5 fill-slate-800 text-slate-800 dark:fill-white dark:text-white" />
                   </span>
                   <span>مشاهده دموی تعاملی</span>
                 </a>
               </div>
 
               {/* Tiny trust row / assurance row */}
-              <div className="text-[11px] text-slate-400 font-bold tracking-wide mt-6 flex items-center gap-3">
+              <div className="text-[11px] text-slate-400 dark:text-slate-500 font-bold tracking-wide mt-6 flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-[#10b981] shrink-0" />
+                  <Check className="w-3.5 h-3.5 text-[#10b981] dark:text-[#19C78C] shrink-0" />
                   <span>بدون نیاز به دانش فنی</span>
                 </div>
-                <span className="text-slate-300">•</span>
+                <span className="text-slate-300 dark:text-slate-700">•</span>
                 <div className="flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-[#10b981] shrink-0" />
+                  <Check className="w-3.5 h-3.5 text-[#10b981] dark:text-[#19C78C] shrink-0" />
                   <span>بهروزرسانی زنده</span>
                 </div>
-                <span className="text-slate-300">•</span>
+                <span className="text-slate-300 dark:text-slate-700">•</span>
                 <div className="flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-[#10b981] shrink-0" />
+                  <Check className="w-3.5 h-3.5 text-[#10b981] dark:text-[#19C78C] shrink-0" />
                   <span>سفارش مستقیم</span>
                 </div>
               </div>
@@ -443,18 +445,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 7: TEMPLATES SECTION
          ========================================== */}
-      <section id="solutions-tabs" className="py-24 bg-[#FBFBFA]">
+      <section id="solutions-tabs" className="py-24 bg-[#FBFBFA] dark:bg-[#121614] transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           
           <Reveal variant="fadeUp" className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] bg-[#10b981]/10 px-3.5 py-1.5 rounded-full border border-[#10b981]/15">طراحی و دیزاین</span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] tracking-tight mt-4 leading-none">قالب‌های از پیش طراحی‌شده برای انواع صنف‌ها</h2>
-            <p className="text-[#71717A] mt-4 font-medium text-sm sm:text-base">ساختار و هویت منحصربه‌فرد کسب‌و‌کار خود را با طرح‌های آماده تخصصی ویترین حفظ کنید.</p>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] dark:text-[#19C78C] bg-[#10b981]/10 dark:bg-[#10b981]/5 px-3.5 py-1.5 rounded-full border border-[#10b981]/15 dark:border-white/5">طراحی و دیزاین</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] dark:text-white tracking-tight mt-4 leading-none">قالب‌های از پیش طراحی‌شده برای انواع صنف‌ها</h2>
+            <p className="text-[#71717A] dark:text-slate-400 mt-4 font-medium text-sm sm:text-base">ساختار و هویت منحصربه‌فرد کسب‌و‌کار خود را با طرح‌های آماده تخصصی ویترین حفظ کنید.</p>
           </Reveal>
 
           {/* Business niche selectors - Premium Sliding Tabs */}
           <Reveal variant="fadeUp" delay={0.1} className="flex justify-center mb-12">
-            <div className="flex flex-wrap gap-1 bg-slate-50 border border-slate-200/40 p-1.5 rounded-[20px] max-w-3xl mx-auto justify-center">
+            <div className="flex flex-wrap gap-1 bg-slate-50 dark:bg-[#161B18] border border-slate-200/40 dark:border-white/5 p-1.5 rounded-[20px] max-w-3xl mx-auto justify-center">
               {TEMPLATES.map((tpl) => {
                 const isActive = activeTemplateId === tpl.id;
                 return (
@@ -467,11 +469,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {isActive && (
                       <motion.span
                         layoutId="activeTemplateTab"
-                        className="absolute inset-0 bg-white border border-slate-200/60 shadow-xs rounded-[14px] z-0"
+                        className="absolute inset-0 bg-white dark:bg-[#121614] border border-slate-200/60 dark:border-white/5 shadow-xs rounded-[14px] z-0"
                         transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                       />
                     )}
-                    <span className={`relative z-10 font-black transition-colors duration-300 ${isActive ? 'text-[#10b981]' : 'text-slate-600 hover:text-slate-900'}`}>
+                    <span className={`relative z-10 font-black transition-colors duration-300 ${isActive ? 'text-[#10b981] dark:text-[#19C78C]' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>
                       {tpl.title}
                     </span>
                   </button>
@@ -481,7 +483,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </Reveal>
 
           {/* Interactive template visual container */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center bg-white border border-slate-200/50 rounded-[2.5rem] p-8 md:p-12 shadow-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center bg-white dark:bg-[#0B0E0C] border border-slate-200/50 dark:border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-xs">
             
             {/* Description of current active Template - Animated Crossfade */}
             <div className="lg:col-span-5 text-right">
@@ -497,42 +499,42 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   >
                     {/* Eyebrow tag matching template accent color */}
                     <span className={`inline-block text-[9px] uppercase tracking-[0.15em] font-black px-3 py-1 rounded-full border ${
-                      tpl.accent === 'emerald' ? 'text-emerald-700 bg-emerald-50 border-emerald-500/15' :
-                      tpl.accent === 'red' ? 'text-red-700 bg-red-50 border-red-500/15' :
-                      tpl.accent === 'amber' ? 'text-amber-700 bg-amber-50 border-amber-500/15' :
-                      'text-rose-700 bg-rose-50 border-rose-500/15'
+                      tpl.accent === 'emerald' ? 'text-emerald-700 bg-emerald-50 border-emerald-500/15 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-[#10b981]/20' :
+                      tpl.accent === 'red' ? 'text-red-700 bg-red-50 border-red-500/15 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/20' :
+                      tpl.accent === 'amber' ? 'text-amber-700 bg-amber-50 border-amber-500/15 dark:text-amber-400 dark:bg-amber-500/10 dark:border-amber-500/20' :
+                      'text-rose-700 bg-rose-50 border-rose-500/15 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/20'
                     }`}>
                       قالب تخصصی صنف
                     </span>
 
-                    <h3 className="text-2xl font-black text-slate-800 tracking-tight leading-none">
+                    <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight leading-none">
                       {tpl.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-medium">
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                       {tpl.description}
                     </p>
 
-                    <div className="h-px bg-slate-100 my-4" />
+                    <div className="h-px bg-slate-100 dark:bg-white/5 my-4" />
 
                     {/* Features checklist */}
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3 justify-end text-xs font-bold text-slate-700">
+                      <div className="flex items-center gap-3 justify-end text-xs font-bold text-slate-700 dark:text-slate-300">
                         <span className="text-right">بهینه‌سازی شده برای سرعت لود و خرید سریع مشتریان صنف</span>
-                        <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                          <Check className="w-3 h-3 text-[#10b981]" />
+                        <div className="w-5 h-5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-[#10b981] dark:text-[#19C78C]" />
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 justify-end text-xs font-bold text-slate-700">
+                      <div className="flex items-center gap-3 justify-end text-xs font-bold text-slate-700 dark:text-slate-300">
                         <span className="text-right">طراحی متناسب با روانشناسی خرید و عکاسی منوی این صنف</span>
-                        <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                          <Check className="w-3 h-3 text-[#10b981]" />
+                        <div className="w-5 h-5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-[#10b981] dark:text-[#19C78C]" />
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 justify-end text-xs font-bold text-slate-700">
+                      <div className="flex items-center gap-3 justify-end text-xs font-bold text-slate-700 dark:text-slate-300">
                         <span className="text-right">امکان شخصی‌سازی کامل تم رنگی، بنرها و لوگو در پنل مدیریت</span>
-                        <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                          <Check className="w-3 h-3 text-[#10b981]" />
+                        <div className="w-5 h-5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-[#10b981] dark:text-[#19C78C]" />
                         </div>
                       </div>
                     </div>
@@ -540,7 +542,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div className="pt-4 flex justify-end">
                       <button 
                         onClick={onStartFreeClick}
-                        className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl cursor-pointer transition-all border-0 shadow-sm"
+                        className="px-6 py-3 bg-slate-900 hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-[#19C78C] text-white font-black text-xs rounded-xl cursor-pointer transition-all border-0 shadow-sm"
                       >
                         ساخت منو با این قالب
                       </button>
@@ -563,33 +565,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="relative"
                   >
                     {/* Shadow & stage backdrop behind the phone */}
-                    <div className="absolute -inset-4 bg-radial from-slate-200/50 via-transparent to-transparent opacity-60 blur-2xl z-0" />
+                    <div className="absolute -inset-4 bg-radial from-slate-200/50 dark:from-emerald-500/5 via-transparent to-transparent opacity-60 blur-2xl z-0" />
 
-                    {/* Phone frame with refined depth */}
-                    <div className="relative w-68 border-[7px] border-slate-900 rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.12)] overflow-hidden bg-white z-10">
+                    {/* High-fidelity CSS iPhone 17 Pro Max Frame */}
+                    <IPhone17ProMaxFrame variant="standard" className="z-10">
                       
-                      {/* Dynamic top bar style matching template */}
-                      <div className={`pt-4 pb-2 px-4 flex items-center justify-between text-[8px] font-bold border-b transition-colors duration-300 ${
+                      {/* Dynamic top badge style matching template */}
+                      <div className={`pt-2 pb-2 px-4 flex items-center justify-between text-[8px] font-bold border-b transition-colors duration-300 shrink-0 ${
                         tpl.bgType === 'dark' 
                           ? 'bg-[#0E0F11] text-white/80 border-slate-800' 
                           : tpl.bgType === 'warm' 
-                            ? 'bg-[#FAF8F5] text-slate-800 border-slate-200/50' 
-                            : 'bg-white text-slate-800 border-slate-100'
+                            ? 'bg-[#FAF8F5] dark:bg-[#111312] text-slate-800 dark:text-white/80 border-slate-200/50 dark:border-white/5' 
+                            : 'bg-white dark:bg-[#111312] text-slate-800 dark:text-white/80 border-slate-100 dark:border-white/5'
                       }`}>
-                        <span className="text-[7.5px] text-[#10b981] font-black flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-[#10b981] rounded-full animate-pulse" />
+                        <span className="text-[7.5px] text-[#10b981] dark:text-[#19C78C] font-black flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 bg-[#10b981] dark:bg-[#19C78C] rounded-full animate-pulse" />
                           سفارش آنلاین فعال
                         </span>
-                        <span className="font-mono">12:30</span>
+                        <span className="font-mono text-slate-400">VITRIN</span>
                       </div>
 
                       {/* Header banner or subtle background */}
-                      <div className={`h-24 px-4 flex items-end justify-between pb-3 relative transition-all duration-300 ${
+                      <div className={`h-24 px-4 flex items-end justify-between pb-3 relative transition-all duration-300 shrink-0 ${
                         tpl.bgType === 'dark' 
                           ? 'bg-gradient-to-br from-[#1E2026] to-[#0E0F11]' 
                           : tpl.bgType === 'warm' 
-                            ? 'bg-gradient-to-br from-[#EFEAE2] to-[#FAF8F5]' 
-                            : 'bg-gradient-to-br from-emerald-50 to-white'
+                            ? 'bg-gradient-to-br from-[#EFEAE2] to-[#FAF8F5] dark:from-[#1A1C19] dark:to-[#111312]' 
+                            : 'bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/20 dark:to-[#111312]'
                       }`}>
                         {/* Dynamic decorative backdrop shape */}
                         <div className={`absolute top-2 right-2 w-14 h-14 rounded-full blur-xl opacity-20 ${
@@ -607,22 +609,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                           }`}>
                             {tpl.id === 'cafe' ? 'کافه یاب' : tpl.id === 'fastfood' ? 'برگر لوکس' : tpl.id === 'restaurant' ? 'غذای اصیل' : 'دسر کده'}
                           </span>
-                          <h4 className={`text-[11px] font-black mt-1 ${tpl.bgType === 'dark' ? 'text-white' : 'text-slate-800'}`}>{tpl.title}</h4>
-                          <p className={`text-[7px] mt-0.5 ${tpl.bgType === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>ثبت سریع سفارش پای میز و بیرون‌بر</p>
+                          <h4 className={`text-[11px] font-black mt-1 ${tpl.bgType === 'dark' ? 'text-white' : 'text-slate-800 dark:text-white'}`}>{tpl.title}</h4>
+                          <p className={`text-[7px] mt-0.5 ${tpl.bgType === 'dark' ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>ثبت سریع سفارش پای میز و بیرون‌بر</p>
                         </div>
                       </div>
 
                       {/* Menu Core list */}
-                      <div className={`p-3 space-y-2.5 h-[240px] overflow-hidden transition-colors duration-300 ${
-                        tpl.bgType === 'dark' ? 'bg-[#0E0F11]' : tpl.bgType === 'warm' ? 'bg-[#FAF8F5]' : 'bg-white'
+                      <div className={`p-3 space-y-2.5 flex-1 overflow-hidden transition-colors duration-300 ${
+                        tpl.bgType === 'dark' ? 'bg-[#0E0F11]' : tpl.bgType === 'warm' ? 'bg-[#FAF8F5] dark:bg-[#111312]' : 'bg-white dark:bg-[#111312]'
                       }`}>
                         
                         {/* Search mockup */}
                         <div className={`p-1.5 rounded-lg flex items-center justify-between border ${
-                          tpl.bgType === 'dark' ? 'bg-[#181A1F] border-slate-800' : 'bg-slate-50 border-slate-100'
+                          tpl.bgType === 'dark' ? 'bg-[#181A1F] border-slate-800' : 'bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5'
                         }`}>
-                          <span className="text-[7px] text-slate-400 font-bold">جستجو در منو...</span>
-                          <span className="w-2.5 h-2.5 bg-slate-300 rounded-full" />
+                          <span className="text-[7px] text-slate-400 dark:text-slate-500 font-bold">جستجو در منو...</span>
+                          <span className="w-2.5 h-2.5 bg-slate-300 dark:bg-white/5 rounded-full" />
                         </div>
 
                         <div className="space-y-2">
@@ -632,19 +634,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                               className={`p-2 rounded-xl border flex items-center justify-between text-right transition-all hover:scale-101 cursor-pointer ${
                                 tpl.bgType === 'dark' 
                                   ? 'bg-[#181A1F] border-slate-800/80 hover:border-slate-700 text-white' 
-                                  : 'bg-white border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02)] hover:border-slate-200 text-slate-800'
+                                  : 'bg-white dark:bg-[#161B18] border-slate-100 dark:border-white/5 shadow-[0_2px_4px_rgba(0,0,0,0.02)] hover:border-slate-200 dark:hover:border-white/10 text-slate-800 dark:text-white'
                               }`}
                             >
                               {/* Price */}
                               <div className="flex items-center gap-1.5 shrink-0">
                                 <span className={`text-[8.5px] font-mono font-extrabold ${
-                                  tpl.accent === 'emerald' ? 'text-[#10b981]' :
+                                  tpl.accent === 'emerald' ? 'text-[#10b981] dark:text-[#19C78C]' :
                                   tpl.accent === 'red' ? 'text-red-500' :
                                   tpl.accent === 'amber' ? 'text-amber-500' : 'text-rose-500'
                                 }`}>
                                   {it.price}
                                 </span>
-                                <span className="text-[6.5px] text-slate-400 font-bold">تومان</span>
+                                <span className="text-[6.5px] text-slate-400 dark:text-slate-500 font-bold">تومان</span>
                               </div>
 
                               {/* Food name with options if spicy */}
@@ -659,7 +661,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         </div>
                       </div>
 
-                    </div>
+                    </IPhone17ProMaxFrame>
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -672,13 +674,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 8: INTEGRATIONS
          ========================================== */}
-      <section className="py-24 bg-white border-t border-b border-slate-200/50">
+      <section className="py-24 bg-white dark:bg-[#0B0E0C] border-t border-b border-slate-200/50 dark:border-white/5 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           
           <Reveal variant="fadeUp" className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] bg-[#10b981]/10 px-3.5 py-1.5 rounded-full border border-[#10b981]/15">اتصالات و یکپارچگی</span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] tracking-tight mt-4 leading-none">یکپارچگی کامل با ابزارهای روز رستوران‌داری</h2>
-            <p className="text-[#71717A] mt-4 font-medium text-sm sm:text-base">سفارش‌ها، سیستم پرداخت، حسابداری و سخت‌افزارهای خود را به صورت یکپارچه متصل کنید.</p>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] dark:text-[#19C78C] bg-[#10b981]/10 dark:bg-[#10b981]/5 px-3.5 py-1.5 rounded-full border border-[#10b981]/15 dark:border-white/5">اتصالات و یکپارچگی</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] dark:text-white tracking-tight mt-4 leading-none">یکپارچگی کامل با ابزارهای روز رستوران‌داری</h2>
+            <p className="text-[#71717A] dark:text-slate-400 mt-4 font-medium text-sm sm:text-base">سفارش‌ها، سیستم پرداخت، حسابداری و سخت‌افزارهای خود را به صورت یکپارچه متصل کنید.</p>
           </Reveal>
 
           <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -700,31 +702,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
               return (
                 <StaggerChild key={integ.id}>
-                  <div className="bg-slate-50/50 p-1.5 rounded-[24px] border border-slate-200/40 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/5 hover:border-emerald-500/20 transition-all duration-300 group h-full flex flex-col">
-                    <div className="bg-white p-6 rounded-[18px] border border-slate-100 flex flex-col justify-between h-full flex-1">
+                  <div className="bg-slate-50/50 dark:bg-[#161B18]/50 p-1.5 rounded-[24px] border border-slate-200/40 dark:border-white/5 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-emerald-500/5 hover:border-emerald-500/20 dark:hover:border-emerald-500/30 transition-all duration-300 group h-full flex flex-col">
+                    <div className="bg-white dark:bg-[#111312] p-6 rounded-[18px] border border-slate-100 dark:border-white/5 flex flex-col justify-between h-full flex-1">
                       
                       {/* Top Row: Category and Status */}
                       <div className="flex items-center justify-between mb-4">
                         {integ.status === 'active' ? (
-                          <span className="text-[9px] bg-emerald-500/10 text-emerald-700 border border-emerald-500/15 px-2 py-0.5 rounded-md font-extrabold">فعال</span>
+                          <span className="text-[9px] bg-emerald-500/10 dark:bg-emerald-500/5 text-emerald-700 dark:text-[#19C78C] border border-emerald-500/15 dark:border-emerald-500/10 px-2 py-0.5 rounded-md font-extrabold">فعال</span>
                         ) : (
-                          <span className="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-bold">به‌زودی</span>
+                          <span className="text-[9px] bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md font-bold">به‌زودی</span>
                         )}
-                        <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-100">{getCategoryLabel(integ.category)}</span>
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-white/5 px-2.5 py-0.5 rounded-full border border-slate-100 dark:border-white/5">{getCategoryLabel(integ.category)}</span>
                       </div>
 
                       {/* Middle Row: Icon & Name */}
                       <div className="flex items-center gap-3.5 text-right justify-end mb-1">
                         <div className="text-right">
-                          <h4 className="text-base font-extrabold text-slate-800 group-hover:text-emerald-950 transition-colors duration-300">{integ.name}</h4>
+                          <h4 className="text-base font-extrabold text-slate-800 dark:text-white group-hover:text-emerald-950 dark:group-hover:text-emerald-400 transition-colors duration-300">{integ.name}</h4>
                         </div>
-                        <div className="w-11 h-11 bg-slate-50 text-slate-700 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 group-hover:bg-emerald-50 group-hover:border-emerald-100 group-hover:text-[#10b981] transition-all duration-300">
+                        <div className="w-11 h-11 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-300 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 dark:border-white/5 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 group-hover:border-emerald-100 dark:group-hover:border-emerald-500/20 group-hover:text-[#10b981] dark:group-hover:text-[#19C78C] transition-all duration-300">
                           <Icon className="w-5 h-5" />
                         </div>
                       </div>
 
                       {/* Bottom Row: Description */}
-                      <p className="text-xs text-slate-500 leading-relaxed font-medium mt-3 text-right flex-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-medium mt-3 text-right flex-1">
                         {integ.description}
                       </p>
                     </div>
@@ -740,40 +742,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 9: VERIFIED CUSTOMER STORY (Case Study layout)
          ========================================== */}
-      <section className="py-12 lg:py-16 bg-[#F8F9FA]">
+      <section className="py-12 lg:py-16 bg-[#F8F9FA] dark:bg-[#121614] transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="bg-white rounded-[2.5rem] border border-slate-200/60 p-8 md:p-12 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="bg-white dark:bg-[#0B0E0C] rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 p-8 md:p-12 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* Metric Metrics (Left side in RTL) */}
             <Reveal variant="fadeRight" delay={0.1} className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-              <div className="bg-[#F8F9FA] p-5 rounded-2xl border border-slate-200/40 hover:border-[#10b981]/20 transition-all">
-                <span className="text-3xl md:text-4xl font-black text-red-500 font-mono tracking-tight">-۴۰٪</span>
-                <p className="text-[10px] sm:text-xs text-slate-500 font-bold mt-2">کاهش زمان انتظار و صف سفارش‌گیری سالن</p>
+              <div className="bg-[#F8F9FA] dark:bg-[#161B18] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 hover:border-[#10b981]/20 dark:hover:border-emerald-500/30 transition-all">
+                <span className="text-3xl md:text-4xl font-black text-red-500 dark:text-rose-400 font-mono tracking-tight">-۴۰٪</span>
+                <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold mt-2">کاهش زمان انتظار و صف سفارش‌گیری سالن</p>
               </div>
-              <div className="bg-[#F8F9FA] p-5 rounded-2xl border border-slate-200/40 hover:border-[#10b981]/20 transition-all">
-                <span className="text-3xl md:text-4xl font-black text-[#10b981] font-mono tracking-tight">+۲۵٪</span>
-                <p className="text-[10px] sm:text-xs text-slate-500 font-bold mt-2">افزایش مبلغ سبد خرید با پیشنهاد مکمل</p>
+              <div className="bg-[#F8F9FA] dark:bg-[#161B18] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 hover:border-[#10b981]/20 dark:hover:border-emerald-500/30 transition-all">
+                <span className="text-3xl md:text-4xl font-black text-[#10b981] dark:text-[#19C78C] font-mono tracking-tight">+۲۵٪</span>
+                <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold mt-2">افزایش مبلغ سبد خرید با پیشنهاد مکمل</p>
               </div>
-              <div className="bg-[#F8F9FA] p-5 rounded-2xl border border-slate-200/40 hover:border-[#10b981]/20 transition-all">
-                <span className="text-3xl md:text-4xl font-black text-[#10b981] font-mono tracking-tight">۰٪</span>
-                <p className="text-[10px] sm:text-xs text-slate-500 font-bold mt-2">خطای پیشخوان در ثبت اقلام سفارش خریداران</p>
+              <div className="bg-[#F8F9FA] dark:bg-[#161B18] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 hover:border-[#10b981]/20 dark:hover:border-emerald-500/30 transition-all">
+                <span className="text-3xl md:text-4xl font-black text-[#10b981] dark:text-[#19C78C] font-mono tracking-tight">۰٪</span>
+                <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold mt-2">خطای پیشخوان در ثبت اقلام سفارش خریداران</p>
               </div>
             </Reveal>
 
             {/* Case Study Story Content (Right side in RTL) */}
             <Reveal variant="fadeLeft" delay={0.2} className="lg:col-span-7 text-right">
-              <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] bg-[#10b981]/10 px-3.5 py-1 rounded-full border border-[#10b981]/15">داستان موفقیت مشتریان</span>
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 mt-6 leading-tight">چگونه کافه رستوران راک فرآیند سفارش‌گیری سالن خود را متحول کرد</h3>
-              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed mt-4">
+              <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] dark:text-[#19C78C] bg-[#10b981]/10 dark:bg-[#10b981]/5 px-3.5 py-1 rounded-full border border-[#10b981]/15 dark:border-white/5">داستان موفقیت مشتریان</span>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-white mt-6 leading-tight">چگونه کافه رستوران راک فرآیند سفارش‌گیری سالن خود را متحول کرد</h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed mt-4">
                 «منوهای کاغذی ما به دلیل تغییرات نوسان قیمت‌ها کثیف، خط‌خورده یا نامرتب به نظر می‌رسیدند. از زمان تجهیز سالن به کدهای میز ویترین، قیمت‌ها را در کسری از ثانیه تغییر می‌دهیم و سفارش‌ها با شماره میز صحیح مستقیماً روی چاپگر پیشخوان آشپزخانه ارسال می‌شوند.»
               </p>
               
               <div className="mt-8 flex items-center justify-end gap-3">
                 <div className="text-right">
-                  <h5 className="text-xs font-black text-slate-800">احسان خسروی</h5>
-                  <p className="text-[10px] text-slate-400 mt-0.5">صاحب و موسس کافه رستوران راک</p>
+                  <h5 className="text-xs font-black text-slate-800 dark:text-white">احسان خسروی</h5>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">صاحب و موسس کافه رستوران راک</p>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-slate-100 object-cover overflow-hidden border border-slate-200">
+                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#161B18] object-cover overflow-hidden border border-slate-200 dark:border-white/5">
                   <div className="w-full h-full bg-gradient-to-br from-[#10b981] to-[#0A0A0A]" />
                 </div>
               </div>
@@ -786,13 +788,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 11: FAQ SECTION (Accordion with premium design & accessibility)
          ========================================== */}
-      <section id="faq" className="py-20 bg-[#FBFBFA] border-t border-b border-slate-200/50">
+      <section id="faq" className="py-20 bg-[#FBFBFA] dark:bg-[#121614] border-t border-b border-slate-200/50 dark:border-white/5 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-6">
           
           <Reveal variant="fadeUp" className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] bg-[#10b981]/10 px-3.5 py-1.5 rounded-full border border-[#10b981]/15">پاسخ به ابهامات شما</span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] tracking-tight mt-4 leading-none">سوالات متداول کاربران</h2>
-            <p className="text-[#71717A] mt-4 font-medium text-sm sm:text-base">پاسخ‌های دقیق به پرسش‌های متداول شما درباره امکانات و کاربرد ویترین.</p>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] dark:text-[#19C78C] bg-[#10b981]/10 dark:bg-[#10b981]/5 px-3.5 py-1.5 rounded-full border border-[#10b981]/15 dark:border-white/5">پاسخ به ابهامات شما</span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] dark:text-white tracking-tight mt-4 leading-none">سوالات متداول کاربران</h2>
+            <p className="text-[#71717A] dark:text-slate-400 mt-4 font-medium text-sm sm:text-base">پاسخ‌های دقیق به پرسش‌های متداول شما درباره امکانات و کاربرد ویترین.</p>
           </Reveal>
 
           <StaggerGroup className="space-y-4">
@@ -801,19 +803,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               return (
                 <StaggerChild key={faq.id}>
                   <div 
-                    className={`bg-white rounded-[20px] border transition-all duration-300 overflow-hidden ${
+                    className={`bg-white dark:bg-[#111312] rounded-[20px] border transition-all duration-300 overflow-hidden ${
                       isOpen 
-                        ? 'border-emerald-500/30 shadow-md shadow-emerald-500/5 ring-1 ring-emerald-500/5' 
-                        : 'border-slate-200/60 hover:border-emerald-500/20 hover:-translate-y-[2px] hover:shadow-lg hover:shadow-emerald-500/5'
+                        ? 'border-emerald-500/30 dark:border-emerald-500/40 shadow-md shadow-emerald-500/5 ring-1 ring-emerald-500/5' 
+                        : 'border-slate-200/60 dark:border-white/5 hover:border-emerald-500/20 dark:hover:border-emerald-500/30 hover:-translate-y-[2px] hover:shadow-lg hover:shadow-emerald-500/5'
                     }`}
                   >
                     <button
                       aria-expanded={isOpen}
                       aria-controls={`faq-answer-${faq.id}`}
                       onClick={() => setActiveFaqId(isOpen ? null : faq.id)}
-                      className="w-full px-6 py-5 flex items-center justify-between text-right font-black text-slate-800 text-sm sm:text-base cursor-pointer border-0 bg-transparent focus-visible:ring-2 focus-visible:ring-emerald-500/30 focus-visible:outline-none rounded-t-[20px]"
+                      className="w-full px-6 py-5 flex items-center justify-between text-right font-black text-slate-800 dark:text-slate-200 text-sm sm:text-base cursor-pointer border-0 bg-transparent focus-visible:ring-2 focus-visible:ring-emerald-500/30 focus-visible:outline-none rounded-t-[20px]"
                     >
-                      <ChevronDown className={`w-5 h-5 text-slate-400 transition-all duration-300 shrink-0 ${isOpen ? 'rotate-180 text-[#10b981]' : ''}`} />
+                      <ChevronDown className={`w-5 h-5 text-slate-400 dark:text-slate-500 transition-all duration-300 shrink-0 ${isOpen ? 'rotate-180 text-[#10b981] dark:text-[#19C78C]' : ''}`} />
                       <span className="flex-1 pr-4">{faq.question}</span>
                     </button>
                     
@@ -826,9 +828,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.25, ease: PRIMARY_EASE }}
                         >
-                          <div className="border-t border-slate-100/80 mx-6" />
+                          <div className="border-t border-slate-100/80 dark:border-white/5 mx-6" />
                           <div className="px-6 pb-6 pt-3">
-                            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed text-right font-medium">
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed text-right font-medium">
                               {faq.answer}
                             </p>
                           </div>
@@ -842,12 +844,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </StaggerGroup>
 
           {/* Bottom FAQ Helper Block */}
-          <Reveal variant="fadeUp" delay={0.2} className="mt-12 bg-white ring-1 ring-black/5 rounded-[24px] p-1 border border-slate-200/40 shadow-[0_12px_24px_-10px_rgba(16,185,129,0.04)] max-w-2xl mx-auto">
-            <div className="bg-slate-50/60 rounded-[20px] p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
-              <p className="text-xs sm:text-sm font-bold text-slate-600">پاسخ سوال خود را پیدا نکردید؟ با تیم ویترین در تماس باشید.</p>
+          <Reveal variant="fadeUp" delay={0.2} className="mt-12 bg-white dark:bg-[#161B18] ring-1 ring-black/5 dark:ring-white/5 rounded-[24px] p-1 border border-slate-200/40 dark:border-white/5 shadow-[0_12px_24px_-10px_rgba(16,185,129,0.04)] max-w-2xl mx-auto">
+            <div className="bg-slate-50/60 dark:bg-[#111312] rounded-[20px] p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
+              <p className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400">پاسخ سوال خود را پیدا نکردید؟ با تیم ویترین در تماس باشید.</p>
               <button 
                 onClick={onStartFreeClick}
-                className="px-5 py-2.5 bg-[#10b981] hover:bg-emerald-600 text-white rounded-xl text-xs font-black shadow-md shadow-emerald-500/10 cursor-pointer transition-all border-0"
+                className="px-5 py-2.5 bg-[#10b981] hover:bg-emerald-600 dark:bg-[#19C78C] dark:hover:bg-[#12cb8d] text-white rounded-xl text-xs font-black shadow-md shadow-emerald-500/10 cursor-pointer transition-all border-0"
               >
                 تماس با ما
               </button>

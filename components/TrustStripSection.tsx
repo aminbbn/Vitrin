@@ -252,7 +252,7 @@ const TrustCard: React.FC<{ item: TrustItem; index: number; isReduced: boolean }
       onTouchStart={() => setIsHovered(true)}
       onTouchEnd={() => setIsHovered(false)}
       tabIndex={0}
-      className="outline-hidden group relative text-right cursor-pointer select-none rounded-[1.5rem] p-[1px] bg-slate-200/50 overflow-hidden"
+      className="outline-hidden group relative text-right cursor-pointer select-none rounded-[1.5rem] p-[1px] bg-slate-200/50 dark:bg-white/10 overflow-hidden"
       whileTap={isReduced ? {} : { scale: 0.995 }}
     >
       {/* Spotlight Border Glow */}
@@ -260,14 +260,14 @@ const TrustCard: React.FC<{ item: TrustItem; index: number; isReduced: boolean }
         <motion.div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-[1.5rem]"
           style={{
-            background: useMotionTemplate`radial-gradient(130px circle at ${mouseX}px ${mouseY}px, rgba(16, 185, 129, 0.45), transparent 80%)`
+            background: useMotionTemplate`radial-gradient(130px circle at ${mouseX}px ${mouseY}px, rgba(25, 199, 140, 0.45), transparent 80%)`
           }}
         />
       )}
 
       {/* Inner card content container */}
       <div className={`
-        relative overflow-hidden bg-white rounded-[calc(1.5rem-1px)] p-6 md:p-7 flex flex-col items-start md:flex-row gap-5 h-full transition-all duration-300
+        relative overflow-hidden bg-white dark:bg-[#121614] rounded-[calc(1.5rem-1px)] p-6 md:p-7 flex flex-col items-start md:flex-row gap-5 h-full transition-all duration-300
         ${active ? 'shadow-xs' : ''}
       `}>
         {/* Spotlight Background Glow */}
@@ -275,7 +275,7 @@ const TrustCard: React.FC<{ item: TrustItem; index: number; isReduced: boolean }
           <motion.div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-[calc(1.5rem-1px)]"
             style={{
-              background: useMotionTemplate`radial-gradient(130px circle at ${mouseX}px ${mouseY}px, rgba(16, 185, 129, 0.04), transparent 80%)`
+              background: useMotionTemplate`radial-gradient(130px circle at ${mouseX}px ${mouseY}px, rgba(25, 199, 140, 0.04), transparent 80%)`
             }}
           />
         )}
@@ -283,7 +283,7 @@ const TrustCard: React.FC<{ item: TrustItem; index: number; isReduced: boolean }
         {/* Highlight top line bar */}
         <div className="absolute top-0 right-0 left-0 h-[2px] overflow-hidden pointer-events-none">
           <motion.div 
-            className="h-full bg-emerald-500"
+            className="h-full bg-emerald-500 dark:bg-[#19C78C]"
             initial={{ width: '0%' }}
             animate={{ width: active ? '100%' : '0%' }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -294,8 +294,8 @@ const TrustCard: React.FC<{ item: TrustItem; index: number; isReduced: boolean }
         <div className={`
           relative w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 border z-10
           ${active 
-            ? 'bg-emerald-50/80 border-emerald-500/30 shadow-xs shadow-emerald-500/5 scale-102' 
-            : 'bg-emerald-500/5 border-emerald-500/10'
+            ? 'bg-emerald-50/80 dark:bg-[#19C78C]/10 border-emerald-500/30 dark:border-[#19C78C]/30 shadow-xs shadow-emerald-500/5 scale-102' 
+            : 'bg-emerald-500/5 dark:bg-[#19C78C]/5 border-emerald-500/10 dark:border-[#19C78C]/15'
           }
         `}>
           {item.iconType === 'percent' && <AnimatedPercentIcon isHovered={active} isReduced={isReduced} />}
@@ -305,7 +305,7 @@ const TrustCard: React.FC<{ item: TrustItem; index: number; isReduced: boolean }
           {/* Ripple on active icon */}
           {!isReduced && active && (
             <motion.div 
-              className="absolute inset-0 rounded-xl bg-emerald-500/10 pointer-events-none"
+              className="absolute inset-0 rounded-xl bg-[#10b981]/10 dark:bg-[#19C78C]/10 pointer-events-none"
               initial={{ scale: 0.8, opacity: 0.5 }}
               animate={{ scale: 1.2, opacity: 0 }}
               transition={{ duration: 0.5 }}
@@ -316,14 +316,14 @@ const TrustCard: React.FC<{ item: TrustItem; index: number; isReduced: boolean }
         {/* Text Content Block */}
         <div className="flex-1 space-y-2 mt-1 z-10">
           <h4 className={`
-            text-[14px] font-black text-slate-800 transition-colors duration-300 leading-tight
-            ${active ? 'text-emerald-700 translate-y-[-0.5px]' : ''}
+            text-[14px] font-black text-slate-800 dark:text-[#F4F7F5] transition-colors duration-300 leading-tight
+            ${active ? 'text-emerald-700 dark:text-[#19C78C] translate-y-[-0.5px]' : ''}
           `}>
             {item.title}
           </h4>
           <p className={`
             text-xs leading-relaxed transition-colors duration-300
-            ${active ? 'text-slate-700' : 'text-[#71717A]'}
+            ${active ? 'text-slate-700 dark:text-[#A4ADA8]' : 'text-[#71717A] dark:text-[#707A74]'}
           `}>
             {item.description}
           </p>
@@ -340,11 +340,11 @@ export const TrustStripSection: React.FC = () => {
   const isReduced = useReducedMotion() ?? false;
 
   return (
-    <section className="bg-slate-50/50 py-16 border-b border-slate-200/50 relative z-20 overflow-hidden">
+    <section className="bg-slate-50/50 dark:bg-[#0B0E0C] py-16 border-b border-slate-200/50 dark:border-white/5 relative z-20 overflow-hidden">
       {/* Decorative clean grid pattern background */}
-      <div className="absolute inset-0 bg-linear-to-b from-transparent to-white/70 opacity-30 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-transparent to-white/70 dark:to-transparent opacity-30 pointer-events-none" />
       <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.015] pointer-events-none"
         style={{
           backgroundImage: `radial-gradient(#10b981 1.5px, transparent 1.5px)`,
           backgroundSize: '24px 24px',

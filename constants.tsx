@@ -38,7 +38,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 245000,
     description: 'پیتزای کلاسیک با پپرونی تند و پنیر موزارلا.',
     image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۲۰ دقیقه',
+    estimatedTime: '20 دقیقه',
     rawMaterials: ['خمیر', 'سس گوجه', 'پپرونی', 'پنیر'],
     modifiers: [
       {
@@ -55,7 +55,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 185000,
     description: 'گوشت گوساله ۱۰۰٪ خالص با نان بریوش.',
     image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۱۵ دقیقه',
+    estimatedTime: '15 دقیقه',
     rawMaterials: ['نان', 'گوشت', 'کاهو', 'گوجه'],
     modifiers: [
        {
@@ -72,7 +72,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 85000,
     description: 'سیب‌زمینی تازه با ادویه مخصوص.',
     image: 'https://images.unsplash.com/photo-1573080496987-8198cb7fcd48?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۱۰ دقیقه',
+    estimatedTime: '10 دقیقه',
     rawMaterials: ['سیب‌زمینی', 'روغن', 'نمک'],
     modifiers: []
   },
@@ -84,7 +84,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 120000,
     description: 'کاهو پیچ، مرغ گریل، پنیر پارمزان و سس مخصوص.',
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۱۰ دقیقه',
+    estimatedTime: '10 دقیقه',
     rawMaterials: ['کاهو', 'مرغ', 'پنیر', 'سس', 'نان کروتون'],
     modifiers: []
   },
@@ -96,7 +96,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 190000,
     description: 'پنه، مرغ، قارچ، سس آلفردو خامه ای و پنیر پارمزان.',
     image: 'https://images.unsplash.com/photo-1621996311239-531f0b50395d?q=80&w=1000&auto=format&fit=crop',
-    estimatedTime: '۲۵ دقیقه',
+    estimatedTime: '25 دقیقه',
     rawMaterials: ['پاستا', 'مرغ', 'قارچ', 'خامه', 'پنیر'],
     modifiers: []
   }
@@ -218,9 +218,9 @@ export const SEARCH_ITEMS = [
   { id: 'o1', type: 'order', title: 'سفارش #12890', subtitle: 'میز ۵', detail: 'در انتظار', status: 'new', keywords: 'سفارش میز ۵ در انتظار جدید order table 5 wait' },
   { id: 'o2', type: 'order', title: 'سفارش #12891', subtitle: 'میز ۱۲', detail: 'در حال آماده‌سازی', status: 'preparing', keywords: 'سفارش میز ۱۲ در حال آماده‌سازی آماده سازی آماده سازی سفارش order table 12 prep' },
   { id: 'o3', type: 'order', title: 'سفارش #12888', subtitle: 'میز ۸', detail: 'آماده تحویل', status: 'ready', keywords: 'سفارش میز ۸ آماده تحویل آماده تحویل آماده سفارش order table 8 ready' },
-  { id: 'c1', type: 'customer', title: 'محمد رضایی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۳۴۵۶۷۸۹', visits: 15, phone: '۰۹۱۲۳۴۵۶۷۸۹', email: 'm.rezaei@gmail.com', joinDate: '۱۴۰۱/۱۰/۱۲', orders: 15, spent: '۳,۲۰۰,۰۰۰', favorite: 'برگر کلاسیک', keywords: 'محمد رضایی مشتری وفادار تلفن شماره موبایل customer rezaei' },
-  { id: 'c2', type: 'customer', title: 'سارا احمدی', subtitle: 'مشتری جدید', detail: '۰۹۳۵۰۰۰۰۰۰۰', visits: 1, phone: '۰۹۳۵۰۰۰۰۰۰۰', email: 'sara.ahmadi@yahoo.com', joinDate: '۱۴۰۲/۰6/۰۱', orders: 1, spent: '۲۴۰,۰۰۰', favorite: 'پیتزا سبزیجات', keywords: 'سارا احمدی مشتری جدید تلفن شماره موبایل customer ahmadi' },
-  { id: 'c3', type: 'customer', title: 'علی کمالی', subtitle: 'مشتری وفادار', detail: '۰۹۱۲۹۹۹۸۸۷۷', visits: 24, phone: '۰۹۱۲۹۹۹۸۸۷۷', email: 'ali.kamali@gmail.com', joinDate: '۱۴۰۱/۰۴/۱۵', orders: 24, spent: '۵,۴۰۰,۰۰۰', favorite: 'پاستا آلفردو', keywords: 'علی کمالی مشتری وفادار تلفن شماره موبایل customer kamali' },
+  { id: 'c1', type: 'customer', title: 'محمد رضایی', subtitle: 'مشتری وفادار', detail: '09123456789', visits: 15, phone: '09123456789', email: 'm.rezaei@gmail.com', joinDate: '2023/10/12', orders: 15, spent: '3,200,000', favorite: 'برگر کلاسیک', keywords: 'محمد رضایی مشتری وفادار تلفن شماره موبایل customer rezaei' },
+  { id: 'c2', type: 'customer', title: 'سارا احمدی', subtitle: 'مشتری جدید', detail: '09350000000', visits: 1, phone: '09350000000', email: 'sara.ahmadi@yahoo.com', joinDate: '2023/06/01', orders: 1, spent: '240,000', favorite: 'پیتزا سبزیجات', keywords: 'سارا احمدی مشتری جدید تلفن شماره موبایل customer ahmadi' },
+  { id: 'c3', type: 'customer', title: 'علی کمالی', subtitle: 'مشتری وفادار', detail: '09129998877', visits: 24, phone: '09129998877', email: 'ali.kamali@gmail.com', joinDate: '2022/04/15', orders: 24, spent: '5,400,000', favorite: 'پاستا آلفردو', keywords: 'علی کمالی مشتری وفادار تلفن شماره موبایل customer kamali' },
   
   // Settings sections (which are searchable and navigate directly)
   { id: 'identity', type: 'setting', title: 'هویت بصری (نام و لوگوی رستوران)', subtitle: 'تنظیمات > بخش اطلاعات اصلی و هویت بصری', detail: 'تنظیمات', icon: 'store', keywords: 'نام لوگو شعار تصویر عکس رستوران مشخصات هویت بصری لوگوی رستوران نام رستوران توضیحات کوتاه هویت اصلی identity logo name brand profile' },

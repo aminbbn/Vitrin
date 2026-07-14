@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { CheckCircle2, Sparkles, X, ChevronLeft, ChevronDown } from 'lucide-react';
 import { ViewState, Notification, ComponentItem } from './types';
 import { SIDEBAR_LINKS, SEARCH_ITEMS } from './constants';
@@ -23,15 +23,53 @@ import { FeaturesPage } from './components/FeaturesPage';
 import { SolutionsPage } from './components/SolutionsPage';
 import { ScrollProgress } from './components/MotionSystem';
 import { MarketingHeader } from './components/MarketingHeader';
+import { useTheme } from './components/ThemeProvider';
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
-  { id: '1', type: 'order', title: 'سفارش جدید #12895', message: '۲ پیتزا پپرونی، ۱ سالاد سزار - میز ۵', time: '۲ دقیقه پیش', read: false, link: 'orders' },
+  { id: '1', type: 'order', title: 'سفارش جدید #12895', message: '2 پیتزا پپرونی، 1 سالاد سزار - میز 5', time: '2 دقیقه پیش', read: false, link: 'orders' },
 ];
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginFlow, setShowLoginFlow] = useState(false);
   const [marketingRoute, setMarketingRoute] = useState<'home' | 'features' | 'solutions'>('home');
+  const [pendingSection, setPendingSection] = useState<string | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  const handleNavigate = (route: 'home' | 'features' | 'solutions') => {
+    setMarketingRoute(route);
+    window.scrollTo({
+      top: 0,
+      behavior: shouldReduceMotion ? 'auto' : 'smooth'
+    });
+  };
+
+  const handleNavigateToSection = (route: 'home', sectionId: string) => {
+    if (marketingRoute !== 'home') {
+      setPendingSection(sectionId);
+      setMarketingRoute('home');
+    } else {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: shouldReduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  // Scroll to section after landing page mounts
+  useEffect(() => {
+    if (marketingRoute === 'home' && pendingSection) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const el = document.getElementById(pendingSection);
+          if (el) {
+            el.scrollIntoView({ behavior: shouldReduceMotion ? 'auto' : 'smooth', block: 'start' });
+          }
+          setPendingSection(null);
+        });
+      });
+    }
+  }, [marketingRoute, pendingSection, shouldReduceMotion]);
   const [activeView, setActiveView] = useState<ViewState>('dashboard');
   const [previousView, setPreviousView] = useState<ViewState>('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -42,19 +80,8 @@ const App: React.FC = () => {
   // Responsive Mobile Sidebar State
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  // Dark/Light Theme State
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return (localStorage.getItem('vitrin_theme') as 'light' | 'dark') || 'light';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('vitrin_theme', theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
+  // Dark/Light Theme State from global ThemeProvider
+  const { theme, setTheme, toggleTheme } = useTheme();
 
   // GLOBAL RESTAURANT INFO
   const [restaurantName, setRestaurantName] = useState(() => {
@@ -217,40 +244,67 @@ const App: React.FC = () => {
     }
 
     return (
-      <div className="min-h-screen bg-[#F7F7F8] text-[#18181B] font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden flex flex-col" style={{ direction: 'rtl' }}>
+      <div className="min-h-screen bg-app-bg text-app-text transition-colors duration-300 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden flex flex-col" style={{ direction: 'rtl' }}>
         <MarketingHeader
+          theme={theme}
+          toggleTheme={toggleTheme}
           marketingRoute={marketingRoute}
-          setMarketingRoute={setMarketingRoute}
+          onNavigate={handleNavigate}
+          onNavigateToSection={handleNavigateToSection}
           onLoginClick={() => setShowLoginFlow(true)}
           onStartFreeClick={() => setShowLoginFlow(true)}
-          onNavigateFeatures={() => setMarketingRoute('features')}
-          onNavigateSolutions={() => setMarketingRoute('solutions')}
         />
 
         {/* Marketing Page Content */}
         <div className="flex-grow">
-          {marketingRoute === 'features' ? (
-            <FeaturesPage 
-              onLoginClick={() => setShowLoginFlow(true)}
-              onStartFreeClick={() => setShowLoginFlow(true)}
-              onNavigateHome={() => setMarketingRoute('home')}
-              onNavigateSolutions={() => setMarketingRoute('solutions')}
-            />
-          ) : marketingRoute === 'solutions' ? (
-            <SolutionsPage 
-              onLoginClick={() => setShowLoginFlow(true)}
-              onStartFreeClick={() => setShowLoginFlow(true)}
-              onNavigateHome={() => setMarketingRoute('home')}
-              onNavigateFeatures={() => setMarketingRoute('features')}
-            />
-          ) : (
-            <LandingPage 
-              onLoginClick={() => setShowLoginFlow(true)} 
-              onStartFreeClick={() => setShowLoginFlow(true)} 
-              onNavigateFeatures={() => setMarketingRoute('features')}
-              onNavigateSolutions={() => setMarketingRoute('solutions')}
-            />
-          )}
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={marketingRoute}
+              initial={
+                shouldReduceMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, y: 12, filter: 'blur(4px)' }
+              }
+              animate={{
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)'
+              }}
+              exit={
+                shouldReduceMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, y: -8, filter: 'blur(3px)' }
+              }
+              transition={{
+                duration: 0.28,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+            >
+              {marketingRoute === 'features' ? (
+                <FeaturesPage 
+                  onLoginClick={() => setShowLoginFlow(true)}
+                  onStartFreeClick={() => setShowLoginFlow(true)}
+                  onNavigateHome={() => handleNavigate('home')}
+                  onNavigateSolutions={() => handleNavigate('solutions')}
+                  theme={theme}
+                />
+              ) : marketingRoute === 'solutions' ? (
+                <SolutionsPage 
+                  onLoginClick={() => setShowLoginFlow(true)}
+                  onStartFreeClick={() => setShowLoginFlow(true)}
+                  onNavigateHome={() => handleNavigate('home')}
+                  onNavigateFeatures={() => handleNavigate('features')}
+                />
+              ) : (
+                <LandingPage 
+                  onLoginClick={() => setShowLoginFlow(true)} 
+                  onStartFreeClick={() => setShowLoginFlow(true)} 
+                  onNavigateFeatures={() => handleNavigate('features')}
+                  onNavigateSolutions={() => handleNavigate('solutions')}
+                />
+              )}
+            </motion.main>
+          </AnimatePresence>
         </div>
       </div>
     );
@@ -272,7 +326,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden font-['Vazirmatn'] transition-colors duration-300">
+    <div className="flex h-screen bg-app-bg text-app-text overflow-hidden font-['Vazirmatn'] transition-colors duration-300">
       {/* Mobile Sidebar Backdrop */}
       {isMobileSidebarOpen && (
         <div 

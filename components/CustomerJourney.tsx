@@ -470,7 +470,7 @@ export const CustomerJourney: React.FC = () => {
   return (
     <section 
       ref={sectionRef}
-      className="py-20 lg:py-28 bg-[#F8F9FA] border-t border-b border-slate-200/50 scroll-mt-20 overflow-hidden relative select-none font-['Vazirmatn']"
+      className="py-20 lg:py-28 bg-[#F8F9FA] dark:bg-[#121614] border-t border-b border-slate-200/50 dark:border-white/5 scroll-mt-20 overflow-hidden relative select-none font-['Vazirmatn']"
       style={{ direction: 'rtl' }}
     >
       <div className="max-w-[1280px] mx-auto px-6 md:px-8 relative z-10">
@@ -485,7 +485,7 @@ export const CustomerJourney: React.FC = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] bg-[#10b981]/10 px-3.5 py-1 rounded-full border border-[#10b981]/15">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] dark:text-[#19C78C] bg-[#10b981]/10 dark:bg-[#19C78C]/10 px-3.5 py-1 rounded-full border border-[#10b981]/15 dark:border-[#19C78C]/20">
               تجربه مشتری
             </span>
           </motion.div>
@@ -495,7 +495,7 @@ export const CustomerJourney: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight mt-5 leading-tight"
+            className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight mt-5 leading-tight"
           >
             مسیر ساده و بی‌دردسر خرید نهایی
           </motion.h2>
@@ -505,7 +505,7 @@ export const CustomerJourney: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-slate-500 mt-4 font-bold text-sm sm:text-base"
+            className="text-slate-500 dark:text-slate-400 mt-4 font-bold text-sm sm:text-base"
           >
             مشتری چگونه سفارش خود را ثبت و نهایی می‌کند؟
           </motion.p>
@@ -529,7 +529,7 @@ export const CustomerJourney: React.FC = () => {
           
           {/* RIGHT SIDE: Active Step Explanatory Panel (RTL alignment) */}
           <div className="lg:col-span-5 flex flex-col justify-between h-full order-1 lg:order-2">
-            <div className="bg-white border border-slate-200/50 rounded-3xl p-8 shadow-xl shadow-slate-100/40 relative overflow-hidden flex flex-col justify-between min-h-[380px]">
+            <div className="bg-white dark:bg-[#161B18] border border-slate-200/50 dark:border-white/5 rounded-3xl p-8 shadow-xl shadow-slate-100/40 dark:shadow-none relative overflow-hidden flex flex-col justify-between min-h-[380px]">
               
               {/* Background abstract graphic */}
               <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-emerald-500/5 to-transparent blur-3xl rounded-full pointer-events-none" />
@@ -545,29 +545,29 @@ export const CustomerJourney: React.FC = () => {
                 >
                   {/* Step index badge */}
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-[11px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-lg">
+                    <span className="text-[11px] font-black text-emerald-500 dark:text-[#19C78C] uppercase tracking-widest bg-emerald-50 dark:bg-[#19C78C]/10 px-2.5 py-1 rounded-lg">
                       {JOURNEY_STEPS[activeIndex].number}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
                       مرحله {activeIndex + 1} از ۵
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-xl md:text-2xl font-black text-slate-800 leading-none mb-3">
+                  <h3 className="text-xl md:text-2xl font-black text-slate-800 dark:text-white leading-none mb-3">
                     {JOURNEY_STEPS[activeIndex].title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-bold mb-6">
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-bold mb-6">
                     {JOURNEY_STEPS[activeIndex].description}
                   </p>
 
                   {/* Bullet list of key benefits */}
                   <div className="space-y-2.5 mb-6">
                     {JOURNEY_STEPS[activeIndex].benefits.map((benefit, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[11px] sm:text-xs text-slate-600 font-bold">
-                        <span className="w-4.5 h-4.5 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0 mt-0.5">
+                      <div key={i} className="flex items-start gap-2 text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-bold">
+                        <span className="w-4.5 h-4.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500 dark:text-[#19C78C] shrink-0 mt-0.5">
                           <Check className="w-3 h-3 stroke-[2.5px]" />
                         </span>
                         <span className="leading-snug">{benefit}</span>
@@ -576,29 +576,29 @@ export const CustomerJourney: React.FC = () => {
                   </div>
 
                   {/* Highlight note block */}
-                  <div className="mt-auto bg-slate-50 border-r-2 border-emerald-500 p-3 rounded-l-xl text-[10px] text-slate-500 font-bold leading-relaxed flex items-center justify-between">
+                  <div className="mt-auto bg-slate-50 dark:bg-white/[0.02] border-r-2 border-emerald-500 dark:border-[#19C78C] p-3 rounded-l-xl text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-relaxed flex items-center justify-between">
                     <span>{JOURNEY_STEPS[activeIndex].note}</span>
                   </div>
                 </motion.div>
               </AnimatePresence>
 
               {/* Navigation Actions Panel */}
-              <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+              <div className="mt-6 pt-5 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
                 {/* Autoplay play/pause toggle */}
                 {!shouldReduceMotion && (
                   <button
                     onClick={() => setIsPlaying(!isPlaying)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-[11px] font-bold text-slate-500 hover:text-slate-800 hover:border-slate-300 active:scale-[0.98] transition-all cursor-pointer outline-none"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-transparent text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:border-slate-300 dark:hover:border-white/20 active:scale-[0.98] transition-all cursor-pointer outline-none"
                     title={isPlaying ? "توقف چرخش خودکار" : "شروع چرخش خودکار"}
                   >
                     {isPlaying ? (
                       <>
-                        <Pause className="w-3 h-3 text-[#10b981] fill-[#10b981]" />
+                        <Pause className="w-3 h-3 text-[#10b981] dark:text-[#19C78C] fill-[#10b981] dark:fill-[#19C78C]" />
                         <span>پخش خودکار فعال</span>
                       </>
                     ) : (
                       <>
-                        <Play className="w-3 h-3 text-slate-400" />
+                        <Play className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                         <span>پخش خودکار متوقف</span>
                       </>
                     )}
@@ -608,7 +608,7 @@ export const CustomerJourney: React.FC = () => {
                 {/* Show next step CTA */}
                 <button
                   onClick={nextStep}
-                  className="flex items-center gap-1 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-extrabold rounded-xl active:scale-[0.97] transition-all cursor-pointer border-0 shadow-lg shadow-slate-900/10"
+                  className="flex items-center gap-1 px-4 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 text-[11px] font-extrabold rounded-xl active:scale-[0.97] transition-all cursor-pointer border-0 shadow-lg shadow-slate-900/10 dark:shadow-none"
                 >
                   <span>{activeIndex === 4 ? "شروع دوباره از ابتدا" : "مشاهده مرحله بعد"}</span>
                   <ChevronLeft className="w-3.5 h-3.5" />
@@ -678,9 +678,9 @@ export const CustomerJourney: React.FC = () => {
                       onClick={() => handleStepSelect(index)}
                       className={`absolute w-[290px] sm:w-[330px] md:w-[370px] h-[270px] rounded-[32px] cursor-pointer ${
                         isActive 
-                          ? 'ring-2 ring-[#10b981]/50 shadow-[0_24px_50px_-16px_rgba(16,185,129,0.3)] bg-slate-950 p-1.5' 
-                          : 'shadow-md border border-slate-200/50 bg-white hover:border-slate-300'
-                      } transition-shadow duration-300`}
+                          ? 'ring-2 ring-[#10b981]/50 dark:ring-[#19C78C]/50 shadow-[0_24px_50px_-16px_rgba(16,185,129,0.3)] bg-slate-950 p-1.5' 
+                          : 'shadow-md border border-slate-200/50 dark:border-white/5 bg-white dark:bg-[#161B18] hover:border-slate-300 dark:hover:border-white/10'
+                      } transition-all duration-300`}
                     >
                       {isActive ? (
                         /* Core Interactive Mini Product Scene Container */
@@ -696,19 +696,19 @@ export const CustomerJourney: React.FC = () => {
                       ) : (
                         /* Compact Elegant Inactive Layer Shell */
                         <div className="w-full h-full p-6 flex flex-col justify-between font-['Vazirmatn'] text-right select-none">
-                          <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                            <span className="text-[10px] font-black text-slate-400">{step.number}</span>
-                            <span className="text-[9px] font-black text-slate-400 px-2 py-0.5 bg-slate-50 border border-slate-100 rounded-md">کلیک کنید</span>
+                          <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-2.5">
+                            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500">{step.number}</span>
+                            <span className="text-[9px] font-black text-slate-400 dark:text-slate-400 px-2 py-0.5 bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5 rounded-md">کلیک کنید</span>
                           </div>
                           
                           <div className="my-auto">
-                            <h4 className="text-sm font-black text-slate-700">{step.title}</h4>
-                            <p className="text-[10px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                            <h4 className="text-sm font-black text-slate-700 dark:text-white">{step.title}</h4>
+                            <p className="text-[10px] text-slate-400 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                               {step.description}
                             </p>
                           </div>
 
-                          <div className="flex items-center gap-2 mt-auto text-[9px] font-bold text-[#10b981]">
+                          <div className="flex items-center gap-2 mt-auto text-[9px] font-bold text-[#10b981] dark:text-[#19C78C]">
                             <span>جزییات مرحله</span>
                             <ChevronLeft className="w-3 h-3 stroke-[2.5px]" />
                           </div>
@@ -729,9 +729,9 @@ export const CustomerJourney: React.FC = () => {
         <div className="mt-16 md:mt-24 max-w-4xl mx-auto">
           {/* Connecting tracking line */}
           <div className="relative flex items-center justify-between">
-            <div className="absolute top-1/2 left-[4%] right-[4%] h-[2px] bg-slate-200 -translate-y-1/2 z-0">
+            <div className="absolute top-1/2 left-[4%] right-[4%] h-[2px] bg-slate-200 dark:bg-white/10 -translate-y-1/2 z-0">
               <motion.div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-[#10b981] origin-right"
+                className="h-full bg-gradient-to-r from-emerald-500 to-[#10b981] dark:from-[#19C78C] dark:to-emerald-500 origin-right"
                 animate={{ width: `${(activeIndex / 4) * 100}%` }}
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               />
@@ -752,23 +752,19 @@ export const CustomerJourney: React.FC = () => {
                   <motion.div
                     animate={{
                       scale: isActive ? 1.15 : 1,
-                      backgroundColor: isActive 
-                        ? "#10b981" 
-                        : isCompleted 
-                        ? "#e6fbf4" 
-                        : "#ffffff",
-                      borderColor: isActive 
-                        ? "#10b981" 
-                        : isCompleted 
-                        ? "#10b981" 
-                        : "#cbd5e1"
                     }}
-                    className="w-10 h-10 rounded-full border-2 flex items-center justify-center shadow-lg transition-colors duration-300"
+                    className={`w-10 h-10 rounded-full border-2 flex items-center justify-center shadow-lg transition-all duration-300 ${
+                      isActive
+                        ? "bg-[#10b981] border-[#10b981] dark:bg-[#19C78C] dark:border-[#19C78C]"
+                        : isCompleted
+                        ? "bg-[#e6fbf4] border-[#10b981] dark:bg-[#19C78C]/10 dark:border-[#19C78C]"
+                        : "bg-white border-slate-300 dark:bg-[#161B18] dark:border-white/10"
+                    }`}
                   >
                     {isCompleted ? (
-                      <Check className="w-5 h-5 text-emerald-600 stroke-[3px]" />
+                      <Check className="w-5 h-5 text-emerald-600 dark:text-[#19C78C] stroke-[3px]" />
                     ) : (
-                      <span className={`text-xs font-black ${isActive ? 'text-white' : 'text-slate-500'}`}>
+                      <span className={`text-xs font-black ${isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>
                         {index + 1}
                       </span>
                     )}
@@ -776,7 +772,7 @@ export const CustomerJourney: React.FC = () => {
 
                   {/* Label title */}
                   <span className={`mt-3 text-[11px] md:text-xs font-black transition-colors duration-300 ${
-                    isActive ? 'text-slate-900 font-extrabold' : 'text-slate-400 group-hover:text-slate-600'
+                    isActive ? 'text-slate-900 dark:text-white font-extrabold' : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-400'
                   }`}>
                     {step.shortLabel}
                   </span>

@@ -57,7 +57,7 @@ const STEPS: ProcessStep[] = [
  */
 const AnimatedMenuIcon: React.FC<{ isHovered: boolean; isReduced: boolean }> = ({ isHovered, isReduced }) => {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-emerald-600">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-emerald-600 dark:text-[#19C78C]">
       {/* Outer frame */}
       <motion.rect
         x="3"
@@ -127,7 +127,8 @@ const AnimatedMenuIcon: React.FC<{ isHovered: boolean; isReduced: boolean }> = (
         cx="17"
         cy="17.5"
         r="1.5"
-        fill="#10b981"
+        fill="currentColor"
+        className="text-[#10b981] dark:text-[#19C78C]"
         initial={isReduced ? { scale: 1 } : { scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, delay: 0.6 }}
@@ -160,7 +161,7 @@ const AnimatedQRPublishIcon: React.FC<{ isHovered: boolean; isReduced: boolean }
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
-        className="text-emerald-600"
+        className="text-emerald-600 dark:text-[#19C78C]"
         initial={isReduced ? { scale: 1 } : { scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 180, delay: 0.1 }}
@@ -177,7 +178,7 @@ const AnimatedQRPublishIcon: React.FC<{ isHovered: boolean; isReduced: boolean }
       {!isReduced && (
         <motion.div
           key={beamTrigger}
-          className="absolute left-0 right-0 h-[1.5px] bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"
+          className="absolute left-0 right-0 h-[1.5px] bg-emerald-500 dark:bg-[#19C78C] shadow-[0_0_8px_rgba(16,185,129,0.8)]"
           initial={{ top: -2 }}
           animate={{ top: 26 }}
           transition={{ duration: 1.2, ease: 'easeInOut' }}
@@ -195,7 +196,7 @@ const AnimatedQRPublishIcon: React.FC<{ isHovered: boolean; isReduced: boolean }
  */
 const AnimatedOrderIcon: React.FC<{ isHovered: boolean; isReduced: boolean }> = ({ isHovered, isReduced }) => {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-emerald-600">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-emerald-600 dark:text-[#19C78C]">
       {/* Outer Bag/Ticket border */}
       <motion.path
         d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"
@@ -255,7 +256,8 @@ const AnimatedOrderIcon: React.FC<{ isHovered: boolean; isReduced: boolean }> = 
       {/* Small confirmation check */}
       <motion.path
         d="M14 15l2 2 4-4"
-        stroke="#10b981"
+        stroke="currentColor"
+        className="text-[#10b981] dark:text-[#19C78C]"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -309,7 +311,7 @@ const MenuBuilderPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> =
   }, [isHovered, isReduced]);
 
   return (
-    <div className="relative bg-slate-50 rounded-2xl p-4 border border-slate-100 min-h-[140px] flex flex-col justify-center gap-2 select-none">
+    <div className="relative bg-slate-50 dark:bg-[#171C19] rounded-2xl p-4 border border-slate-100 dark:border-white/5 min-h-[140px] flex flex-col justify-center gap-2 select-none">
       {/* Editor cursor visual guide */}
       {!isReduced && isHovered && (
         <motion.div
@@ -318,7 +320,7 @@ const MenuBuilderPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> =
           animate={{ opacity: [0, 1, 1, 0], scale: [0.8, 1, 1, 0.8], x: [20, -5, -5, 20], y: [10, -8, -8, 10] }}
           transition={{ duration: 1.5, times: [0, 0.2, 0.8, 1], ease: 'easeInOut' }}
         >
-          <div className="flex items-center gap-1.5 bg-slate-950 text-white text-[8px] font-black px-2 py-1 rounded-full shadow-lg border border-white/20 whitespace-nowrap">
+          <div className="flex items-center gap-1.5 bg-slate-950 dark:bg-black text-white text-[8px] font-black px-2 py-1 rounded-full shadow-lg border border-white/20 whitespace-nowrap">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span>ویرایش چیدمان</span>
           </div>
@@ -329,7 +331,7 @@ const MenuBuilderPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> =
       <AnimatePresence>
         {savedVisible && (
           <motion.div
-            className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-[9px] font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1 z-10"
+            className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-emerald-600 dark:bg-[#19C78C] text-white dark:text-black text-[9px] font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1 z-10"
             initial={{ opacity: 0, y: 8, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.9 }}
@@ -349,26 +351,26 @@ const MenuBuilderPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> =
             transition={{ type: 'spring', stiffness: 220, damping: 20 }}
             className={`h-7 rounded-lg border flex items-center justify-between px-2.5 transition-all duration-300 ${
               item.isGhost
-                ? 'bg-white/40 border-slate-100 opacity-40'
+                ? 'bg-white/40 dark:bg-black/20 border-slate-100 dark:border-white/5 opacity-40'
                 : item.isSpecial
-                ? 'bg-emerald-500/5 border-emerald-500/20 shadow-xs'
-                : 'bg-white border-slate-200/60 shadow-xs'
+                ? 'bg-emerald-500/5 dark:bg-[#19C78C]/5 border-emerald-500/20 dark:border-[#19C78C]/20 shadow-xs'
+                : 'bg-white dark:bg-[#121614] border-slate-200/60 dark:border-white/5 shadow-xs'
             }`}
           >
             <div className="flex items-center gap-1.5">
               <span
                 className={`text-[7px] px-1.5 py-0.5 rounded-md font-extrabold transition-all duration-300 ${
                   item.isGhost
-                    ? 'bg-slate-100 text-slate-400'
+                    ? 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500'
                     : item.isSpecial
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-slate-100 text-slate-500'
+                    ? 'bg-emerald-500 text-white dark:text-black'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {item.label}
               </span>
             </div>
-            <span className={`text-[9px] font-black transition-colors duration-300 ${item.isSpecial ? 'text-slate-800' : 'text-slate-600'}`}>
+            <span className={`text-[9px] font-black transition-colors duration-300 ${item.isSpecial ? 'text-slate-800 dark:text-[#F4F7F5]' : 'text-slate-600 dark:text-[#A4ADA8]'}`}>
               {item.title}
             </span>
           </motion.div>
@@ -400,7 +402,7 @@ const PublishQRPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> = (
   }, [isHovered, isReduced]);
 
   return (
-    <div className="relative bg-slate-50 rounded-2xl p-4 border border-slate-100 min-h-[140px] flex flex-col items-center justify-center gap-2 select-none overflow-hidden">
+    <div className="relative bg-slate-50 dark:bg-[#171C19] rounded-2xl p-4 border border-slate-100 dark:border-white/5 min-h-[140px] flex flex-col items-center justify-center gap-2 select-none overflow-hidden">
       {/* Scan Pulse Radial Glow Background */}
       {!isReduced && isHovered && (
         <motion.div
@@ -413,25 +415,25 @@ const PublishQRPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> = (
 
       {/* Main interactive QR mockup board */}
       <motion.div
-        className="relative bg-white p-2.5 rounded-xl border border-slate-200/80 shadow-md flex flex-col items-center gap-1.5 w-24"
+        className="relative bg-white dark:bg-[#121614] p-2.5 rounded-xl border border-slate-200/80 dark:border-white/5 shadow-md flex flex-col items-center gap-1.5 w-24"
         animate={!isReduced && isHovered ? { y: -2, scale: 1.02 } : { y: 0, scale: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
         <div className="relative">
-          <QrCode className="w-12 h-12 text-slate-800" />
+          <QrCode className="w-12 h-12 text-slate-800 dark:text-slate-200" />
           
           {/* Animated red/emerald laser scanner beam */}
           {!isReduced && isHovered && (
             <motion.div
               key={beamTrigger}
-              className="absolute left-0 right-0 h-[1.5px] bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]"
+              className="absolute left-0 right-0 h-[1.5px] bg-emerald-500 dark:bg-[#19C78C] shadow-[0_0_8px_rgba(16,185,129,0.9)]"
               initial={{ top: 0 }}
               animate={{ top: 48 }}
               transition={{ duration: 1.0, ease: 'easeInOut' }}
             />
           )}
         </div>
-        <span className="text-[8px] font-black text-slate-600 bg-slate-100 px-2 py-0.5 rounded">میز شماره ۴</span>
+        <span className="text-[8px] font-black text-slate-600 dark:text-[#A4ADA8] bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">میز شماره ۴</span>
       </motion.div>
 
       {/* Status Indicators and micro domain link */}
@@ -439,8 +441,8 @@ const PublishQRPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> = (
         <motion.span
           className={`text-[8px] font-black px-2 py-0.5 rounded-full border ${
             published
-              ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-              : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+              ? 'bg-emerald-500/10 text-emerald-600 dark:text-[#19C78C] border-emerald-500/20 dark:border-[#19C78C]/20'
+              : 'bg-amber-500/10 text-amber-600 dark:text-[#F59E0B] border-amber-500/20 dark:border-[#F59E0B]/20'
           }`}
           layout
         >
@@ -448,7 +450,7 @@ const PublishQRPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> = (
         </motion.span>
         
         {/* Domain chip */}
-        <span className="text-[7px] text-slate-400 font-mono tracking-tight mt-0.5">menu.vitrin.me/shandiz</span>
+        <span className="text-[7px] text-slate-400 dark:text-slate-500 font-mono tracking-tight mt-0.5">menu.vitrin.me/shandiz</span>
       </div>
     </div>
   );
@@ -479,20 +481,20 @@ const OrderManagementPreview: React.FC<{ isHovered: boolean; isReduced: boolean 
   const getStatusLabel = () => {
     switch (status) {
       case 'new':
-        return { text: 'سفارش جدید', bg: 'bg-blue-500/10 text-blue-600 border-blue-500/20' };
+        return { text: 'سفارش جدید', bg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 dark:border-blue-400/20' };
       case 'preparing':
-        return { text: 'در حال آماده‌سازی', bg: 'bg-amber-500/10 text-amber-600 border-amber-500/20' };
+        return { text: 'در حال آماده‌سازی', bg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 dark:border-amber-400/20' };
       case 'ready':
-        return { text: 'آماده تحویل', bg: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' };
+        return { text: 'آماده تحویل', bg: 'bg-emerald-500/10 text-emerald-600 dark:text-[#19C78C] border-emerald-500/20 dark:border-[#19C78C]/20' };
     }
   };
 
   const currentStatus = getStatusLabel();
 
   return (
-    <div className="relative bg-slate-50 rounded-2xl p-4 border border-slate-100 min-h-[140px] flex flex-col justify-center select-none overflow-hidden">
+    <div className="relative bg-slate-50 dark:bg-[#171C19] rounded-2xl p-4 border border-slate-100 dark:border-white/5 min-h-[140px] flex flex-col justify-center select-none overflow-hidden">
       <motion.div
-        className="bg-white border border-slate-200/80 p-3 rounded-xl shadow-xs space-y-2 relative"
+        className="bg-white dark:bg-[#121614] border border-slate-200/80 dark:border-white/5 p-3 rounded-xl shadow-xs space-y-2 relative"
         animate={!isReduced && isHovered ? { scale: 1.02, y: -1 } : { scale: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
@@ -506,19 +508,19 @@ const OrderManagementPreview: React.FC<{ isHovered: boolean; isReduced: boolean 
           >
             {currentStatus.text}
           </motion.span>
-          <span className="text-[8px] text-slate-400 font-mono">میز شماره ۲</span>
+          <span className="text-[8px] text-slate-400 dark:text-slate-500 font-mono">میز شماره ۲</span>
         </div>
 
-        <div className="space-y-1 border-t border-slate-100 pt-1.5 text-right">
-          <span className="text-[9px] text-slate-800 font-extrabold block">پیتزا پپرونی تند</span>
-          <span className="text-[7.5px] text-slate-400 block">+ پنیر اضافه، سوسیس بوقلمون</span>
+        <div className="space-y-1 border-t border-slate-100 dark:border-white/5 pt-1.5 text-right">
+          <span className="text-[9px] text-slate-800 dark:text-[#F4F7F5] font-extrabold block">پیتزا پپرونی تند</span>
+          <span className="text-[7.5px] text-slate-400 dark:text-slate-500 block">+ پنیر اضافه، سوسیس بوقلمون</span>
         </div>
 
         {/* Dynamic checking indicators */}
         <div className="flex items-center gap-1 justify-end pt-1">
-          <span className="text-[7px] text-slate-400">پرداخت آنلاین موفق</span>
-          <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center shrink-0">
-            <Check className="w-2.5 h-2.5 text-emerald-600" />
+          <span className="text-[7px] text-slate-400 dark:text-slate-500">پرداخت آنلاین موفق</span>
+          <div className="w-3.5 h-3.5 rounded-full bg-emerald-500/10 dark:bg-[#19C78C]/15 border border-emerald-500/25 dark:border-[#19C78C]/20 flex items-center justify-center shrink-0">
+            <Check className="w-2.5 h-2.5 text-emerald-600 dark:text-[#19C78C]" />
           </div>
         </div>
       </motion.div>
@@ -629,10 +631,10 @@ const ProcessCard: React.FC<ProcessCardProps> = ({ step, index, activeStep, setA
       onTouchEnd={() => setActiveStep(null)}
       tabIndex={0}
       style={{ opacity: opacityValue }}
-      className={`relative bg-white rounded-3xl border transition-all duration-300 flex flex-col justify-between group outline-hidden select-none h-full p-6 md:p-8 ${
+      className={`relative bg-white dark:bg-[#121614] rounded-3xl border transition-all duration-300 flex flex-col justify-between group outline-hidden select-none h-full p-6 md:p-8 ${
         isActive 
-          ? '-translate-y-1.5 scale-[1.006] border-emerald-500/20 shadow-lg' 
-          : 'border-slate-200/50 shadow-xs'
+          ? '-translate-y-1.5 scale-[1.006] border-emerald-500/20 dark:border-[#19C78C]/20 shadow-lg' 
+          : 'border-slate-200/50 dark:border-white/5 shadow-xs'
       }`}
     >
       {/* Pointer following radial highlight light - Desktop & Non-reduced only */}
@@ -652,24 +654,24 @@ const ProcessCard: React.FC<ProcessCardProps> = ({ step, index, activeStep, setA
           <motion.div
             className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-base border transition-all duration-300 ${
               isActive
-                ? 'bg-emerald-500 text-white border-emerald-500 scale-106 -translate-y-0.5'
-                : 'bg-emerald-50/50 text-[#10b981] border-emerald-100'
+                ? 'bg-emerald-500 dark:bg-[#19C78C] text-white dark:text-black border-emerald-500 dark:border-[#19C78C] scale-106 -translate-y-0.5'
+                : 'bg-emerald-50/50 dark:bg-[#19C78C]/5 text-[#10b981] dark:text-[#19C78C] border-emerald-100 dark:border-[#19C78C]/10'
             }`}
             initial={isReduced ? { scale: 1, opacity: 1 } : { scale: 0, rotate: 8, opacity: 0 }}
             whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{
-              type: 'spring',
-              stiffness: 260,
-              damping: 18,
-              delay: 0.35 + index * 0.12,
+               type: 'spring',
+               stiffness: 260,
+               damping: 18,
+               delay: 0.35 + index * 0.12,
             }}
           >
             {step.number}
           </motion.div>
 
           {/* Semantic Animated Icons */}
-          <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 transition-colors group-hover:border-emerald-100">
+          <div className="w-10 h-10 bg-slate-50 dark:bg-[#171C19] rounded-xl flex items-center justify-center border border-slate-100 dark:border-white/5 transition-colors group-hover:border-emerald-100">
             {step.id === 'build' && <AnimatedMenuIcon isHovered={isActive} isReduced={isReduced} />}
             {step.id === 'publish' && <AnimatedQRPublishIcon isHovered={isActive} isReduced={isReduced} />}
             {step.id === 'manage' && <AnimatedOrderIcon isHovered={isActive} isReduced={isReduced} />}
@@ -678,10 +680,10 @@ const ProcessCard: React.FC<ProcessCardProps> = ({ step, index, activeStep, setA
 
         {/* Text Area */}
         <div className="space-y-2 mb-5 relative z-10 text-right">
-          <h3 className={`text-base font-black transition-colors duration-300 ${isActive ? 'text-emerald-700' : 'text-slate-800'}`}>
+          <h3 className={`text-base font-black transition-colors duration-300 ${isActive ? 'text-emerald-700 dark:text-[#19C78C]' : 'text-slate-800 dark:text-[#F4F7F5]'}`}>
             {step.title}
           </h3>
-          <p className="text-xs text-slate-500 leading-relaxed min-h-[40px]">
+          <p className="text-xs text-slate-500 dark:text-[#A4ADA8] leading-relaxed min-h-[40px]">
             {step.description}
           </p>
         </div>
@@ -695,17 +697,17 @@ const ProcessCard: React.FC<ProcessCardProps> = ({ step, index, activeStep, setA
       </div>
 
       {/* Result Footer Statement */}
-      <div className="pt-4 border-t border-slate-100/80 flex items-center justify-between text-right relative z-10">
+      <div className="pt-4 border-t border-slate-100/80 dark:border-white/5 flex items-center justify-between text-right relative z-10">
         <div className="flex items-center gap-1.5 justify-end w-full">
           {/* Subtle indicator dot on hover */}
           <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[#10b981]"
+            className="w-1.5 h-1.5 rounded-full bg-[#10b981] dark:bg-[#19C78C]"
             initial={{ scale: 0, opacity: 0 }}
             animate={isActive ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
           />
           <motion.span 
-            className={`text-[11px] font-black leading-none transition-colors duration-200 ${isActive ? 'text-emerald-800 font-extrabold' : 'text-[#10b981]'}`}
+            className={`text-[11px] font-black leading-none transition-colors duration-200 ${isActive ? 'text-emerald-800 dark:text-[#19C78C] font-extrabold' : 'text-[#10b981] dark:text-[#19C78C]'}`}
             animate={isActive ? { y: -1 } : { y: 0 }}
           >
             {step.result}
@@ -739,9 +741,10 @@ const ProcessConnector: React.FC<{ activeStep: number | null; isReduced: boolean
         {/* Faint grey background baseline */}
         <motion.path
           d="M 833 40 C 700 20, 633 60, 500 40 C 367 20, 300 60, 166 40"
-          stroke="#E2E8F0"
+          stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
+          className="text-slate-200 dark:text-white/10"
           initial={{ pathLength: 0 }}
           whileInView={{ pathLength: 1 }}
           viewport={{ once: true }}
@@ -760,11 +763,11 @@ const ProcessConnector: React.FC<{ activeStep: number | null; isReduced: boolean
 
         {/* Node Circles */}
         {/* Node 1: Step 1 (Right) */}
-        <circle cx="833" cy="40" r="5" fill="#FFFFFF" stroke={activeStep && activeStep >= 1 ? '#10b981' : '#E2E8F0'} strokeWidth="3" />
+        <circle cx="833" cy="40" r="5" fill="currentColor" stroke={activeStep && activeStep >= 1 ? '#10b981' : 'currentColor'} strokeWidth="3" className="text-white dark:text-[#121614]" />
         {/* Node 2: Step 2 (Center) */}
-        <circle cx="500" cy="40" r="5" fill="#FFFFFF" stroke={activeStep && activeStep >= 2 ? '#10b981' : '#E2E8F0'} strokeWidth="3" />
+        <circle cx="500" cy="40" r="5" fill="currentColor" stroke={activeStep && activeStep >= 2 ? '#10b981' : 'currentColor'} strokeWidth="3" className="text-white dark:text-[#121614]" />
         {/* Node 3: Step 3 (Left) */}
-        <circle cx="166" cy="40" r="5" fill="#FFFFFF" stroke={activeStep && activeStep >= 3 ? '#10b981' : '#E2E8F0'} strokeWidth="3" />
+        <circle cx="166" cy="40" r="5" fill="currentColor" stroke={activeStep && activeStep >= 3 ? '#10b981' : 'currentColor'} strokeWidth="3" className="text-white dark:text-[#121614]" />
       </svg>
     </div>
   );
@@ -792,7 +795,7 @@ export const ThreeStepSection: React.FC = () => {
   };
 
   return (
-    <section id="how-it-works" className="py-20 lg:py-28 bg-[#FBFBFA] overflow-hidden relative">
+    <section id="how-it-works" className="py-20 lg:py-28 bg-[#FBFBFA] dark:bg-[#0B0E0C] overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6 relative">
         
         {/* Choreographed Heading Entrance */}
@@ -820,7 +823,7 @@ export const ThreeStepSection: React.FC = () => {
               }
             }}
           >
-            <span className="relative text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] bg-emerald-500/5 px-4 py-1.5 rounded-full border border-[#10b981]/15 overflow-hidden block">
+            <span className="relative text-[10px] uppercase tracking-[0.2em] font-black text-[#10b981] dark:text-[#19C78C] bg-emerald-500/5 dark:bg-[#19C78C]/5 px-4 py-1.5 rounded-full border border-[#10b981]/15 dark:border-[#19C78C]/15 overflow-hidden block">
               مسیر راه‌اندازی منو
               {/* Subtle highlight sweep */}
               {!isReduced && (
@@ -836,7 +839,7 @@ export const ThreeStepSection: React.FC = () => {
           {/* Heading with line-level mask */}
           <div className="overflow-hidden py-1">
             <motion.h2
-              className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] tracking-tight leading-tight"
+              className="text-2xl sm:text-3xl md:text-4xl font-black text-[#18181B] dark:text-[#F4F7F5] tracking-tight leading-tight"
               variants={{
                 hidden: { opacity: 0, y: 28, filter: 'blur(3px)' },
                 visible: { 
@@ -853,7 +856,7 @@ export const ThreeStepSection: React.FC = () => {
 
           {/* Supporting paragraph */}
           <motion.p
-            className="text-[#71717A] font-medium text-sm sm:text-base leading-relaxed"
+            className="text-[#71717A] dark:text-[#A4ADA8] font-medium text-sm sm:text-base leading-relaxed"
             variants={{
               hidden: { opacity: 0, y: 16 },
               visible: { 
