@@ -20,11 +20,11 @@ import { Order, OrderStatus } from '../types';
 
 // --- Mock Data ---
 const INITIAL_ORDERS: Order[] = [
-  { id: '#12890', tableNumber: 5, customerName: 'محمد رضایی', items: ['پیتزا پپرونی (متوسط)', 'کوکا کولا', 'سیب‌زمینی سرخ کرده'], notes: 'سیب‌زمینی بدون نمک باشد', totalPrice: 320000, status: 'new', timestamp: '۲ دقیقه پیش' },
-  { id: '#12891', tableNumber: 12, items: ['همبرگر ویژه', 'سالاد فصل'], totalPrice: 185000, status: 'new', timestamp: '۵ دقیقه پیش' },
-  { id: '#12888', tableNumber: 8, customerName: 'سارا احمدی', items: ['پیتزا سبزیجات', 'دلستر'], totalPrice: 240000, status: 'preparing', timestamp: '۱۰ دقیقه پیش' },
-  { id: '#12885', tableNumber: 2, items: ['جوجه کباب', 'برنج ایرانی'], totalPrice: 410000, status: 'ready', timestamp: '۱۵ دقیقه پیش' },
-  { id: '#12880', tableNumber: 1, items: ['سوپ جو'], totalPrice: 65000, status: 'delivered', timestamp: '۱ ساعت پیش' },
+  { id: '#12890', tableNumber: 5, customerName: 'محمد رضایی', items: ['پیتزا پپرونی (متوسط)', 'کوکا کولا', 'سیب‌زمینی سرخ کرده'], notes: 'سیب‌زمینی بدون نمک باشد', totalPrice: 320000, status: 'new', timestamp: '2 دقیقه پیش' },
+  { id: '#12891', tableNumber: 12, items: ['همبرگر ویژه', 'سالاد فصل'], totalPrice: 185000, status: 'new', timestamp: '5 دقیقه پیش' },
+  { id: '#12888', tableNumber: 8, customerName: 'سارا احمدی', items: ['پیتزا سبزیجات', 'دلستر'], totalPrice: 240000, status: 'preparing', timestamp: '10 دقیقه پیش' },
+  { id: '#12885', tableNumber: 2, items: ['جوجه کباب', 'برنج ایرانی'], totalPrice: 410000, status: 'ready', timestamp: '15 دقیقه پیش' },
+  { id: '#12880', tableNumber: 1, items: ['سوپ جو'], totalPrice: 65000, status: 'delivered', timestamp: '1 ساعت پیش' },
 ];
 
 const COLUMNS: { id: OrderStatus, label: string, color: string, bg: string, icon: any }[] = [

@@ -172,7 +172,7 @@ const TEMPLATES: TemplateItem[] = [
     bgType: 'warm',
     items: [
       { name: 'کیک هویج و گردو کلاسیک', price: '290,000' },
-      { name: 'ماکارون فرانسوی (جعبه ۶ عددی)', price: '180,000' },
+      { name: 'ماکارون فرانسوی (جعبه 6 عددی)', price: '180,000' },
       { name: 'دسر چیزکیک سن‌سباستین', price: '160,000' },
     ],
   },
@@ -240,7 +240,7 @@ const PLANS: PlanItem[] = [
     period: 'همیشگی',
     description: 'مناسب برای کافه‌ها و کیوسک‌های کوچک که تازه کسب‌و‌کار خود را راه‌اندازی کرده‌اند و منوی دیجیتال ساده می‌خواهند.',
     features: [
-      'تعریف تا ۵۰ محصول متمایز',
+      'تعریف تا 50 محصول متمایز',
       'دسته‌بندی نامحدود اقلام منو',
       'ایجاد کدهای QR پایه جهت اسکن عمومی',
       'مشاهده آنلاین منو با لود فوق‌العاده سریع',
@@ -264,7 +264,7 @@ const PLANS: PlanItem[] = [
       'اتصال به دامنه اختصاصی شخصی',
       'پنل پیامک اطلاع‌رسانی خودکار وضعیت سفارش',
       'پشتیبانی اولویت‌دار تلفنی و آنلاین',
-      'دریافت کارمزد دقیقا ۰٪ روی تمام سفارش‌ها',
+      'دریافت کارمزد دقیقا 0٪ روی تمام سفارش‌ها',
     ],
   },
 ];
@@ -317,7 +317,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#121614] text-[#18181B] dark:text-slate-200 font-['Vazirmatn'] selection:bg-[#10b981]/15 selection:text-[#10b981] overflow-x-hidden leading-relaxed">
+    <div className="min-h-screen bg-transparent text-[#18181B] dark:text-slate-200 font-['Vazirmatn'] selection:bg-[#10b981]/15 selection:text-[#10b981] overflow-x-hidden leading-relaxed">
       
       {/* ==========================================
           SECTION 2: INTERACTIVE HERO SECTION
@@ -325,9 +325,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 2: INTERACTIVE HERO SECTION
          ========================================== */}
-      <header ref={heroRef} id="hero" className="relative py-20 lg:py-32 border-b border-slate-200/50 dark:border-white/5 bg-[#F9FAF9] dark:bg-[#0B0E0C] overflow-hidden">
-        {/* Elastic Interactive Grid Background */}
-        <ReactiveGridBackground containerRef={heroRef} />
+      <header ref={heroRef} id="hero" className="relative py-20 lg:py-32 border-b border-slate-200/50 dark:border-white/5 bg-transparent overflow-hidden">
+        
 
         {/* Cinematic ambient background glow and stage atmosphere */}
         <div className="absolute top-1/2 left-1/4 w-[700px] h-[700px] -translate-y-1/2 bg-gradient-radial from-[#10b981]/8 to-transparent rounded-full blur-[140px] pointer-events-none z-0 animate-pulse" />
@@ -749,15 +748,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Metric Metrics (Left side in RTL) */}
             <Reveal variant="fadeRight" delay={0.1} className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
               <div className="bg-[#F8F9FA] dark:bg-[#161B18] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 hover:border-[#10b981]/20 dark:hover:border-emerald-500/30 transition-all">
-                <span className="text-3xl md:text-4xl font-black text-red-500 dark:text-rose-400 font-mono tracking-tight">-۴۰٪</span>
+                <span className="text-3xl md:text-4xl font-black text-red-500 dark:text-rose-400 font-mono tracking-tight">-40٪</span>
                 <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold mt-2">کاهش زمان انتظار و صف سفارش‌گیری سالن</p>
               </div>
               <div className="bg-[#F8F9FA] dark:bg-[#161B18] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 hover:border-[#10b981]/20 dark:hover:border-emerald-500/30 transition-all">
-                <span className="text-3xl md:text-4xl font-black text-[#10b981] dark:text-[#19C78C] font-mono tracking-tight">+۲۵٪</span>
+                <span className="text-3xl md:text-4xl font-black text-[#10b981] dark:text-[#19C78C] font-mono tracking-tight">+25٪</span>
                 <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold mt-2">افزایش مبلغ سبد خرید با پیشنهاد مکمل</p>
               </div>
               <div className="bg-[#F8F9FA] dark:bg-[#161B18] p-5 rounded-2xl border border-slate-200/40 dark:border-white/5 hover:border-[#10b981]/20 dark:hover:border-emerald-500/30 transition-all">
-                <span className="text-3xl md:text-4xl font-black text-[#10b981] dark:text-[#19C78C] font-mono tracking-tight">۰٪</span>
+                <span className="text-3xl md:text-4xl font-black text-[#10b981] dark:text-[#19C78C] font-mono tracking-tight">0٪</span>
                 <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold mt-2">خطای پیشخوان در ثبت اقلام سفارش خریداران</p>
               </div>
             </Reveal>
@@ -943,7 +942,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <span className="hover:text-[#10b981] transition-colors cursor-pointer">واتساپ ارتباطی</span>
             </div>
             <div>
-              <p className="text-center sm:text-right">© ۱۴۰۵ ویترین. تمامی حقوق معنوی این پلتفرم ابری محفوظ می‌باشد.</p>
+              <p className="text-center sm:text-right">© 1405 ویترین. تمامی حقوق معنوی این پلتفرم ابری محفوظ می‌باشد.</p>
             </div>
           </div>
         </div>

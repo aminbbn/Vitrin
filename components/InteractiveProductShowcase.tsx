@@ -246,7 +246,7 @@ export function InteractiveProductShowcase() {
                 </div>
 
                 {/* Mobile Tab Switcher */}
-                <div className="flex md:hidden bg-[#0B0D0C] p-1.5 rounded-xl border border-white/5 mb-6">
+                <div className="flex lg:hidden bg-[#0B0D0C] p-1.5 rounded-xl border border-white/5 mb-6">
                   <button
                     onClick={() => setActiveTab('preview')}
                     className={`flex-1 py-2.5 rounded-lg text-xs font-black transition-all ${
@@ -270,12 +270,12 @@ export function InteractiveProductShowcase() {
                 </div>
 
                 {/* Primary Dual View Split */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                   
                   {/* ==========================================
-                      EDITOR PANEL: 60-65% width
+                      EDITOR PANEL: 50% width
                      ========================================== */}
-                  <div className={`md:col-span-7 flex flex-col space-y-5 text-right ${activeTab === 'edit' ? 'block' : 'hidden md:block'}`}>
+                  <div className={`lg:col-span-6 flex flex-col space-y-5 text-right ${activeTab === 'edit' ? 'block' : 'hidden lg:block'}`}>
                     
                     {/* Product Name Input */}
                     <div className="space-y-2">
@@ -491,7 +491,7 @@ export function InteractiveProductShowcase() {
                   {/* ==========================================
                       MIDDLE SYNC ARTERI: Pulse Animation Indicator
                      ========================================== */}
-                  <div className="hidden md:flex md:col-span-1 flex-col items-center justify-center relative">
+                  <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center relative">
                     <div className="h-full w-[2px] bg-white/5 relative flex items-center justify-center">
                       <AnimatePresence>
                         {isPulseActive && (
@@ -510,9 +510,9 @@ export function InteractiveProductShowcase() {
                   </div>
 
                   {/* ==========================================
-                      CUSTOMER MOBILE PREVIEW: 35-40% width
+                      CUSTOMER MOBILE PREVIEW: 40% width
                      ========================================== */}
-                  <div className={`md:col-span-4 flex flex-col justify-start ${activeTab === 'preview' ? 'block' : 'hidden md:block'}`}>
+                  <div className={`lg:col-span-5 flex flex-col justify-start items-center relative z-20 overflow-hidden ${activeTab === 'preview' ? 'block' : 'hidden lg:block'}`}>
                     
                     {/* High-fidelity CSS iPhone 17 Pro Max Frame */}
                     <IPhone17ProMaxFrame variant="standard" className="z-10">
@@ -673,7 +673,7 @@ export function InteractiveProductShowcase() {
                 {/* 4. Sync/Autosave Status Footer bar */}
                 <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-2.5 text-right">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-slate-500 font-bold">آخرین ویرایش: کمتر از ۲ ثانیه پیش</span>
+                    <span className="text-[10px] text-slate-500 font-bold">آخرین ویرایش: کمتر از 2 ثانیه پیش</span>
                   </div>
 
                   <div className="flex items-center gap-2 bg-[#0B0D0C] border border-white/5 px-4 py-1.5 rounded-lg">

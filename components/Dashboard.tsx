@@ -113,14 +113,14 @@ const getMockStats = (range: string, brandColor: string) => {
     },
   ];
 
-  if (range === '24h' || range === '۲۴ ساعت گذشته') {
+  if (range === '24h' || range === '24 ساعت گذشته') {
     return baseStats.map(s => {
       if (s.id === 'revenue') return { ...s, value: '3,850,000', trend: '+2%' };
       if (s.id === 'orders') return { ...s, value: '12', trend: '0%' };
       return s;
     });
   }
-  if (range === '30days' || range === '۳۰ روز گذشته') {
+  if (range === '30days' || range === '30 روز گذشته') {
     return baseStats.map(s => {
       if (s.id === 'revenue') return { ...s, value: '450,000,000', trend: '+15%' };
       if (s.id === 'orders') return { ...s, value: '1,200', trend: '+10%' };
@@ -455,9 +455,9 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
 
   const getDateRangeLabel = () => {
     switch(dateRange) {
-      case '24h': return '۲۴ ساعت گذشته';
-      case '7days': return '۷ روز گذشته';
-      case '30days': return '۳۰ روز گذشته';
+      case '24h': return '24 ساعت گذشته';
+      case '7days': return '7 روز گذشته';
+      case '30days': return '30 روز گذشته';
     }
   };
 
@@ -556,9 +556,9 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
                     exit={{ opacity: 0, y: 5 }}
                     className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden z-50"
                   >
-                    <button onClick={() => handleDateConfirm('24h')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>۲۴ ساعت گذشته</button>
-                    <button onClick={() => handleDateConfirm('7days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>۷ روز گذشته</button>
-                    <button onClick={() => handleDateConfirm('30days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>۳۰ روز گذشته</button>
+                    <button onClick={() => handleDateConfirm('24h')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>24 ساعت گذشته</button>
+                    <button onClick={() => handleDateConfirm('7days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>7 روز گذشته</button>
+                    <button onClick={() => handleDateConfirm('30days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>30 روز گذشته</button>
                   </motion.div>
                )}
             </AnimatePresence>

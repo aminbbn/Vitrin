@@ -397,8 +397,8 @@ const Header: React.FC<HeaderProps> = ({
                      <div className="space-y-2">
                         {[
                           { icon: MapPin, label: "آدرس", value: "تهران، سعادت آباد، میدان کاج، خیابان سرو شرقی" },
-                          { icon: Phone, label: "تلفن", value: "۰۲۱-۸۸۹۹۰۰۰۰" },
-                          { icon: Clock, label: "ساعت کار", value: "همه روزه ۱۱:۰۰ صبح تا ۱۱:۳۰ شب" }
+                          { icon: Phone, label: "تلفن", value: "021-88990000" },
+                          { icon: Clock, label: "ساعت کار", value: "همه روزه 11:00 صبح تا 11:30 شب" }
                         ].map((item, idx) => (
                           <div key={idx} className="flex items-start gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-2xl transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
                              <item.icon className="w-5 h-5 text-slate-400 mt-0.5" />

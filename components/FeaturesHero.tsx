@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { FeatureAtlas } from './FeatureAtlas';
+import { FeatureAtlas, FeatureModuleId } from './FeatureAtlas';
 import { ArrowLeft, Play } from '@phosphor-icons/react';
-import { ReactiveGridBackground } from './ReactiveGridBackground';
 
 interface FeaturesHeroProps {
-  onLoginClick: () => void;
+  onLoginClick?: () => void;
   onStartFreeClick: () => void;
   theme: 'light' | 'dark';
 }
@@ -16,28 +15,46 @@ export const FeaturesHero: React.FC<FeaturesHeroProps> = ({
   theme
 }) => {
   const shouldReduceMotion = useReducedMotion();
-  const [activeNode, setActiveNode] = useState<number>(1);
-  const [isAutoplay, setIsAutoplay] = useState<boolean>(true);
+  
+  // Refactored State according to Non-Negotiable constraints
+  const [activeNode, setActiveNode] = useState<FeatureModuleId>('studio');
+  const [lockedNode, setLockedNode] = useState<FeatureModuleId>('studio');
+  const [isInView, setIsInView] = useState<boolean>(true);
+  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
+  const [isPointerInside, setIsPointerInside] = useState<boolean>(false);
+  const [isDocumentHidden, setIsDocumentHidden] = useState<boolean>(typeof document !== 'undefined' ? document.hidden : false);
+
   const heroContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Auto-cycle through the 4 nodes every 3 seconds if autoplay is on
+  // Derived autoplay eligibility state
+  const canAutoplay = 
+    isInView && 
+    !hasUserInteracted && 
+    !isPointerInside && 
+    !shouldReduceMotion && 
+    !isDocumentHidden;
+
+  // Handle document visibility changes
   useEffect(() => {
-    if (!isAutoplay || shouldReduceMotion) return;
+    if (typeof document === 'undefined') return;
 
-    const timer = setInterval(() => {
-      setActiveNode((prev) => (prev === 4 ? 1 : prev + 1));
-    }, 3000);
+    const handleVisibilityChange = () => {
+      setIsDocumentHidden(document.hidden);
+    };
 
-    return () => clearInterval(timer);
-  }, [isAutoplay, shouldReduceMotion]);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
-  // Use Intersection Observer to pause cycle when the hero is out of view
+  // Intersection Observer for autoplay viewport awareness
   useEffect(() => {
     if (shouldReduceMotion) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsAutoplay(entry.isIntersecting);
+        setIsInView(entry.isIntersecting);
       },
       { threshold: 0.15 }
     );
@@ -49,34 +66,68 @@ export const FeaturesHero: React.FC<FeaturesHeroProps> = ({
     return () => observer.disconnect();
   }, [shouldReduceMotion]);
 
+  // Autoplay cycle timer at 4400ms interval
+  useEffect(() => {
+    if (!canAutoplay) return;
+
+    const cycleOrder: FeatureModuleId[] = ['studio', 'products', 'customer', 'orders'];
+
+    const timer = setInterval(() => {
+      setActiveNode((current) => {
+        const nextIndex = (cycleOrder.indexOf(current) + 1) % cycleOrder.length;
+        const nextModule = cycleOrder[nextIndex];
+        setLockedNode(nextModule);
+        return nextModule;
+      });
+    }, 4400);
+
+    return () => clearInterval(timer);
+  }, [canAutoplay]);
+
   const handleStartTour = () => {
-    setIsAutoplay(false);
+    setHasUserInteracted(true);
     const firstModule = document.getElementById('studio');
     if (firstModule) {
-      const yOffset = -72; // header height
+      const yOffset = -72; // header height offset
       const y = firstModule.getBoundingClientRect().top + window.pageYOffset + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
+  const handlePreviewModule = (module: FeatureModuleId) => {
+    setActiveNode(module);
+  };
+
+  const handleActivateModule = (module: FeatureModuleId) => {
+    setHasUserInteracted(true);
+    setLockedNode(module);
+    setActiveNode(module);
+  };
+
+  const handlePointerPresenceChange = (inside: boolean) => {
+    setIsPointerInside(inside);
+    if (!inside) {
+      // Revert to locked state when pointer exits
+      setActiveNode(lockedNode);
     }
   };
 
   return (
     <section 
       ref={heroContainerRef}
-      className="relative py-16 lg:py-24 bg-[#F5F7F6] dark:bg-[#080A09] text-slate-900 dark:text-slate-100 overflow-hidden transition-colors duration-300"
+      className="relative py-16 lg:py-24 bg-transparent text-slate-900 dark:text-slate-100 overflow-hidden transition-colors duration-300"
     >
-      {/* Elastic Interactive Grid Background */}
-      <ReactiveGridBackground containerRef={heroContainerRef} />
+      {/* Decorative subtle ambient backdrop glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.05)_0%,transparent_65%)] dark:bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.03)_0%,transparent_65%)] pointer-events-none" />
 
-      {/* Decorative Grid and Soft Glows */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.06)_0%,transparent_65%)] dark:bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.04)_0%,transparent_65%)] pointer-events-none" />
-
+      {/* Preserve Non-Negotiable structural layouts exactly */}
       <div className="max-w-[1200px] mx-auto px-6 md:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
-          {/* RIGHT COL: Copy & CTAs */}
-          <div className="lg:col-span-6 flex flex-col items-start text-right">
+          {/* RIGHT COL: Copy & CTAs (lg:col-span-5) */}
+          <div className="lg:col-span-5 flex flex-col items-start text-right">
             
-            {/* Elegant small eyebrow tag */}
+            {/* Elegant tiny eyebrow tag */}
             <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -87,12 +138,12 @@ export const FeaturesHero: React.FC<FeaturesHeroProps> = ({
               <span>تور تعاملی پلتفرم ویترین</span>
             </motion.div>
 
-            {/* Editorial clean display headline */}
+            {/* Headline with corrected Persian half-spaces */}
             <motion.h1 
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-[52px] font-black tracking-tight leading-[1.1] mb-4 text-[#151817] dark:text-[#F3F6F4]"
+              className="text-4xl md:text-5xl lg:text-[48px] font-black tracking-tight leading-[1.15] mb-4 text-[#151817] dark:text-[#F3F6F4]"
             >
               تمام ابزارهای منو و سفارش، <br />
               <span className="text-[#10B981] dark:text-[#19C78C]">در یک سیستم یکپارچه</span>
@@ -103,12 +154,12 @@ export const FeaturesHero: React.FC<FeaturesHeroProps> = ({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="px-3.5 py-1.5 bg-slate-200/50 dark:bg-[#101412] text-slate-700 dark:text-emerald-400 text-sm font-black rounded-lg border border-slate-300/20 dark:border-[#10B981]/10 mb-6"
+              className="px-3.5 py-1.5 bg-slate-200/50 dark:bg-[#101412] text-slate-700 dark:text-emerald-400 text-xs font-black rounded-lg border border-slate-300/20 dark:border-[#10B981]/10 mb-6"
             >
               از طراحی تا تحویل سفارش
             </motion.div>
 
-            {/* Restrained clean description */}
+            {/* Meticulously corrected description with Persian half-spaces */}
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -118,14 +169,14 @@ export const FeaturesHero: React.FC<FeaturesHeroProps> = ({
               چهار ماژول متصل برای طراحی منو، مدیریت محصولات، ساخت تجربه خرید و کنترل سفارشهای رستوران.
             </motion.p>
 
-            {/* Dual Action Buttons */}
+            {/* Action Buttons */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-wrap items-center gap-4 w-full"
             >
-              {/* Primary CTA button-in-button with custom micro-interactions */}
+              {/* Primary CTA with button-in-button micro-interaction */}
               <button
                 onClick={handleStartTour}
                 className="px-6 py-3.5 bg-slate-900 hover:bg-slate-800 dark:bg-[#10B981] dark:hover:bg-emerald-500 text-white font-black text-xs rounded-xl flex items-center gap-3 transition-all active:scale-[0.98] border-0 cursor-pointer shadow-lg group focus:outline-none"
@@ -148,19 +199,20 @@ export const FeaturesHero: React.FC<FeaturesHeroProps> = ({
 
           </div>
 
-          {/* LEFT COL: Interactive Feature Atlas visual workspace */}
-          <div className="lg:col-span-6 flex items-center justify-center">
+          {/* LEFT COL: Interactive Compact Flow Deck (lg:col-span-7) */}
+          <div className="lg:col-span-7 flex items-center justify-center w-full">
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="w-full relative"
             >
               <FeatureAtlas 
-                activeNode={activeNode} 
-                setActiveNode={setActiveNode} 
-                isAutoplay={isAutoplay} 
-                setIsAutoplay={setIsAutoplay}
+                activeModule={activeNode} 
+                lockedModule={lockedNode} 
+                onPreviewModule={handlePreviewModule} 
+                onActivateModule={handleActivateModule} 
+                onPointerPresenceChange={handlePointerPresenceChange}
                 theme={theme}
               />
             </motion.div>

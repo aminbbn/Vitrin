@@ -43,6 +43,6 @@ export const formatOrderId = (id: string | number): string => {
 export const normalizeDigits = (value: string): string => {
   if (!value) return '';
   return value
-    .replace(/[۰-۹]/g, (digit) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit)))
-    .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)));
+    .replace(/[0-9]/g, (digit) => String('0123456789'.indexOf(digit)))
+    .replace(/[0-9]/g, (digit) => String('0123456789'.indexOf(digit)));
 };

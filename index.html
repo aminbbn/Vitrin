@@ -70,41 +70,79 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
       :root {
-        --app-bg: #F5F7F6;
+        --page-bg: #F5F7F6;
+        --surface-bg: #FFFFFF;
+
+        --text-primary: #151817;
+        --text-secondary: #626A66;
+        --text-tertiary: #8A938E;
+
+        --border: rgba(17, 31, 24, 0.08);
+        --border-strong: rgba(17, 31, 24, 0.14);
+
+        --accent: #10B981;
+        --accent-strong: #059669;
+        --accent-soft: rgba(16, 185, 129, 0.10);
+
+        --grid-line: rgba(5, 150, 105, 0.035);
+        --grid-node: rgba(5, 150, 105, 0.14);
+        --cursor-glow: rgba(16, 185, 129, 0.05);
+
+        /* Map legacy variables to prevent breakages */
+        --app-bg: var(--page-bg);
         --app-bg-subtle: #EEF2F0;
-        --app-surface: #FFFFFF;
-        --app-surface-elevated: #FFFFFF;
+        --app-surface: var(--surface-bg);
+        --app-surface-elevated: var(--surface-bg);
         --app-surface-inset: #F2F5F3;
         --app-surface-hover: #F8FBF9;
-        --app-text: #161917;
-        --app-text-muted: #626A66;
-        --app-text-subtle: #8A938E;
-        --app-border: rgba(17, 31, 24, 0.08);
-        --app-border-strong: rgba(17, 31, 24, 0.14);
-        --app-accent: #10B981;
-        --app-accent-strong: #059669;
-        --app-accent-soft: rgba(16, 185, 129, 0.08);
-        --app-grid: rgba(13, 94, 70, 0.045);
-        --app-grid-node: rgba(16, 185, 129, 0.16);
+        --app-text: var(--text-primary);
+        --app-text-muted: var(--text-secondary);
+        --app-text-subtle: var(--text-tertiary);
+        --app-border: var(--border);
+        --app-border-strong: var(--border-strong);
+        --app-accent: var(--accent);
+        --app-accent-strong: var(--accent-strong);
+        --app-accent-soft: var(--accent-soft);
+        --app-grid: var(--grid-line);
+        --app-grid-node: var(--grid-node);
       }
 
       .dark {
-        --app-bg: #070A09;
+        --page-bg: #070A09;
+        --surface-bg: #101512;
+
+        --text-primary: #F3F7F4;
+        --text-secondary: #A0AAA4;
+        --text-tertiary: #727D76;
+
+        --border: rgba(255, 255, 255, 0.07);
+        --border-strong: rgba(255, 255, 255, 0.12);
+
+        --accent: #19C78C;
+        --accent-strong: #20D99A;
+        --accent-soft: rgba(25, 199, 140, 0.11);
+
+        --grid-line: rgba(45, 212, 157, 0.035);
+        --grid-node: rgba(45, 212, 157, 0.15);
+        --cursor-glow: rgba(25, 199, 140, 0.075);
+
+        /* Map legacy variables to prevent breakages */
+        --app-bg: var(--page-bg);
         --app-bg-subtle: #0B0F0D;
-        --app-surface: #101512;
+        --app-surface: var(--surface-bg);
         --app-surface-elevated: #141A16;
         --app-surface-inset: #090D0B;
         --app-surface-hover: #18201B;
-        --app-text: #F3F7F4;
-        --app-text-muted: #A0AAA4;
-        --app-text-subtle: #6F7A74;
-        --app-border: rgba(255, 255, 255, 0.07);
-        --app-border-strong: rgba(255, 255, 255, 0.12);
-        --app-accent: #19C78C;
-        --app-accent-strong: #20D99A;
-        --app-accent-soft: rgba(25, 199, 140, 0.11);
-        --app-grid: rgba(45, 213, 158, 0.035);
-        --app-grid-node: rgba(45, 213, 158, 0.14);
+        --app-text: var(--text-primary);
+        --app-text-muted: var(--text-secondary);
+        --app-text-subtle: var(--text-tertiary);
+        --app-border: var(--border);
+        --app-border-strong: var(--border-strong);
+        --app-accent: var(--accent);
+        --app-accent-strong: var(--accent-strong);
+        --app-accent-soft: var(--accent-soft);
+        --app-grid: var(--grid-line);
+        --app-grid-node: var(--grid-node);
       }
 
       body {
@@ -219,6 +257,47 @@
       .glow-transition {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
       }
+      
+      /* Global dark mode overrides for legacy hardcoded colors */
+      .dark .bg-white {
+        background-color: var(--app-surface) !important;
+      }
+      .dark .bg-slate-50 {
+        background-color: var(--app-bg-subtle) !important;
+      }
+      .dark .bg-\[\#F7F7F8\] {
+        background-color: var(--app-bg) !important;
+      }
+      .dark .bg-\[\#0A0A0A\] {
+        background-color: var(--app-bg) !important;
+      }
+      .dark .text-slate-900 {
+        color: var(--app-text) !important;
+      }
+      .dark .text-slate-800 {
+        color: var(--app-text) !important;
+      }
+      .dark .text-slate-700 {
+        color: var(--app-text-muted) !important;
+      }
+      .dark .text-slate-600 {
+        color: var(--app-text-subtle) !important;
+      }
+      .dark .text-slate-500 {
+        color: var(--app-text-subtle) !important;
+      }
+      .dark .text-\[\#18181B\] {
+        color: var(--app-text) !important;
+      }
+      .dark .text-\[\#71717A\] {
+        color: var(--app-text-muted) !important;
+      }
+      .dark .border-slate-200 {
+        border-color: var(--app-border) !important;
+      }
+      .dark .border-slate-100 {
+        border-color: var(--app-border) !important;
+      }
     </style>
   <script type="importmap">
 {
@@ -234,7 +313,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+  <body class="bg-app-bg text-app-text transition-colors">
     <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

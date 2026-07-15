@@ -23,21 +23,21 @@ export interface ProcessStep {
 const STEPS: ProcessStep[] = [
   {
     id: 'build',
-    number: '۱',
+    number: '1',
     title: 'منوی خود را بسازید',
     description: 'محصولات، دسته‌بندی‌ها و اطلاعات کافه یا رستوران خود را به سادگی و به صورت کاملاً ویژوال در استودیو طراحی کنید.',
     result: 'دست‌آورد: طراحی اختصاصی متناسب با برند شما',
   },
   {
     id: 'publish',
-    number: '۲',
+    number: '2',
     title: 'منتشرش کنید',
     description: 'طرح نهایی منو را با یک کلیک روی دامنه اختصاصی خود یا کدهای QR میزها فعال کنید تا در دسترس مشتریان قرار گیرد.',
     result: 'دست‌آورد: دسترسی آنی خریدار بدون نیاز به نصب اپلیکیشن',
   },
   {
     id: 'manage',
-    number: '۳',
+    number: '3',
     title: 'سفارش‌ها را مدیریت کنید',
     description: 'سفارش‌های ثبت‌شده مشتریان را با اطلاعات دقیق میز و پرداخت، مستقیماً در پنل مدیریت ویترین دریافت و پیگیری کنید.',
     result: 'دست‌آورد: کاهش خطاهای سفارش‌گیری به صفر درصد',
@@ -433,7 +433,7 @@ const PublishQRPreview: React.FC<{ isHovered: boolean; isReduced: boolean }> = (
             />
           )}
         </div>
-        <span className="text-[8px] font-black text-slate-600 dark:text-[#A4ADA8] bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">میز شماره ۴</span>
+        <span className="text-[8px] font-black text-slate-600 dark:text-[#A4ADA8] bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded">میز شماره 4</span>
       </motion.div>
 
       {/* Status Indicators and micro domain link */}
@@ -508,7 +508,7 @@ const OrderManagementPreview: React.FC<{ isHovered: boolean; isReduced: boolean 
           >
             {currentStatus.text}
           </motion.span>
-          <span className="text-[8px] text-slate-400 dark:text-slate-500 font-mono">میز شماره ۲</span>
+          <span className="text-[8px] text-slate-400 dark:text-slate-500 font-mono">میز شماره 2</span>
         </div>
 
         <div className="space-y-1 border-t border-slate-100 dark:border-white/5 pt-1.5 text-right">

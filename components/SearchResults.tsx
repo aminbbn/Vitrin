@@ -88,7 +88,7 @@ const SearchCustomerProfileModal: React.FC<SearchCustomerProfileModalProps> = ({
                </div>
                <div className="text-center p-2 border-r border-slate-200">
                   <div className="text-[10px] text-slate-400 font-bold mb-1">مجموع خرید (تومان)</div>
-                  <div className="text-lg font-black text-slate-800">{customer.spent ?? '۳,۲۰۰,۰۰۰'}</div>
+                  <div className="text-lg font-black text-slate-800">{customer.spent ?? '3,200,000'}</div>
                </div>
             </div>
 
@@ -102,12 +102,12 @@ const SearchCustomerProfileModal: React.FC<SearchCustomerProfileModalProps> = ({
                      </div>
                      <div className="text-right">
                         <div className="text-[10px] font-bold text-slate-400">شماره تلفن</div>
-                        <div className="text-sm font-black text-slate-800">{customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷'}</div>
+                        <div className="text-sm font-black text-slate-800">{customer.phone ?? '09121234567'}</div>
                      </div>
                   </div>
                   <div className="flex gap-2">
                      <button 
-                        onClick={() => handleCopy(customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷', 'phone')}
+                        onClick={() => handleCopy(customer.phone ?? '09121234567', 'phone')}
                         className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200/60 shadow-sm"
                         title="کپی شماره"
                      >
@@ -156,7 +156,7 @@ const SearchCustomerProfileModal: React.FC<SearchCustomerProfileModalProps> = ({
                <div className="grid grid-cols-2 gap-4">
                   <div className="p-3 bg-slate-50/30 border border-slate-100 rounded-2xl">
                      <span className="text-[10px] text-slate-400 block mb-0.5 font-bold">تاریخ عضویت</span>
-                     <span className="text-xs font-black text-slate-700">{customer.joinDate ?? '۱۴۰۲/۰۱/۱۵'}</span>
+                     <span className="text-xs font-black text-slate-700">{customer.joinDate ?? '1402/01/15'}</span>
                   </div>
                   <div className="p-3 bg-slate-50/30 border border-slate-100 rounded-2xl">
                      <span className="text-[10px] text-slate-400 block mb-0.5 font-bold font-['Vazirmatn']">غذای مورد علاقه</span>

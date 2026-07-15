@@ -24,6 +24,7 @@ import { SolutionsPage } from './components/SolutionsPage';
 import { ScrollProgress } from './components/MotionSystem';
 import { MarketingHeader } from './components/MarketingHeader';
 import { useTheme } from './components/ThemeProvider';
+import { ReactiveGridBackground } from './components/ReactiveGridBackground';
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
   { id: '1', type: 'order', title: 'سفارش جدید #12895', message: '2 پیتزا پپرونی، 1 سالاد سزار - میز 5', time: '2 دقیقه پیش', read: false, link: 'orders' },
@@ -244,67 +245,74 @@ const App: React.FC = () => {
     }
 
     return (
-      <div className="min-h-screen bg-app-bg text-app-text transition-colors duration-300 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden flex flex-col" style={{ direction: 'rtl' }}>
-        <MarketingHeader
-          theme={theme}
-          toggleTheme={toggleTheme}
-          marketingRoute={marketingRoute}
-          onNavigate={handleNavigate}
-          onNavigateToSection={handleNavigateToSection}
-          onLoginClick={() => setShowLoginFlow(true)}
-          onStartFreeClick={() => setShowLoginFlow(true)}
-        />
+      <div className="min-h-screen bg-app-bg text-app-text transition-colors duration-300 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden flex flex-col relative" style={{ direction: 'rtl' }}>
+        {/* Global persistent reactive grid background across all public marketing pages */}
+        <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
+          <ReactiveGridBackground intensity="normal" />
+        </div>
 
-        {/* Marketing Page Content */}
-        <div className="flex-grow">
-          <AnimatePresence mode="wait">
-            <motion.main
-              key={marketingRoute}
-              initial={
-                shouldReduceMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, y: 12, filter: 'blur(4px)' }
-              }
-              animate={{
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)'
-              }}
-              exit={
-                shouldReduceMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, y: -8, filter: 'blur(3px)' }
-              }
-              transition={{
-                duration: 0.28,
-                ease: [0.16, 1, 0.3, 1]
-              }}
-            >
-              {marketingRoute === 'features' ? (
-                <FeaturesPage 
-                  onLoginClick={() => setShowLoginFlow(true)}
-                  onStartFreeClick={() => setShowLoginFlow(true)}
-                  onNavigateHome={() => handleNavigate('home')}
-                  onNavigateSolutions={() => handleNavigate('solutions')}
-                  theme={theme}
-                />
-              ) : marketingRoute === 'solutions' ? (
-                <SolutionsPage 
-                  onLoginClick={() => setShowLoginFlow(true)}
-                  onStartFreeClick={() => setShowLoginFlow(true)}
-                  onNavigateHome={() => handleNavigate('home')}
-                  onNavigateFeatures={() => handleNavigate('features')}
-                />
-              ) : (
-                <LandingPage 
-                  onLoginClick={() => setShowLoginFlow(true)} 
-                  onStartFreeClick={() => setShowLoginFlow(true)} 
-                  onNavigateFeatures={() => handleNavigate('features')}
-                  onNavigateSolutions={() => handleNavigate('solutions')}
-                />
-              )}
-            </motion.main>
-          </AnimatePresence>
+        <div className="relative z-10 flex flex-col min-h-screen">
+          <MarketingHeader
+            theme={theme}
+            toggleTheme={toggleTheme}
+            marketingRoute={marketingRoute}
+            onNavigate={handleNavigate}
+            onNavigateToSection={handleNavigateToSection}
+            onLoginClick={() => setShowLoginFlow(true)}
+            onStartFreeClick={() => setShowLoginFlow(true)}
+          />
+
+          {/* Marketing Page Content */}
+          <div className="flex-grow">
+            <AnimatePresence mode="wait">
+              <motion.main
+                key={marketingRoute}
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 0 }
+                    : { opacity: 0, y: 12, filter: 'blur(4px)' }
+                }
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  filter: 'blur(0px)'
+                }}
+                exit={
+                  shouldReduceMotion
+                    ? { opacity: 0 }
+                    : { opacity: 0, y: -8, filter: 'blur(3px)' }
+                }
+                transition={{
+                  duration: 0.28,
+                  ease: [0.16, 1, 0.3, 1]
+                }}
+              >
+                {marketingRoute === 'features' ? (
+                  <FeaturesPage 
+                    onLoginClick={() => setShowLoginFlow(true)}
+                    onStartFreeClick={() => setShowLoginFlow(true)}
+                    onNavigateHome={() => handleNavigate('home')}
+                    onNavigateSolutions={() => handleNavigate('solutions')}
+                    theme={theme}
+                  />
+                ) : marketingRoute === 'solutions' ? (
+                  <SolutionsPage 
+                    onLoginClick={() => setShowLoginFlow(true)}
+                    onStartFreeClick={() => setShowLoginFlow(true)}
+                    onNavigateHome={() => handleNavigate('home')}
+                    onNavigateFeatures={() => handleNavigate('features')}
+                  />
+                ) : (
+                  <LandingPage 
+                    onLoginClick={() => setShowLoginFlow(true)} 
+                    onStartFreeClick={() => setShowLoginFlow(true)} 
+                    onNavigateFeatures={() => handleNavigate('features')}
+                    onNavigateSolutions={() => handleNavigate('solutions')}
+                  />
+                )}
+              </motion.main>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     );

@@ -100,7 +100,7 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
               {/* Style Selection */}
               <div className="text-right">
                 <span className="text-xs font-black text-slate-800 dark:text-slate-300 block mb-3">
-                  ۱. انتخاب استایل چیدمان هیرو
+                  1. انتخاب استایل چیدمان هیرو
                 </span>
                 <div className="grid grid-cols-3 gap-2">
                   {[
@@ -126,7 +126,7 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
               {/* Categories Re-ordering */}
               <div className="text-right">
                 <span className="text-xs font-black text-slate-800 dark:text-slate-300 block mb-3">
-                  ۲. مدیریت و مرتب‌سازی نمایش دسته‌بندی‌ها
+                  2. مدیریت و مرتب‌سازی نمایش دسته‌بندی‌ها
                 </span>
                 <div className="space-y-2">
                   {categories.map((cat, idx) => (
@@ -325,7 +325,7 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
                         </div>
                         <div className="bg-[#EEF2F0] dark:bg-[#141917] p-2.5 rounded-xl border border-slate-200/40 dark:border-white/5 flex flex-col justify-center items-center text-center">
                           <h3 className="font-black text-[9px] text-emerald-500">جشنواره تابستانه</h3>
-                          <p className="text-[7px] text-slate-400">تا ۲۰٪ تخفیف ویژه</p>
+                          <p className="text-[7px] text-slate-400">تا 20٪ تخفیف ویژه</p>
                         </div>
                       </motion.div>
                     )}
@@ -348,9 +348,9 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
                     <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 block">پرفروش‌ترین‌های امروز</span>
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                       {[
-                        { seed: 'burger_prev', title: 'برگر زغالی', price: '۳۱۰,۰۰۰' },
-                        { seed: 'salad_prev', title: 'سالاد سزار', price: '۲۴۰,۰۰۰' },
-                        { seed: 'pasta_prev', title: 'پاستا آلفردو', price: '۳۲۰,۰۰0' }
+                        { seed: 'burger_prev', title: 'برگر زغالی', price: '310,000' },
+                        { seed: 'salad_prev', title: 'سالاد سزار', price: '240,000' },
+                        { seed: 'pasta_prev', title: 'پاستا آلفردو', price: '320,000' }
                       ].map((item) => (
                         <div key={item.title} className="w-24 bg-slate-50 dark:bg-[#141917]/40 border border-slate-200/50 dark:border-white/5 p-2 rounded-xl shrink-0">
                           <div className="h-12 bg-slate-200 dark:bg-[#141917] rounded-lg mb-1 overflow-hidden">

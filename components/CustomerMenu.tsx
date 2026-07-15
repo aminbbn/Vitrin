@@ -42,7 +42,7 @@ import {
 const ProfileModal = ({ isOpen, onClose, brandColor }: { isOpen: boolean; onClose: () => void; brandColor: string }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [table, setTable] = useState('۵');
+  const [table, setTable] = useState('5');
   const [orders, setOrders] = useState<any[]>([]);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -50,7 +50,7 @@ const ProfileModal = ({ isOpen, onClose, brandColor }: { isOpen: boolean; onClos
     if (isOpen) {
       const savedName = localStorage.getItem('vitrin_customer_name') || '';
       const savedPhone = localStorage.getItem('vitrin_customer_phone') || '';
-      const savedTable = localStorage.getItem('vitrin_customer_table') || '۵';
+      const savedTable = localStorage.getItem('vitrin_customer_table') || '5';
       const savedOrders = localStorage.getItem('vitrin_orders') || '[]';
       
       setName(savedName);
@@ -141,7 +141,7 @@ const ProfileModal = ({ isOpen, onClose, brandColor }: { isOpen: boolean; onClos
                     type="tel" 
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹"
+                    placeholder="مثال: 09123456789"
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-slate-400 dark:focus:border-slate-700 transition-colors font-medium text-slate-800 dark:text-slate-100 text-left"
                   />
                 </div>
@@ -149,7 +149,7 @@ const ProfileModal = ({ isOpen, onClose, brandColor }: { isOpen: boolean; onClos
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1.5 text-right">میز پیش‌فرض</label>
                   <div className="grid grid-cols-5 gap-2 font-['Vazirmatn']">
-                    {['۱', '۲', '۵', '۸', '۱۲'].map((num) => (
+                    {['1', '2', '5', '8', '12'].map((num) => (
                       <button 
                         key={num} 
                         type="button"

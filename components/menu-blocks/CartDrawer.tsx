@@ -32,7 +32,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const isEdit = mode === 'edit';
 
   // Checkout Fields
-  const [tableNumber, setTableNumber] = useState('۵');
+  const [tableNumber, setTableNumber] = useState('5');
   const [customerName, setCustomerName] = useState('');
   const [notes, setNotes] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
@@ -324,7 +324,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                             انتخاب شماره میز
                           </label>
                           <div className="grid grid-cols-5 gap-2 font-['Vazirmatn']">
-                            {['۱', '۲', '۵', '۸', '۱۲'].map((num) => (
+                            {['1', '2', '5', '8', '12'].map((num) => (
                               <button
                                 key={num}
                                 type="button"

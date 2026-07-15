@@ -90,7 +90,7 @@ export const CustomerJourneyModule: React.FC<CustomerJourneyModuleProps> = ({ th
                       گام اول: اسکن و صفحه خانه
                     </h3>
                     <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-bold">
-                      مشتری شما QR کد چسبانده شده روی میز شماره ۵ را با دوربین اسکن کرده و فوراً منوی آنلاین کافه را بدون نیاز به دانلود هیچ اپلیکیشنی بر روی گوشی خود لود می‌کند.
+                      مشتری شما QR کد چسبانده شده روی میز شماره 5 را با دوربین اسکن کرده و فوراً منوی آنلاین کافه را بدون نیاز به دانلود هیچ اپلیکیشنی بر روی گوشی خود لود می‌کند.
                     </p>
                     <button 
                       onClick={() => setFlowStep(2)}
@@ -144,7 +144,7 @@ export const CustomerJourneyModule: React.FC<CustomerJourneyModuleProps> = ({ th
                     {/* Checkbox selector representing modification of item */}
                     <div className="bg-slate-50 dark:bg-[#141917] p-4 rounded-xl border border-slate-200/50 dark:border-white/5 text-right">
                       <div className="flex items-center justify-between text-xs font-black">
-                        <span className="font-mono text-emerald-600 dark:text-[#19C78C] font-black">+۳۵,۰۰۰ تومان</span>
+                        <span className="font-mono text-emerald-600 dark:text-[#19C78C] font-black">+35,000 تومان</span>
                         <label className="flex items-center gap-2 cursor-pointer select-none">
                           <span className="text-slate-700 dark:text-slate-200">افزودن پنیر چدار به پیتزا</span>
                           <input 
@@ -321,7 +321,7 @@ export const CustomerJourneyModule: React.FC<CustomerJourneyModuleProps> = ({ th
                           {/* Welcome Campaign badge */}
                           <div className="bg-slate-50 dark:bg-white/[0.02] p-2.5 rounded-xl border border-slate-200/60 dark:border-white/5 mt-auto">
                             <span className="text-[8px] text-emerald-600 dark:text-[#19C78C] font-black block">🎁 کمپین خوش‌آمدگویی</span>
-                            <p className="text-[7px] text-slate-400 mt-0.5 font-bold">۱۰٪ تخفیف بدون قرعه کشی بر روی تمام فاکتورها</p>
+                            <p className="text-[7px] text-slate-400 mt-0.5 font-bold">10٪ تخفیف بدون قرعه کشی بر روی تمام فاکتورها</p>
                           </div>
                         </motion.div>
                       )}
@@ -357,7 +357,7 @@ export const CustomerJourneyModule: React.FC<CustomerJourneyModuleProps> = ({ th
                             <div className="flex-1 text-right flex flex-col justify-between py-0.5">
                               <div>
                                 <h4 className="font-black text-[9px] text-slate-900 dark:text-white leading-tight">پیتزا پپرونی مخصوص زغالی</h4>
-                                <p className="text-[7px] text-slate-400 truncate mt-0.5">پپرونی ممتاز ۹۰٪، قارچ، پنیر موزارلای دودی فر پخت</p>
+                                <p className="text-[7px] text-slate-400 truncate mt-0.5">پپرونی ممتاز 90٪، قارچ، پنیر موزارلای دودی فر پخت</p>
                               </div>
                               <div className="flex justify-between items-center mt-1">
                                 <span className="text-[7px] bg-red-500/10 text-rose-500 px-1.5 py-0.5 rounded font-black">🌶️ اسپایسی</span>

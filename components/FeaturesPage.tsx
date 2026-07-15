@@ -30,7 +30,7 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({
 
   return (
     <div 
-      className="min-h-screen bg-[#F5F7F6] dark:bg-[#080A09] text-slate-900 dark:text-slate-100 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed transition-colors duration-300"
+      className="min-h-screen bg-transparent text-app-text font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed transition-colors duration-300"
       style={{ direction: 'rtl' }}
     >
       

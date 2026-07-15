@@ -118,7 +118,7 @@ export const OrderManagementModule: React.FC<OrderManagementModuleProps> = ({ th
               <span className="text-[10px] font-black tracking-widest text-slate-400 block mb-2 select-none uppercase">نمای مانیتور زنده پرسنل آشپزخانه</span>
               <div className="flex items-center justify-center lg:justify-end gap-1.5 text-[11px] font-bold text-slate-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
-                <span>سرور مرکزی متصل است - به روز رسانی ۱ میلی‌ثانیه</span>
+                <span>سرور مرکزی متصل است - به روز رسانی 1 میلی‌ثانیه</span>
               </div>
             </div>
 
@@ -192,7 +192,7 @@ export const OrderManagementModule: React.FC<OrderManagementModuleProps> = ({ th
                     <span>همین الان</span>
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="bg-[#10b981] text-white font-black px-2 py-0.5 rounded text-[10px] select-none">میز ۵</span>
+                    <span className="bg-[#10b981] text-white font-black px-2 py-0.5 rounded text-[10px] select-none">میز 5</span>
                     <span className="font-mono text-slate-700 dark:text-slate-300">#VIT-9204</span>
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export const OrderManagementModule: React.FC<OrderManagementModuleProps> = ({ th
                 {/* Ticket checklists */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-100">
-                    <span className="font-mono text-slate-400">۱ عدد</span>
+                    <span className="font-mono text-slate-400">1 عدد</span>
                     <span className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
                       <span>پیتزا پپرونی مخصوص زغالی</span>
@@ -220,7 +220,7 @@ export const OrderManagementModule: React.FC<OrderManagementModuleProps> = ({ th
                   
                   <div className="text-left font-mono">
                     <span className="text-[8.5px] text-slate-400 block font-black">مبلغ پرداختی فاکتور</span>
-                    <span className="text-slate-800 dark:text-white font-black text-[11px]">۳۷۵,۰۰۰ تومان</span>
+                    <span className="text-slate-800 dark:text-white font-black text-[11px]">375,000 تومان</span>
                   </div>
                 </div>
 

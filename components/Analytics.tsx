@@ -19,33 +19,33 @@ type DateRange = '7days' | '30days' | '1year';
 // --- EXPANDED MOCK DATA ---
 
 const ALL_REVIEWS = [
-  { id: 1, user: 'علی م.', comment: 'کیفیت غذا عالی بود اما سرویس کمی کند انجام شد.', rating: 4, date: '۲ ساعت پیش', productName: 'پیتزا پپرونی', productImage: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200&auto=format&fit=crop' },
-  { id: 2, user: 'سارا ک.', comment: 'بهترین پیتزایی که تا حالا خوردم! نان سیر هم فوق‌العاده بود.', rating: 5, date: '۵ ساعت پیش', productName: 'پیتزا پپرونی', productImage: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200&auto=format&fit=crop' },
+  { id: 1, user: 'علی م.', comment: 'کیفیت غذا عالی بود اما سرویس کمی کند انجام شد.', rating: 4, date: '2 ساعت پیش', productName: 'پیتزا پپرونی', productImage: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200&auto=format&fit=crop' },
+  { id: 2, user: 'سارا ک.', comment: 'بهترین پیتزایی که تا حالا خوردم! نان سیر هم فوق‌العاده بود.', rating: 5, date: '5 ساعت پیش', productName: 'پیتزا پپرونی', productImage: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200&auto=format&fit=crop' },
   { id: 3, user: 'رضا ن.', comment: 'متاسفانه غذا سرد به دستم رسید.', rating: 2, date: 'دیروز', productName: 'برگر کلاسیک', productImage: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format&fit=crop' },
   { id: 4, user: 'مریم س.', comment: 'برخورد پرسنل عالی بود. محیط خیلی تمیز بود.', rating: 5, date: 'دیروز', productName: 'سالاد سزار', productImage: 'https://images.unsplash.com/photo-1550304999-8f69611339bf?q=80&w=200&auto=format&fit=crop' },
-  { id: 5, user: 'حسین د.', comment: 'نسبت به قیمت حجم غذا کم بود.', rating: 3, date: '۲ روز پیش', productName: 'پاستا آلفردو', productImage: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=200&auto=format&fit=crop' },
-  { id: 6, user: 'نازنین ف.', comment: 'عاشق طعم سس مخصوصتون شدم!', rating: 5, date: '۳ روز پیش', productName: 'برگر کلاسیک', productImage: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format&fit=crop' },
+  { id: 5, user: 'حسین د.', comment: 'نسبت به قیمت حجم غذا کم بود.', rating: 3, date: '2 روز پیش', productName: 'پاستا آلفردو', productImage: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=200&auto=format&fit=crop' },
+  { id: 6, user: 'نازنین ف.', comment: 'عاشق طعم سس مخصوصتون شدم!', rating: 5, date: '3 روز پیش', productName: 'برگر کلاسیک', productImage: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format&fit=crop' },
   { id: 7, user: 'امیررضا', comment: 'خیلی معمولی.', rating: 3, date: 'هفته پیش', productName: 'سیب‌زمینی سرخ‌کرده', productImage: 'https://images.unsplash.com/photo-1573080496987-8198cb7fcd48?q=80&w=200&auto=format&fit=crop' },
   { id: 8, user: 'زهرا پ.', comment: 'پیتزا خیلی چرب بود.', rating: 2, date: 'هفته پیش', productName: 'پیتزا پپرونی', productImage: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=200&auto=format&fit=crop' },
   { id: 9, user: 'محمد ک.', comment: 'همه چیز عالی.', rating: 5, date: 'هفته پیش', productName: 'سالاد سزار', productImage: 'https://images.unsplash.com/photo-1550304999-8f69611339bf?q=80&w=200&auto=format&fit=crop' },
-  { id: 10, user: 'نگین ر.', comment: 'طعم پاستا بی‌نظیر بود.', rating: 5, date: '۲ هفته پیش', productName: 'پاستا آلفردو', productImage: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=200&auto=format&fit=crop' },
+  { id: 10, user: 'نگین ر.', comment: 'طعم پاستا بی‌نظیر بود.', rating: 5, date: '2 هفته پیش', productName: 'پاستا آلفردو', productImage: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=200&auto=format&fit=crop' },
 ];
 
 const ALL_LOYAL_CUSTOMERS = [
-  { id: 1, name: 'سارا محمدی', orders: 42, spent: '۸,۵۰۰,۰۰۰', lastOrder: '۲ روز پیش', joinDate: '۱۴۰۲/۰۱/۱۵', favorite: 'پیتزا پپرونی', phone: '۰۹۱۲۱۲۳۴۵۶۷', email: 'sara.mohammadi@gmail.com' },
-  { id: 2, name: 'علی رضاپور', orders: 35, spent: '۶,۲۰۰,۰۰۰', lastOrder: 'دیروز', joinDate: '۱۴۰۲/۰۲/۱۰', favorite: 'برگر کلاسیک', phone: '۰۹۱۲۷۶۵۴۳۲۱', email: 'ali.rezapour@yahoo.com' },
-  { id: 3, name: 'مریم کاویانی', orders: 28, spent: '۵,۱۰۰,۰۰۰', lastOrder: 'هفته پیش', joinDate: '۱۴۰۱/۱۱/۲۰', favorite: 'سالاد سزار', phone: '۰۹۱۲۹۸۷۶۵۴۳', email: 'm.kaviani@hotmail.com' },
-  { id: 4, name: 'حسین ناصری', orders: 20, spent: '۳,۴۰۰,۰۰۰', lastOrder: '۳ روز پیش', joinDate: '۱۴۰۲/۰۵/۰۵', favorite: 'پاستا', phone: '۰۹۱۲۴۵۶۷۸۹۰', email: 'hossein.naseri@gmail.com' },
-  { id: 5, name: 'کیان مهرابی', orders: 18, spent: '۳,۱۰۰,۰۰۰', lastOrder: '۵ روز پیش', joinDate: '۱۴۰۲/۰۶/۱۲', favorite: 'برگر', phone: '۰۹۱۲۳۴۵۶۷۸۹', email: 'kian.mehrabi@outlook.com' },
-  { id: 6, name: 'لیلا حاتمی', orders: 15, spent: '۲,۸۰۰,۰۰۰', lastOrder: 'دیروز', joinDate: '۱۴۰۲/۰۳/۲۵', favorite: 'پیتزا', phone: '۰۹۱۲۲۳۴۵۶۷۸', email: 'leila.hatami@gmail.com' },
+  { id: 1, name: 'سارا محمدی', orders: 42, spent: '8,500,000', lastOrder: '2 روز پیش', joinDate: '1402/01/15', favorite: 'پیتزا پپرونی', phone: '09121234567', email: 'sara.mohammadi@gmail.com' },
+  { id: 2, name: 'علی رضاپور', orders: 35, spent: '6,200,000', lastOrder: 'دیروز', joinDate: '1402/02/10', favorite: 'برگر کلاسیک', phone: '09127654321', email: 'ali.rezapour@yahoo.com' },
+  { id: 3, name: 'مریم کاویانی', orders: 28, spent: '5,100,000', lastOrder: 'هفته پیش', joinDate: '1401/11/20', favorite: 'سالاد سزار', phone: '09129876543', email: 'm.kaviani@hotmail.com' },
+  { id: 4, name: 'حسین ناصری', orders: 20, spent: '3,400,000', lastOrder: '3 روز پیش', joinDate: '1402/05/05', favorite: 'پاستا', phone: '09124567890', email: 'hossein.naseri@gmail.com' },
+  { id: 5, name: 'کیان مهرابی', orders: 18, spent: '3,100,000', lastOrder: '5 روز پیش', joinDate: '1402/06/12', favorite: 'برگر', phone: '09123456789', email: 'kian.mehrabi@outlook.com' },
+  { id: 6, name: 'لیلا حاتمی', orders: 15, spent: '2,800,000', lastOrder: 'دیروز', joinDate: '1402/03/25', favorite: 'پیتزا', phone: '09122345678', email: 'leila.hatami@gmail.com' },
 ];
 
 const ALL_NEW_CUSTOMERS = [
-  { id: 101, name: 'آرش کمانگیر', source: 'اینستاگرام', joinDate: 'امروز', firstOrder: 'پیتزا پپرونی', phone: '۰۹۳۵۱۲۳۴۵۶۷', email: 'arash.k@gmail.com' },
-  { id: 102, name: 'بهرام رادان', source: 'گوگل مپ', joinDate: 'امروز', firstOrder: 'سالاد سزار', phone: '۰۹۳۶۷۶۵۴۳۲۱', email: 'bahram.r@yahoo.com' },
-  { id: 103, name: 'هدیه تهرانی', source: 'معرفی دوستان', joinDate: 'دیروز', firstOrder: 'برگر کلاسیک', phone: '۰۹۳۷۹۸۷۶۵۴۳', email: 'hedieh.t@gmail.com' },
-  { id: 104, name: 'نوید محمدزاده', source: 'اسنپ‌فود', joinDate: 'دیروز', firstOrder: 'پاستا آلفردو', phone: '۰۹۳۸۴۵۶۷۸۹۰', email: 'navid.m@gmail.com' },
-  { id: 105, name: 'ترانه علیدوستی', source: 'گذری', joinDate: '۲ روز پیش', firstOrder: 'نوشیدنی', phone: '۰۹۳۹۳۴۵۶۷۸۹', email: 'taraneh.a@gmail.com' },
+  { id: 101, name: 'آرش کمانگیر', source: 'اینستاگرام', joinDate: 'امروز', firstOrder: 'پیتزا پپرونی', phone: '09351234567', email: 'arash.k@gmail.com' },
+  { id: 102, name: 'بهرام رادان', source: 'گوگل مپ', joinDate: 'امروز', firstOrder: 'سالاد سزار', phone: '09367654321', email: 'bahram.r@yahoo.com' },
+  { id: 103, name: 'هدیه تهرانی', source: 'معرفی دوستان', joinDate: 'دیروز', firstOrder: 'برگر کلاسیک', phone: '09379876543', email: 'hedieh.t@gmail.com' },
+  { id: 104, name: 'نوید محمدزاده', source: 'اسنپ‌فود', joinDate: 'دیروز', firstOrder: 'پاستا آلفردو', phone: '09384567890', email: 'navid.m@gmail.com' },
+  { id: 105, name: 'ترانه علیدوستی', source: 'گذری', joinDate: '2 روز پیش', firstOrder: 'نوشیدنی', phone: '09393456789', email: 'taraneh.a@gmail.com' },
 ];
 
 const ACQUISITION_DATA = [
@@ -78,28 +78,28 @@ const getSalesData = (range: DateRange) => {
       ];
     default:
       return [
-        { name: 'هفته ۱', newCustomers: 85, returning: 210 },
-        { name: 'هفته ۲', newCustomers: 95, returning: 240 },
-        { name: 'هفته ۳', newCustomers: 70, returning: 200 },
-        { name: 'هفته ۴', newCustomers: 110, returning: 280 },
+        { name: 'هفته 1', newCustomers: 85, returning: 210 },
+        { name: 'هفته 2', newCustomers: 95, returning: 240 },
+        { name: 'هفته 3', newCustomers: 70, returning: 200 },
+        { name: 'هفته 4', newCustomers: 110, returning: 280 },
       ];
   }
 };
 
 const SATISFACTION_DATA = [
-  { name: 'بسیار راضی (۵)', value: 65, color: '#10b981' }, 
-  { name: 'راضی (۴)', value: 20, color: '#3b82f6' },
-  { name: 'متوسط (۳)', value: 10, color: '#f59e0b' },
-  { name: 'ناراضی (۱-۲)', value: 5, color: '#ef4444' },
+  { name: 'بسیار راضی (5)', value: 65, color: '#10b981' }, 
+  { name: 'راضی (4)', value: 20, color: '#3b82f6' },
+  { name: 'متوسط (3)', value: 10, color: '#f59e0b' },
+  { name: 'ناراضی (1-2)', value: 5, color: '#ef4444' },
 ];
 
 const getAnalyticsStats = (brandColor: string, reviewCount: number) => [
   { 
     id: 'satisfaction', 
     label: 'امتیاز رضایت', 
-    value: '۴.۸', 
-    unit: 'از ۵', 
-    trend: '+۰.۲', 
+    value: '4.8', 
+    unit: 'از 5', 
+    trend: '+0.2', 
     up: true, 
     icon: Smile, 
     color: brandColor,
@@ -108,9 +108,9 @@ const getAnalyticsStats = (brandColor: string, reviewCount: number) => [
   { 
     id: 'retention', 
     label: 'نرخ بازگشت', 
-    value: '۶۸٪', 
+    value: '68٪', 
     unit: 'مشتریان وفادار', 
-    trend: '+۵٪', 
+    trend: '+5٪', 
     up: true, 
     icon: UserCheck, 
     color: 'blue',
@@ -119,9 +119,9 @@ const getAnalyticsStats = (brandColor: string, reviewCount: number) => [
   { 
     id: 'new_customers', 
     label: 'مشتریان جدید', 
-    value: '۱۴۵', 
+    value: '145', 
     unit: 'نفر', 
-    trend: '-۲٪', 
+    trend: '-2٪', 
     up: false, 
     icon: UserPlus, 
     color: 'purple',
@@ -132,7 +132,7 @@ const getAnalyticsStats = (brandColor: string, reviewCount: number) => [
     label: 'مجموع نظرات', 
     value: reviewCount.toString(), 
     unit: 'نظر', 
-    trend: '+۱۲', 
+    trend: '+12', 
     up: true, 
     icon: MessageCircle, 
     color: 'orange',
@@ -263,12 +263,12 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll, onSelectCu
                             <div className="absolute inset-0 rounded-full border-4 border-emerald-100 dark:border-emerald-950/30"></div>
                             <div className="absolute inset-0 rounded-full border-4 border-emerald-500 border-l-transparent rotate-45"></div>
                             <div className="flex flex-col items-center">
-                                <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">۴.۸</span>
+                                <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">4.8</span>
                                 <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">امتیاز کل</span>
                             </div>
                         </div>
                         <p className="text-sm font-bold text-slate-700 dark:text-slate-300 max-w-[200px]">وضعیت رضایت مشتریان عالی است!</p>
-                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">بر اساس ۲۰۵ نظر ثبت شده در ماه جاری</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">بر اساس 205 نظر ثبت شده در ماه جاری</p>
                     </div>
                 )}
             </div>
@@ -328,7 +328,7 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll, onSelectCu
                 </div>
                 <div className="mt-4 text-center">
                    <p className="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
-                      <strong>نکته:</strong> ارسال کد تخفیف برای مشتریانی که بیش از ۲ هفته سفارش نداشته‌اند، می‌تواند نرخ بازگشت را تا ۱۵٪ افزایش دهد.
+                      <strong>نکته:</strong> ارسال کد تخفیف برای مشتریانی که بیش از 2 هفته سفارش نداشته‌اند، می‌تواند نرخ بازگشت را تا 15٪ افزایش دهد.
                    </p>
                 </div>
              </div>
@@ -376,7 +376,7 @@ const InsightPanel = ({ activeStatId, reviews, brandColor, onShowAll, onSelectCu
                    </div>
                    <h3 className="text-lg font-black text-purple-900 dark:text-purple-200 mb-2">رشد فوق‌العاده!</h3>
                    <p className="text-xs text-purple-700/80 dark:text-purple-400/80 leading-relaxed max-w-xs mx-auto">
-                      تعداد مشتریان جدید شما نسبت به هفته گذشته <strong>۱۵٪ رشد</strong> داشته است. کمپین اینستاگرامی شما عملکرد موفقی دارد.
+                      تعداد مشتریان جدید شما نسبت به هفته گذشته <strong>15٪ رشد</strong> داشته است. کمپین اینستاگرامی شما عملکرد موفقی دارد.
                    </p>
                 </div>
                 {/* Background Decorations */}
@@ -466,7 +466,7 @@ const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({ customer, i
                </div>
                <div className="text-center p-2 border-r border-slate-200 dark:border-slate-800">
                   <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mb-1 font-['Vazirmatn']">مجموع خرید (تومان)</div>
-                  <div className="text-lg font-black text-slate-800 dark:text-slate-200">{customer.spent ?? '۲۴۰,۰۰۰'}</div>
+                  <div className="text-lg font-black text-slate-800 dark:text-slate-200">{customer.spent ?? '240,000'}</div>
                </div>
             </div>
 
@@ -480,12 +480,12 @@ const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({ customer, i
                      </div>
                      <div className="text-right">
                         <div className="text-[10px] font-bold text-slate-400">شماره تلفن</div>
-                        <div className="text-sm font-black text-slate-800 dark:text-slate-100">{customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷'}</div>
+                        <div className="text-sm font-black text-slate-800 dark:text-slate-100">{customer.phone ?? '09121234567'}</div>
                      </div>
                   </div>
                   <div className="flex gap-2">
                      <button 
-                        onClick={() => handleCopy(customer.phone ?? '۰۹۱۲۱۲۳۴۵۶۷', 'phone')}
+                        onClick={() => handleCopy(customer.phone ?? '09121234567', 'phone')}
                         className="p-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl transition-colors border border-slate-200/60 dark:border-slate-800 shadow-sm"
                         title="کپی شماره"
                      >
@@ -930,7 +930,7 @@ const Analytics: React.FC<{ brandColor: string; theme?: 'light' | 'dark' }> = ({
                 </ResponsiveContainer>
              </div>
              <div className="text-center z-10 -mt-6">
-                <p className="text-3xl font-black text-slate-800 dark:text-slate-100">۸۵٪</p>
+                <p className="text-3xl font-black text-slate-800 dark:text-slate-100">85٪</p>
                 <p className="text-xs text-slate-400 dark:text-slate-500 font-bold">تجربه مثبت</p>
              </div>
              {/* Background Pattern */}

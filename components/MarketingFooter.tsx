@@ -157,7 +157,7 @@ export const MarketingFooter: React.FC<MarketingFooterProps> = ({
           
           {/* Copyright text (Right in RTL flex order) */}
           <div>
-            <p className="m-0 text-slate-500 font-bold">© ۱۴۰۵ ویترین. تمامی حقوق این پلتفرم محفوظ و تحت مالکیت معنوی می‌باشد.</p>
+            <p className="m-0 text-slate-500 font-bold">© 1405 ویترین. تمامی حقوق این پلتفرم محفوظ و تحت مالکیت معنوی می‌باشد.</p>
           </div>
         </div>
       </div>

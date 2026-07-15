@@ -142,7 +142,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
       newErrors.password = 'رمز عبور الزامی است';
       isValid = false;
     } else if (password.length < 6) {
-      newErrors.password = 'حداقل ۶ کاراکتر باشد';
+      newErrors.password = 'حداقل 6 کاراکتر باشد';
       isValid = false;
     }
 
@@ -308,7 +308,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
       </motion.div>
       <div className="absolute bottom-6 left-0 right-0 text-center">
          <p className="text-[10px] text-slate-400 font-medium">
-            © ۲۰۲۵ ویترین. تمامی حقوق محفوظ است.
+            © 2025 ویترین. تمامی حقوق محفوظ است.
          </p>
       </div>
     </div>

@@ -6,10 +6,10 @@ import {
 } from 'lucide-react';
 
 const ITEMS = [
-  { id: 'designer',  icon: <Palette className="w-5 h-5" />,      title: 'طراحی بصری',        subtitle: 'طراح هوشمند منو',    desc: 'ویرایشگر حرفه‌ای برای طراحی منوهای چاپی و دیجیتال با استانداردهای روز.', stat: '۱۰۰+ قالب حرفه‌ای',      color: '#fbbf24' },
+  { id: 'designer',  icon: <Palette className="w-5 h-5" />,      title: 'طراحی بصری',        subtitle: 'طراح هوشمند منو',    desc: 'ویرایشگر حرفه‌ای برای طراحی منوهای چاپی و دیجیتال با استانداردهای روز.', stat: '100+ قالب حرفه‌ای',      color: '#fbbf24' },
   { id: 'orders',    icon: <ClipboardList className="w-5 h-5" />, title: 'مدیریت سفارش',      subtitle: 'سیستم ثبت سفارش آنی',       desc: 'رهگیری لحظه‌ای سفارشات از لحظه ثبت تا تحویل درب میز مشتری.',           stat: 'پردازش آنی',             color: '#10b981' },
   { id: 'analytics', icon: <BarChart3 className="w-5 h-5" />,    title: 'هوش تجاری',          subtitle: 'تحلیل هوشمند کسب‌وکار',          desc: 'تحلیل دقیق پرفروش‌ترین آیتم‌ها و رفتارهای خرید مشتریان شما.',          stat: 'گزارش‌های ماهانه',       color: '#3b82f6' },
-  { id: 'products',  icon: <Package className="w-5 h-5" />,       title: 'انبارداری هوشمند',  subtitle: 'کنترل و مدیریت موجودی',    desc: 'کنترل خودکار موجودی مواد اولیه بر اساس هر سفارش ثبت شده.',            stat: 'دقت ۹۹٪',               color: '#f97316' },
+  { id: 'products',  icon: <Package className="w-5 h-5" />,       title: 'انبارداری هوشمند',  subtitle: 'کنترل و مدیریت موجودی',    desc: 'کنترل خودکار موجودی مواد اولیه بر اساس هر سفارش ثبت شده.',            stat: 'دقت 99٪',               color: '#f97316' },
   { id: 'app',       icon: <Smartphone className="w-5 h-5" />,    title: 'منوی دیجیتال',      subtitle: 'منوی وب‌اپلیکیشن مشتری',          desc: 'ارائه منوی آنلاین بدون نیاز به نصب اپلیکیشن توسط مشتری.',            stat: 'سازگار با تمام گوشی‌ها', color: '#8b5cf6' },
   { id: 'security',  icon: <ShieldCheck className="w-5 h-5" />,   title: 'پشتیبان‌گیری کلاود', subtitle: 'پشتیبان‌گیری امن ابری',           desc: 'امنیت کامل داده‌های رستوران و دسترسی از هر جای دنیا.',                stat: 'رمزنگاری AES-256',       color: '#06b6d4' },
 ];
@@ -327,7 +327,7 @@ const StatusBar = ({ brandColor }: { brandColor: string }) => {
       <div className="flex items-center gap-3.5 flex-row-reverse">
         <div className="flex items-center gap-1.5 flex-row-reverse">
           <Radio style={{ width: 11, height: 11, color: 'rgba(255,255,255,0.4)' }} />
-          <span className="text-[10px] font-sans" style={{ color: 'rgba(255,255,255,0.55)' }}>پایداری ۱۰۰٪</span>
+          <span className="text-[10px] font-sans" style={{ color: 'rgba(255,255,255,0.55)' }}>پایداری 100٪</span>
         </div>
         <div className="flex items-center gap-1.5 flex-row-reverse">
           <Shield style={{ width: 11, height: 11, color: 'rgba(255,255,255,0.4)' }} />
@@ -335,14 +335,14 @@ const StatusBar = ({ brandColor }: { brandColor: string }) => {
         </div>
         <div className="flex items-center gap-1.5 flex-row-reverse">
           <Globe style={{ width: 11, height: 11, color: 'rgba(255,255,255,0.4)' }} />
-          <span className="text-[10px] font-sans" style={{ color: 'rgba(255,255,255,0.55)' }}>پاسخ‌دهی ۱۴ms</span>
+          <span className="text-[10px] font-sans" style={{ color: 'rgba(255,255,255,0.55)' }}>پاسخ‌دهی 14ms</span>
         </div>
       </div>
 
       <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.12)' }} />
 
       <div className="flex items-center gap-2 flex-row-reverse">
-        <span className="text-[10px] font-bold" style={{ color: c }}>پلتفرم نسخه ۴.۲</span>
+        <span className="text-[10px] font-bold" style={{ color: c }}>پلتفرم نسخه 4.2</span>
         <div className="relative flex">
           <div className="absolute w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: c, opacity: 0.7 }} />
           <div className="relative w-1.5 h-1.5 rounded-full" style={{ backgroundColor: c }} />

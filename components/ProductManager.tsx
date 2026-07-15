@@ -558,7 +558,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                                value={editingProduct.discountPrice === undefined ? "" : editingProduct.discountPrice}
                                onChange={e => setEditingProduct({ ...editingProduct, discountPrice: e.target.value === "" ? undefined : parseInt(e.target.value) || 0 })}
                                className={`w-full p-3 pr-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                               placeholder="مثال: ۱۹۹,۰۰۰"
+                               placeholder="مثال: 199,000"
                              />
                           </div>
                           
@@ -590,7 +590,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                                value={editingProduct.estimatedTime}
                                onChange={e => setEditingProduct({ ...editingProduct, estimatedTime: e.target.value })}
                                className={`w-full p-3 pr-10 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 rounded-xl text-sm outline-none focus:border-${brandColor}-500 transition-colors text-right`}
-                               placeholder="مثال: ۱۵ دقیقه"
+                               placeholder="مثال: 15 دقیقه"
                              />
                           </div>
                        </div>
@@ -841,7 +841,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                          <input type="file" onChange={handleImageUpload} accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" />
                       </div>
                       <div className="text-[10px] text-slate-400 dark:text-slate-500 text-center">
-                         حداکثر حجم: ۵ مگابایت (JPG, PNG)
+                         حداکثر حجم: 5 مگابایت (JPG, PNG)
                       </div>
                    </section>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { JourneyProgress } from './JourneyProgress';
 import { 
   QrCode, 
   Smartphone, 
@@ -28,7 +29,7 @@ interface JourneyStep {
 const JOURNEY_STEPS: JourneyStep[] = [
   {
     id: "step-1",
-    number: "مرحله ۱",
+    number: "مرحله 1",
     title: "اسکن کد میز",
     shortLabel: "اسکن کد میز",
     description: "مشتری با اسکن QR روی میز، بلافاصله وارد منوی اختصاصی همان میز می‌شود و بدون نیاز به گارسون یا نصب اپلیکیشن سفارش خود را آغاز می‌کند.",
@@ -38,17 +39,17 @@ const JOURNEY_STEPS: JourneyStep[] = [
   },
   {
     id: "step-2",
-    number: "مرحله ۲",
+    number: "مرحله 2",
     title: "مشاهده سریع منو",
     shortLabel: "مشاهده منو",
     description: "منوی دیجیتال با ساختاری ساده، روان و فوق‌العاده سریع روی مرورگر موبایل مشتری باز می‌شود. دسته‌بندی‌ها به آسانی قابل مرور و بررسی هستند.",
     sceneType: "browse",
-    benefits: ["پیمایش روان و لود زیر ۱ ثانیه منو", "طراحی سازگار با موبایل (Responsive)", "نمایش عکس‌ها و قیمت‌های به‌روز"],
+    benefits: ["پیمایش روان و لود زیر 1 ثانیه منو", "طراحی سازگار با موبایل (Responsive)", "نمایش عکس‌ها و قیمت‌های به‌روز"],
     note: "تغییر منو زنده و در لحظه اعمال می‌شود."
   },
   {
     id: "step-3",
-    number: "مرحله ۳",
+    number: "مرحله 3",
     title: "افزودن ملزومات",
     shortLabel: "افزودن ملزومات",
     description: "غذا، نوشیدنی و افزودنی‌های دلخواه را انتخاب می‌کند و سفارش را با انتخاب گزینه‌های جانبی (پنیر اضافه، قارچ، سس ویژه) مطابق سلیقه خود می‌سازد.",
@@ -58,7 +59,7 @@ const JOURNEY_STEPS: JourneyStep[] = [
   },
   {
     id: "step-4",
-    number: "مرحله ۴",
+    number: "مرحله 4",
     title: "پرداخت مستقیم",
     shortLabel: "پرداخت مستقیم",
     description: "پس از بررسی سبد خرید، سفارش خود را به صورت مستقیم ثبت می‌کند و در صورت نیاز، هزینه فاکتور را از طریق درگاه بانکی متصل به میز پرداخت می‌کند.",
@@ -68,7 +69,7 @@ const JOURNEY_STEPS: JourneyStep[] = [
   },
   {
     id: "step-5",
-    number: "مرحله ۵",
+    number: "مرحله 5",
     title: "تحویل و ثبت سفارش",
     shortLabel: "تحویل سفارش",
     description: "اطلاعات سفارش با شماره میز دقیق و جزئیات پرداخت وارد پنل مدیریت رستوران می‌شود. زنگ هشدار به صدا درآمده و فرآیند آماده‌سازی بلافاصله شروع می‌شود.",
@@ -207,7 +208,7 @@ export const CustomerJourney: React.FC = () => {
                 className="mt-4 flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-black text-[#10b981]"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>میز شماره ۴</span>
+                <span>میز شماره 4</span>
               </motion.div>
             </div>
 
@@ -228,7 +229,7 @@ export const CustomerJourney: React.FC = () => {
 
               {/* Mock App Header */}
               <div className="pt-5 pb-2 px-3 border-b border-white/[0.06] bg-white/[0.02] flex items-center justify-between text-[10px] text-slate-300 font-bold">
-                <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded">میز ۴</span>
+                <span className="text-[8px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded">میز 4</span>
                 <span>کافه رستوران راک</span>
               </div>
 
@@ -252,7 +253,7 @@ export const CustomerJourney: React.FC = () => {
                   </div>
                   <div className="flex-1 text-[8px] flex flex-col justify-center min-w-0">
                     <span className="text-white font-black truncate">پیتزا پپرونی</span>
-                    <span className="text-[#10b981] font-bold mt-0.5">۲۸۰,۰۰۰ تومان</span>
+                    <span className="text-[#10b981] font-bold mt-0.5">280,000 تومان</span>
                   </div>
                   <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px] font-black shrink-0 shadow-lg shadow-emerald-500/20 cursor-pointer">+</div>
                 </motion.div>
@@ -268,7 +269,7 @@ export const CustomerJourney: React.FC = () => {
                   </div>
                   <div className="flex-1 text-[8px] flex flex-col justify-center min-w-0">
                     <span className="text-white font-black truncate">چیزبرگر مخصوص</span>
-                    <span className="text-slate-400 font-bold mt-0.5">۲۹۵,۰۰۰ تومان</span>
+                    <span className="text-slate-400 font-bold mt-0.5">295,000 تومان</span>
                   </div>
                   <div className="w-4 h-4 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white text-[10px] font-black shrink-0">+</div>
                 </motion.div>
@@ -302,7 +303,7 @@ export const CustomerJourney: React.FC = () => {
                     </motion.div>
                     <span className="text-slate-200 font-bold">پنیر پیتزا اضافه</span>
                   </div>
-                  <span className="text-slate-400">+۴۵,۰۰۰ تومان</span>
+                  <span className="text-slate-400">+45,000 تومان</span>
                 </div>
 
                 {/* Mushrooms option */}
@@ -317,7 +318,7 @@ export const CustomerJourney: React.FC = () => {
                     </motion.div>
                     <span className="text-slate-200 font-bold">قارچ اضافه</span>
                   </div>
-                  <span className="text-slate-400">+۲۵,۰۰۰ تومان</span>
+                  <span className="text-slate-400">+25,000 تومان</span>
                 </div>
 
                 {/* Jalapeno option */}
@@ -326,14 +327,14 @@ export const CustomerJourney: React.FC = () => {
                     <div className="w-3.5 h-3.5 rounded bg-white/5 border border-white/10 flex items-center justify-center text-transparent" />
                     <span className="text-slate-400">هالوپینو تند اضافه</span>
                   </div>
-                  <span className="text-slate-500">+۱۵,۰۰0 تومان</span>
+                  <span className="text-slate-500">+15,000 تومان</span>
                 </div>
               </div>
 
               {/* Total Summary */}
               <div className="mt-4 pt-2.5 border-t border-white/10 flex items-center justify-between text-[9px] text-white">
                 <span className="font-bold">مبلغ کل سفارش:</span>
-                <span className="font-black text-[#10b981]">۳۵۰,۰۰۰ تومان</span>
+                <span className="font-black text-[#10b981]">350,000 تومان</span>
               </div>
             </div>
 
@@ -347,23 +348,23 @@ export const CustomerJourney: React.FC = () => {
           <div className="relative w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden rounded-3xl p-4">
             {/* Checkout Invoice Card */}
             <div className="w-[190px] bg-[#111312] border border-white/10 rounded-2xl p-3 shadow-2xl relative z-10 text-right font-['Vazirmatn']">
-              <span className="text-[6px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded font-black">پیش‌فاکتور میز شماره ۴</span>
+              <span className="text-[6px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded font-black">پیش‌فاکتور میز شماره 4</span>
               
               <div className="mt-2.5 space-y-1 text-[8px] text-slate-300 border-b border-white/[0.05] pb-2">
                 <div className="flex justify-between">
                   <span>پیتزا پپرونی با پنیر اضافه</span>
-                  <span>۳۲۵,۰۰۰ تومان</span>
+                  <span>325,000 تومان</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>قارچ اضافه × ۱</span>
-                  <span>۲۵,۰۰۰ تومان</span>
+                  <span>قارچ اضافه × 1</span>
+                  <span>25,000 تومان</span>
                 </div>
               </div>
 
               {/* Total */}
               <div className="my-2.5 flex justify-between items-center text-[10px] font-black text-white">
                 <span>مبلغ قابل پرداخت:</span>
-                <span className="text-[#10b981]">۳۵۰,۰۰۰ تومان</span>
+                <span className="text-[#10b981]">350,000 تومان</span>
               </div>
 
               {/* Button with animated pulse */}
@@ -391,7 +392,7 @@ export const CustomerJourney: React.FC = () => {
                     <CheckCircle2 className="w-4 h-4 stroke-[2.5px]" />
                   </div>
                   <span className="text-[9px] font-black text-white mt-2">پرداخت با موفقیت انجام شد</span>
-                  <span className="text-[7px] text-slate-400 mt-1">شماره پیگیری: ۸۹۱۲۷۶</span>
+                  <span className="text-[7px] text-slate-400 mt-1">شماره پیگیری: 891276</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -421,8 +422,8 @@ export const CustomerJourney: React.FC = () => {
               >
                 {/* Order header */}
                 <div className="flex justify-between items-center text-[8px]">
-                  <span className="font-black text-[#10b981]">جدید #۱۲۸۹۵</span>
-                  <span className="bg-[#10b981]/15 text-[#10b981] px-1.5 py-0.5 rounded font-black text-[7px]">میز شماره ۴</span>
+                  <span className="font-black text-[#10b981]">جدید #12895</span>
+                  <span className="bg-[#10b981]/15 text-[#10b981] px-1.5 py-0.5 rounded font-black text-[7px]">میز شماره 4</span>
                 </div>
 
                 {/* Divider */}
@@ -430,14 +431,14 @@ export const CustomerJourney: React.FC = () => {
 
                 {/* Items */}
                 <div className="space-y-1 text-[7px] text-slate-200 font-bold">
-                  <div>۱ × پیتزا پپرونی مخصوص</div>
+                  <div>1 × پیتزا پپرونی مخصوص</div>
                   <div className="text-slate-400 mr-2.5">• با پنیر پیتزا اضافه</div>
                   <div className="text-slate-400 mr-2.5">• با قارچ اضافه</div>
                 </div>
 
                 {/* Status indicator */}
                 <div className="mt-2 pt-1.5 border-t border-white/[0.04] flex justify-between items-center text-[6px]">
-                  <span className="text-slate-400">ثبت شده در: ۱۲:۰۴</span>
+                  <span className="text-slate-400">ثبت شده در: 12:04</span>
                   <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-400 px-1 py-0.2 rounded font-black">
                     <span className="w-1 h-1 rounded-full bg-emerald-400 animate-ping" />
                     <span>آماده‌سازی</span>
@@ -549,7 +550,7 @@ export const CustomerJourney: React.FC = () => {
                       {JOURNEY_STEPS[activeIndex].number}
                     </span>
                     <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
-                      مرحله {activeIndex + 1} از ۵
+                      مرحله {activeIndex + 1} از 5
                     </span>
                   </div>
 
@@ -726,60 +727,12 @@ export const CustomerJourney: React.FC = () => {
         {/* ==========================================
             BOTTOM STEP TIMELINE PILLS NAVIGATION
            ========================================== */}
-        <div className="mt-16 md:mt-24 max-w-4xl mx-auto">
-          {/* Connecting tracking line */}
-          <div className="relative flex items-center justify-between">
-            <div className="absolute top-1/2 left-[4%] right-[4%] h-[2px] bg-slate-200 dark:bg-white/10 -translate-y-1/2 z-0">
-              <motion.div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-[#10b981] dark:from-[#19C78C] dark:to-emerald-500 origin-right"
-                animate={{ width: `${(activeIndex / 4) * 100}%` }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              />
-            </div>
-
-            {/* Individual step pills */}
-            {JOURNEY_STEPS.map((step, index) => {
-              const isActive = index === activeIndex;
-              const isCompleted = index < activeIndex;
-
-              return (
-                <button
-                  key={step.id}
-                  onClick={() => handleStepSelect(index)}
-                  className="relative z-10 flex flex-col items-center group cursor-pointer focus:outline-none border-0 bg-transparent"
-                >
-                  {/* Circle point */}
-                  <motion.div
-                    animate={{
-                      scale: isActive ? 1.15 : 1,
-                    }}
-                    className={`w-10 h-10 rounded-full border-2 flex items-center justify-center shadow-lg transition-all duration-300 ${
-                      isActive
-                        ? "bg-[#10b981] border-[#10b981] dark:bg-[#19C78C] dark:border-[#19C78C]"
-                        : isCompleted
-                        ? "bg-[#e6fbf4] border-[#10b981] dark:bg-[#19C78C]/10 dark:border-[#19C78C]"
-                        : "bg-white border-slate-300 dark:bg-[#161B18] dark:border-white/10"
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <Check className="w-5 h-5 text-emerald-600 dark:text-[#19C78C] stroke-[3px]" />
-                    ) : (
-                      <span className={`text-xs font-black ${isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>
-                        {index + 1}
-                      </span>
-                    )}
-                  </motion.div>
-
-                  {/* Label title */}
-                  <span className={`mt-3 text-[11px] md:text-xs font-black transition-colors duration-300 ${
-                    isActive ? 'text-slate-900 dark:text-white font-extrabold' : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-400'
-                  }`}>
-                    {step.shortLabel}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        <div className="mt-16 md:mt-24 max-w-4xl mx-auto pb-12">
+          <JourneyProgress
+            steps={JOURNEY_STEPS}
+            activeIndex={activeIndex}
+            onStepSelect={handleStepSelect}
+          />
         </div>
 
       </div>

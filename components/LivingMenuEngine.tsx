@@ -68,7 +68,7 @@ export const LivingMenuEngine: React.FC = () => {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [autoStep, setAutoStep] = useState<number>(0);
   const [orderTickets, setOrderTickets] = useState<OrderTicket[]>([
-    { id: '1', table: 'میز ۴', items: '۱× پیتزا پپرونی + قارچ', price: 340000, time: 'همین الان', status: 'received' }
+    { id: '1', table: 'میز 4', items: '1× پیتزا پپرونی + قارچ', price: 340000, time: 'همین الان', status: 'received' }
   ]);
   const [isLivePulse, setIsLivePulse] = useState<boolean>(true);
 
@@ -148,7 +148,7 @@ export const LivingMenuEngine: React.FC = () => {
     const newTicket: OrderTicket = {
       id: randomId,
       table: `میز ${tableNum}`,
-      items: `۱× پیتزا پپرونی ${menuState.addons.length > 0 ? '+ پنیر اضافه' : ''}`,
+      items: `1× پیتزا پپرونی ${menuState.addons.length > 0 ? '+ پنیر اضافه' : ''}`,
       price: finalOrderPrice,
       time: 'همین الان',
       status: 'received'
@@ -324,7 +324,7 @@ export const LivingMenuEngine: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs font-black text-slate-800">کمپین تخفیف ۱۵٪</h3>
+                  <h3 className="text-xs font-black text-slate-800">کمپین تخفیف 15٪</h3>
                   <p className="text-[10px] text-slate-400 mt-0.5 font-medium">فعال‌سازی با یک لمس</p>
                 </div>
                 <button
@@ -509,7 +509,7 @@ export const LivingMenuEngine: React.FC = () => {
                         <Check className="w-3 h-3" />
                         <span>افزودنی متصل: {menuState.addons.join(' + ')}</span>
                       </span>
-                      <span className="font-mono text-slate-500">+۳۵,۰۰۰ تومان</span>
+                      <span className="font-mono text-slate-500">+35,000 تومان</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -615,7 +615,7 @@ export const LivingMenuEngine: React.FC = () => {
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span>متصل به درگاه پرداخت مستقیم شاپرک</span>
           </span>
-          <span>ویترین © ۱۴۰۵</span>
+          <span>ویترین © 1405</span>
         </div>
 
       </div>

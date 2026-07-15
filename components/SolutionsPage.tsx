@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { ReactiveGridBackground } from './ReactiveGridBackground';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -45,6 +46,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
 }) => {
   const prefersReducedMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<TabType>('cafe');
+  const heroRef = useRef<HTMLDivElement | null>(null);
 
   // Animation configurations
   const springTransition = prefersReducedMotion 
@@ -85,10 +87,10 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
 
   // Restaurant Mock State
   const [restaurantTables, setRestaurantTables] = useState([
-    { id: 4, orders: '۲ پیتزا پپرونی، ۱ سالاد سزار', total: 920000, status: 'preparing' },
-    { id: 12, orders: '۱ همبرگر مخصوص، ۱ سیب‌زمینی', total: 475000, status: 'ready' },
-    { id: 7, orders: '۳ پاستا آلفردو، ۳ لیموناد', total: 1350000, status: 'received' },
-    { id: 9, orders: '۱ فیله استریپس، ۱ نوشابه قوطی', total: 390000, status: 'delivered' }
+    { id: 4, orders: '2 پیتزا پپرونی، 1 سالاد سزار', total: 920000, status: 'preparing' },
+    { id: 12, orders: '1 همبرگر مخصوص، 1 سیب‌زمینی', total: 475000, status: 'ready' },
+    { id: 7, orders: '3 پاستا آلفردو، 3 لیموناد', total: 1350000, status: 'received' },
+    { id: 9, orders: '1 فیله استریپس، 1 نوشابه قوطی', total: 390000, status: 'delivered' }
   ]);
 
   const updateTableStatus = (tableId: number, nextStatus: string) => {
@@ -105,27 +107,27 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
   const branchesData = {
     central: {
       name: 'شعبه مرکزی (تهران)',
-      sales: '۴۸,۳۰۰,۰۰۰ تومان امروز',
+      sales: '48,300,000 تومان امروز',
       orders: 142,
       activeOrders: 14,
       chefStatus: 'پیک کاری 🔥',
-      syncTime: '۱ ثانیه پیش'
+      syncTime: '1 ثانیه پیش'
     },
     vanak: {
       name: 'شعبه ونک',
-      sales: '۳۲,۱۵۰,۰۰۰ تومان امروز',
+      sales: '32,150,000 تومان امروز',
       orders: 98,
       activeOrders: 6,
       chefStatus: 'نرمال ✅',
-      syncTime: '۵ ثانیه پیش'
+      syncTime: '5 ثانیه پیش'
     },
     tajrish: {
       name: 'شعبه تجریش',
-      sales: '۲۷,۹۰۰,۰۰۰ تومان امروز',
+      sales: '27,900,000 تومان امروز',
       orders: 84,
       activeOrders: 8,
       chefStatus: 'نرمال ✅',
-      syncTime: '۳ ثانیه پیش'
+      syncTime: '3 ثانیه پیش'
     }
   };
 
@@ -154,10 +156,11 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F8] dark:bg-[#070a08] text-[#18181B] dark:text-zinc-100 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed transition-colors duration-300" style={{ direction: 'rtl' }}>
+    <div className="min-h-screen bg-transparent text-app-text font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed transition-colors duration-300" style={{ direction: 'rtl' }}>
       
       {/* Hero Header Section */}
-      <header className="relative py-12 lg:py-16 bg-[#0A0A0A] text-white overflow-hidden border-b border-white/10">
+      <header ref={heroRef} className="relative py-12 lg:py-16 bg-[#0A0A0A]/75 backdrop-blur-md text-white overflow-hidden border-b border-white/10">
+        
         <div className="absolute inset-0 bg-[linear-gradient(rgba(16, 185, 129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16, 185, 129,0.02)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
           
@@ -187,7 +190,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
               }`}
             >
-              ۱. کافه‌ها و بارهای نوشیدنی
+              1. کافه‌ها و بارهای نوشیدنی
             </button>
             <button 
               onClick={() => {
@@ -201,7 +204,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
               }`}
             >
-              ۲. رستوران‌های سنتی و فرنگی
+              2. رستوران‌های سنتی و فرنگی
             </button>
             <button 
               onClick={() => {
@@ -215,7 +218,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
               }`}
             >
-              ۳. فست‌فودها و زنجیره‌ای‌ها
+              3. فست‌فودها و زنجیره‌ای‌ها
             </button>
           </div>
         </div>
@@ -336,7 +339,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                       منوی نوشیدنی که مدام تغییر می‌کنه، بدون نیاز به طراح گرافیک آپدیت میشه
                     </h2>
                     <p className="text-[#71717A] dark:text-zinc-400 text-sm md:text-base font-medium">
-                      یکی از بزرگترین چالش‌های کافه، نوسان موجودی دان قهوه یا میوه‌های استوایی در فصول مختلف است. در ویترین نیازی به طراحی بنر جدید یا چاپ مجدد نیست؛ در کمتر از ۱۰ ثانیه افزودنی، سس یا چاشنی جدید اضافه کرده یا قیمت‌ها را اصلاح کنید.
+                      یکی از بزرگترین چالش‌های کافه، نوسان موجودی دان قهوه یا میوه‌های استوایی در فصول مختلف است. در ویترین نیازی به طراحی بنر جدید یا چاپ مجدد نیست؛ در کمتر از 10 ثانیه افزودنی، سس یا چاشنی جدید اضافه کرده یا قیمت‌ها را اصلاح کنید.
                     </p>
 
                     <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-zinc-800/80">
@@ -370,7 +373,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                         </div>
                         <div>
                           <h4 className="font-bold text-xs text-[#18181B] dark:text-zinc-200">تخفیف‌ها و برچسب‌های ویژه (Tags & Discounts)</h4>
-                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">تعریف برچسب "امضا کافه" یا "قهوه کلمبیا ۱۰۰٪ عربیکا" برای جلب توجه مشتریان خاص‌پسند.</p>
+                          <p className="text-[11px] text-[#71717A] dark:text-zinc-400 mt-0.5">تعریف برچسب "امضا کافه" یا "قهوه کلمبیا 100٪ عربیکا" برای جلب توجه مشتریان خاص‌پسند.</p>
                         </div>
                       </div>
 
@@ -531,9 +534,9 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                         <span className="text-[10px] text-slate-400 font-bold block mb-2">انتخاب شیر جانبی (افزودنی هزینه اضافی دارد):</span>
                         <div className="grid grid-cols-3 gap-2">
                           {[
-                            { key: 'regular', label: 'شیر معمولی', extra: '۰' },
-                            { key: 'almond', label: 'شیر بادام', extra: '+۲۵,۰۰۰' },
-                            { key: 'oat', label: 'شیر جو دوسر', extra: '+۳۰,۰۰۰' }
+                            { key: 'regular', label: 'شیر معمولی', extra: '0' },
+                            { key: 'almond', label: 'شیر بادام', extra: '+25,000' },
+                            { key: 'oat', label: 'شیر جو دوسر', extra: '+30,000' }
                           ].map((item) => (
                             <button
                               key={item.key}
@@ -850,9 +853,9 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                 title: 'نوسانات قیمت و کمپین‌های تخفیف',
                 desc: 'جذب مشتری بیشتر با پویایی قیمت‌ها و آفر‌های مناسبتی.',
                 beforeTitle: 'روش سنتی (ثابت و غیرقابل ویرایش)',
-                beforeText: 'برای تغییر چند قیمت ساده یا اعمال ۱۰ درصد تخفیف موقت، باید فایل طراحی ادیت بشه و چند صدهزار تومان پول چاپ تراکت جدید بدی که عملاً انعطاف‌پذیری بازاریابی رو صفر می‌کنه.',
+                beforeText: 'برای تغییر چند قیمت ساده یا اعمال 10 درصد تخفیف موقت، باید فایل طراحی ادیت بشه و چند صدهزار تومان پول چاپ تراکت جدید بدی که عملاً انعطاف‌پذیری بازاریابی رو صفر می‌کنه.',
                 afterTitle: 'پلتفرم هوشمند ویترین',
-                afterText: 'در لحظه قیمت جشنواره بزار، تخفیف اعمال کن یا برچسب "امضا کافه" رو به کارت محصول بچسبون تا فروش اون محصول ۲ برابر شه و رفتارهای خرید مشتریان رو هوشمندانه کنترل کنی.'
+                afterText: 'در لحظه قیمت جشنواره بزار، تخفیف اعمال کن یا برچسب "امضا کافه" رو به کارت محصول بچسبون تا فروش اون محصول 2 برابر شه و رفتارهای خرید مشتریان رو هوشمندانه کنترل کنی.'
               },
               {
                 id: 'ordering',
@@ -992,7 +995,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   </div>
                   <h4 className="font-black text-white text-lg">درخواست دمو با موفقیت ثبت شد</h4>
                   <p className="text-slate-300 text-xs leading-relaxed max-w-md mx-auto">
-                    همکاران ما در بخش پشتیبانی فنی استودیو ویترین طی حداکثر ۲۴ ساعت آینده با شماره <span className="font-mono text-[#10b981] font-bold">{formPhone}</span> با شما تماس گرفته و پنل آزمایشی را فعال خواهند کرد.
+                    همکاران ما در بخش پشتیبانی فنی استودیو ویترین طی حداکثر 24 ساعت آینده با شماره <span className="font-mono text-[#10b981] font-bold">{formPhone}</span> با شما تماس گرفته و پنل آزمایشی را فعال خواهند کرد.
                   </p>
                   <button 
                     onClick={() => setFormSubmitted(false)}
@@ -1036,7 +1039,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                       required
                       value={formPhone}
                       onChange={(e) => setFormPhone(e.target.value)}
-                      placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹"
+                      placeholder="مثال: 09123456789"
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold text-left font-mono focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent"
                     />
                   </div>
@@ -1116,7 +1119,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   </div>
                   <div className="text-right">
                     <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-bold block">شماره تلفن مستقیم استودیو ویترین</span>
-                    <span className="text-xs font-mono font-black text-[#18181B] dark:text-zinc-100 block mt-1" style={{ direction: 'ltr' }}>+۹۸ (۲۱) ۸۸۹۷-۶۵۴۳</span>
+                    <span className="text-xs font-mono font-black text-[#18181B] dark:text-zinc-100 block mt-1" style={{ direction: 'ltr' }}>+98 (21) 8897-6543</span>
                   </div>
                 </motion.div>
 
@@ -1188,7 +1191,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
             اولین منوی کافی‌شاپ یا رستوران خود را همین امروز بسازید
           </h2>
           <p className="text-white/80 max-w-xl mx-auto text-xs sm:text-sm font-bold">
-            بدون نیاز به کارت اعتباری یا دانش فنی. منوی دیجیتال کاملاً رایگان با سفارش‌گیری آزمایشی در ۵ دقیقه در اختیار شماست.
+            بدون نیاز به کارت اعتباری یا دانش فنی. منوی دیجیتال کاملاً رایگان با سفارش‌گیری آزمایشی در 5 دقیقه در اختیار شماست.
           </p>
           <div className="pt-4 flex flex-wrap justify-center gap-4">
             <button 
@@ -1287,7 +1290,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
               </a>
             </div>
             <div>
-              <p>© ۱۴۰۵ ویترین. تمامی حقوق این پلتفرم محفوظ و تحت مالکیت معنوی می‌باشد.</p>
+              <p>© 1405 ویترین. تمامی حقوق این پلتفرم محفوظ و تحت مالکیت معنوی می‌باشد.</p>
             </div>
           </div>
         </div>

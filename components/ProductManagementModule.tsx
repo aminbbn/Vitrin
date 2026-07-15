@@ -30,7 +30,7 @@ export const ProductManagementModule: React.FC<ProductManagementModuleProps> = (
   const [isAvailable, setIsAvailable] = useState<boolean>(true);
   const [selectedTag, setSelectedTag] = useState<string>('🔥 پرفروش‌ترین');
   const [ingredients, setIngredients] = useState<string[]>([
-    'گوشت گرم ۱۸۰ گرمی',
+    'گوشت گرم 180 گرمی',
     'پنیر گودا ذوب شده',
     'کاهو فرانسوی و گوجه',
     'سس مخصوص ویترین'
@@ -40,7 +40,7 @@ export const ProductManagementModule: React.FC<ProductManagementModuleProps> = (
   // Modifiers
   const [modifiers, setModifiers] = useState<ModifierItem[]>([
     { id: '1', name: 'سس قارچ اضافه', price: 45000, isMandatory: false },
-    { id: '2', name: 'پیاز سوخاری (۴ حلقه)', price: 35000, isMandatory: false }
+    { id: '2', name: 'پیاز سوخاری (4 حلقه)', price: 35000, isMandatory: false }
   ]);
   
   const [newModName, setNewModName] = useState<string>('');

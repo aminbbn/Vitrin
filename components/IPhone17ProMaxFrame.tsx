@@ -16,9 +16,9 @@ export const IPhone17ProMaxFrame: React.FC<IPhone17ProMaxFrameProps> = ({
 
   // Width mapping
   const widthClasses = {
-    compact: 'w-[240px]',
-    standard: 'w-[295px]',
-    showcase: 'w-[360px]',
+    compact: 'w-[240px] max-w-full',
+    standard: 'w-[295px] md:w-[clamp(270px,24vw,340px)] max-w-full',
+    showcase: 'w-[360px] max-w-full',
   };
 
   return (

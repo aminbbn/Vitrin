@@ -104,7 +104,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   
   // Local state for other fields loaded from localStorage or defaults
   const [address, setAddress] = useState(() => localStorage.getItem('vitrin_restaurant_address') || 'تهران، سعادت آباد، میدان کاج');
-  const [phone, setPhone] = useState(() => localStorage.getItem('vitrin_restaurant_phone') || '۰۲۱-۲۲xxx');
+  const [phone, setPhone] = useState(() => localStorage.getItem('vitrin_restaurant_phone') || '021-22xxx');
   const [description, setDescription] = useState(() => localStorage.getItem('vitrin_restaurant_description') || 'رستورانی با طعم‌های اصیل و به یادماندنی...');
   const [isSaved, setIsSaved] = useState(false);
 
