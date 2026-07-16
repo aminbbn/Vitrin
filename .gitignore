@@ -29,3 +29,12 @@ dist-ssr
 backend/.env
 backend/dist
 backend/node_modules
+
+# SQLite databases
+backend/prisma/*.db
+backend/prisma/*.db-journal
+backend/prisma/*.db-wal
+backend/prisma/*.db-shm
+
+# Generated Prisma Client
+backend/src/generated/prisma/
