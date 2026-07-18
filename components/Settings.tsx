@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Store, 
@@ -13,6 +13,7 @@ import {
   Camera,
   CheckCircle2
 } from 'lucide-react';
+import { useTenant } from '../data/useRepositories';
 
 interface SettingsPageProps {
   restaurantName: string;
@@ -79,6 +80,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   highlightedItemId,
   clearHighlight
 }) => {
+  const { restaurant, updateInfo } = useTenant();
   const [hours, setHours] = useState(INITIAL_HOURS);
   const [localHighlight, setLocalHighlight] = useState<string | null>(null);
 
@@ -102,19 +104,34 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
     }
   }, [highlightedItemId, clearHighlight]);
   
-  // Local state for other fields loaded from localStorage or defaults
-  const [address, setAddress] = useState(() => localStorage.getItem('vitrin_restaurant_address') || 'تهران، سعادت آباد، میدان کاج');
-  const [phone, setPhone] = useState(() => localStorage.getItem('vitrin_restaurant_phone') || '021-22xxx');
-  const [description, setDescription] = useState(() => localStorage.getItem('vitrin_restaurant_description') || 'رستورانی با طعم‌های اصیل و به یادماندنی...');
+  // Local state for other fields loaded from hook or defaults
+  const [address, setAddress] = useState('تهران، سعادت آباد، میدان کاج');
+  const [phone, setPhone] = useState('021-22xxx');
+  const [description, setDescription] = useState('رستورانی با طعم‌های اصیل و به یادماندنی...');
   const [isSaved, setIsSaved] = useState(false);
 
-  const handleSave = () => {
-    localStorage.setItem('vitrin_restaurant_address', address);
-    localStorage.setItem('vitrin_restaurant_phone', phone);
-    localStorage.setItem('vitrin_restaurant_description', description);
-    localStorage.setItem('vitrin_restaurant_hours', JSON.stringify(hours));
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
+  useEffect(() => {
+    if (restaurant) {
+      if (restaurant.address) setAddress(restaurant.address);
+      if (restaurant.phone) setPhone(restaurant.phone);
+      if (restaurant.description) setDescription(restaurant.description);
+      if (restaurant.hours) setHours(restaurant.hours as any);
+    }
+  }, [restaurant]);
+
+  const handleSave = async () => {
+    try {
+      await updateInfo({
+        address,
+        phone,
+        description,
+        hours: hours as any
+      });
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+    } catch (e) {
+      console.error('Error saving settings:', e);
+    }
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Edit3, Check, X, Image as ImageIcon, Layers, MoveUp, MoveDown } from 'lucide-react';
 import { Category } from '../types';
-import { INITIAL_CATEGORIES } from '../constants';
+import { useCatalog } from '../data/useRepositories';
 
 interface CategoryManagerProps {
   brandColor: string;
@@ -23,31 +23,10 @@ const itemVariants = {
 };
 
 const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { categories, saveCategories, loading } = useCatalog();
   const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('vitrin_categories');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setCategories(parsed.sort((a: Category, b: Category) => a.order - b.order));
-      } catch (e) {
-        setCategories(INITIAL_CATEGORIES);
-      }
-    } else {
-      setCategories(INITIAL_CATEGORIES);
-      localStorage.setItem('vitrin_categories', JSON.stringify(INITIAL_CATEGORIES));
-    }
-  }, []);
-
-  const saveCategories = (newCategories: Category[]) => {
-    const sorted = [...newCategories].sort((a, b) => a.order - b.order);
-    setCategories(sorted);
-    localStorage.setItem('vitrin_categories', JSON.stringify(sorted));
-  };
 
   const handleCreate = () => {
     setEditingCategory({
@@ -98,6 +77,17 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
 
     saveCategories(newCategories);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full w-full bg-slate-50 dark:bg-slate-950" dir="rtl">
+        <div className="flex flex-col items-center gap-4">
+          <div className={`w-12 h-12 rounded-full border-4 border-slate-200 border-t-${brandColor}-500 animate-spin`} />
+          <p className="text-sm text-slate-400 font-medium">در حال بارگذاری اطلاعات...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`p-4 md:p-8 max-w-5xl mx-auto h-full ${view === 'list' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto pb-32'}`} dir="rtl">

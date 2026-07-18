@@ -20,7 +20,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Product, ModifierGroup, ProductModifier, Category } from '../types';
-import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '../constants';
+import { useCatalog } from '../data/useRepositories';
 
 // Animation Variants
 const containerVariants = {
@@ -51,36 +51,10 @@ interface ProductManagerProps {
 
 const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlightedItemId, clearHighlight }) => {
   const [view, setView] = useState<'list' | 'edit' | 'create'>('list');
-  const [products, setProducts] = useState<Product[]>(() => {
-    const savedProds = localStorage.getItem('vitrin_products');
-    if (savedProds) {
-      try {
-        return JSON.parse(savedProds);
-      } catch (e) {
-        return INITIAL_PRODUCTS;
-      }
-    }
-    return INITIAL_PRODUCTS;
-  });
-  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
+  const { products, categories, saveProducts, loading } = useCatalog();
   const [activeCategory, setActiveCategory] = useState('همه');
   const [searchQuery, setSearchQuery] = useState('');
   const [localHighlight, setLocalHighlight] = useState<string | null>(null);
-
-  React.useEffect(() => {
-    const savedCats = localStorage.getItem('vitrin_categories');
-    if (savedCats) {
-      try {
-        setCategories(JSON.parse(savedCats).sort((a: Category, b: Category) => a.order - b.order));
-      } catch (e) {
-        // use initial
-      }
-    }
-  }, []);
-
-  React.useEffect(() => {
-    localStorage.setItem('vitrin_products', JSON.stringify(products));
-  }, [products]);
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -163,9 +137,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     if (!editingProduct || !editingProduct.name) return;
 
     if (view === 'create') {
-      setProducts([...products, editingProduct]);
+      saveProducts([...products, editingProduct]);
     } else {
-      setProducts(products.map(p => p.id === editingProduct.id ? editingProduct : p));
+      saveProducts(products.map(p => p.id === editingProduct.id ? editingProduct : p));
     }
     setView('list');
     setEditingProduct(null);
@@ -177,7 +151,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
 
   const confirmDelete = () => {
     if (productToDelete) {
-      setProducts(products.filter(p => p.id !== productToDelete));
+      saveProducts(products.filter(p => p.id !== productToDelete));
       setProductToDelete(null);
       if (view !== 'list') setView('list');
     }
@@ -301,6 +275,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     const matchesSearch = p.name.includes(searchQuery) || p.description.includes(searchQuery);
     return matchesCategory && matchesSearch;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full w-full bg-slate-50 dark:bg-slate-950" dir="rtl">
+        <div className="flex flex-col items-center gap-4">
+          <div className={`w-12 h-12 rounded-full border-4 border-slate-200 border-t-${brandColor}-500 animate-spin`} />
+          <p className="text-sm text-slate-400 font-medium">در حال بارگذاری اطلاعات...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-950 font-['Vazirmatn'] relative transition-colors">

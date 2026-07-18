@@ -25,6 +25,8 @@ import { ScrollProgress } from './components/MotionSystem';
 import { MarketingHeader } from './components/MarketingHeader';
 import { useTheme } from './components/ThemeProvider';
 import { ReactiveGridBackground } from './components/ReactiveGridBackground';
+import { useRepositories } from './data/RepositoryProvider';
+import { useTenant, useMenuDraft } from './data/useRepositories';
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
   { id: '1', type: 'order', title: 'سفارش جدید #12895', message: '2 پیتزا پپرونی، 1 سالاد سزار - میز 5', time: '2 دقیقه پیش', read: false, link: 'orders' },
@@ -71,6 +73,7 @@ const App: React.FC = () => {
       });
     }
   }, [marketingRoute, pendingSection, shouldReduceMotion]);
+
   const [activeView, setActiveView] = useState<ViewState>('dashboard');
   const [previousView, setPreviousView] = useState<ViewState>('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -84,40 +87,15 @@ const App: React.FC = () => {
   // Dark/Light Theme State from global ThemeProvider
   const { theme, setTheme, toggleTheme } = useTheme();
 
-  // GLOBAL RESTAURANT INFO
-  const [restaurantName, setRestaurantName] = useState(() => {
-    return localStorage.getItem('vitrin_restaurant_name') || 'رستوران ایتالیایی لیمو';
-  });
+  // REPOSITORIES & HOOKS
+  const { authRepository } = useRepositories();
+  const { restaurant, brandColor, updateInfo, updateBrandColor, loading: tenantLoading } = useTenant();
+  const { draftElements: canvasElements, saveDraft: setCanvasElements, publishMenu, loading: menuLoading } = useMenuDraft();
+  const [authLoading, setAuthLoading] = useState(true);
 
-  const [restaurantLogo, setRestaurantLogo] = useState(() => {
-    return localStorage.getItem('vitrin_restaurant_logo') || '';
-  });
-
-  const [brandColor, setBrandColor] = useState(() => {
-    return localStorage.getItem('vitrin_brand_color') || 'emerald';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('vitrin_restaurant_name', restaurantName);
-  }, [restaurantName]);
-
-  useEffect(() => {
-    localStorage.setItem('vitrin_restaurant_logo', restaurantLogo);
-  }, [restaurantLogo]);
-
-  useEffect(() => {
-    localStorage.setItem('vitrin_brand_color', brandColor);
-  }, [brandColor]);
-
-  // SHARED CANVAS STATE
-  const [canvasElements, setCanvasElements] = useState<ComponentItem[]>(() => {
-    const savedDraft = localStorage.getItem('vitrin_designer_draft');
-    return savedDraft ? JSON.parse(savedDraft) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('vitrin_designer_draft', JSON.stringify(canvasElements));
-  }, [canvasElements]);
+  // Set local state for backward compatibility if needed, though we can use restaurant info directly
+  const restaurantName = restaurant?.name || 'رستوران ایتالیایی لیمو';
+  const restaurantLogo = restaurant?.logoUrl || '';
 
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,9 +106,18 @@ const App: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
 
   useEffect(() => {
-    const auth = localStorage.getItem('vitrin_auth');
-    if (auth === 'true') setIsAuthenticated(true);
-  }, []);
+    const checkAuth = async () => {
+      try {
+        const authed = await authRepository.isAuthenticated();
+        setIsAuthenticated(authed);
+      } catch (e) {
+        console.error('Error checking auth:', e);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+    checkAuth();
+  }, [authRepository]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
@@ -146,29 +133,45 @@ const App: React.FC = () => {
     }
   }, [debouncedQuery]);
 
-  const handleLogin = (name?: string) => { 
-    localStorage.setItem('vitrin_auth', 'true'); 
-    if (name) {
-      setRestaurantName(name);
-      localStorage.setItem('vitrin_restaurant_name', name);
+  const handleLogin = async (name?: string) => { 
+    setAuthLoading(true);
+    try {
+      await authRepository.login('mock-password', name);
+      setIsAuthenticated(true);
+      if (name) {
+        await updateInfo({ name });
+      }
+    } catch (e) {
+      console.error('Error logging in:', e);
+    } finally {
+      setAuthLoading(false);
     }
-    setIsAuthenticated(true); 
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('vitrin_auth');
-    setIsAuthenticated(false);
-    setActiveView('dashboard');
+  const handleLogout = async () => {
+    setAuthLoading(true);
+    try {
+      await authRepository.logout();
+      setIsAuthenticated(false);
+      setActiveView('dashboard');
+    } catch (e) {
+      console.error('Error logging out:', e);
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     setIsPublishing(true);
-    localStorage.setItem('vitrin_published_design', JSON.stringify(canvasElements));
-    setTimeout(() => {
-      setIsPublishing(false);
+    try {
+      await publishMenu(canvasElements);
       setShowPublishSuccess(true);
       setTimeout(() => setShowPublishSuccess(false), 3000);
-    }, 1500);
+    } catch (e) {
+      console.error('Error publishing:', e);
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   const handlePreviewShop = () => {
@@ -177,6 +180,17 @@ const App: React.FC = () => {
   };
 
   const renderView = () => {
+    if (tenantLoading || menuLoading || authLoading) {
+      return (
+        <div className="flex items-center justify-center h-full w-full bg-app-bg">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-emerald-500 animate-spin" />
+            <p className="text-sm text-slate-400 font-medium">در حال بارگذاری اطلاعات...</p>
+          </div>
+        </div>
+      );
+    }
+
     switch (activeView) {
       case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} brandColor={brandColor} theme={theme} />;
       case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} brandColor={brandColor} />;
@@ -188,11 +202,11 @@ const App: React.FC = () => {
         return (
           <SettingsPage 
             restaurantName={restaurantName} 
-            setRestaurantName={setRestaurantName} 
+            setRestaurantName={(name) => updateInfo({ name })} 
             restaurantLogo={restaurantLogo}
-            setRestaurantLogo={setRestaurantLogo}
+            setRestaurantLogo={(logoUrl) => updateInfo({ logoUrl })}
             brandColor={brandColor}
-            setBrandColor={setBrandColor}
+            setBrandColor={(color) => updateBrandColor(color)}
           />
         );
       case 'customer-menu': return <CustomerMenu liveElements={canvasElements} theme={theme} toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />;
