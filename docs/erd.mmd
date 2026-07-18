@@ -1,0 +1,519 @@
+erDiagram
+
+    USER {
+        uuid id PK
+        string email UK
+        string passwordHash
+        string fullName
+        uuid avatarMediaId FK
+        timestamp emailVerifiedAt
+        enum status
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    AUTH_ACCOUNT {
+        uuid id PK
+        uuid userId FK
+        enum provider
+        string providerAccountId
+        string providerEmail
+        timestamp createdAt
+    }
+
+    REFRESH_SESSION {
+        uuid id PK
+        uuid userId FK
+        string tokenHash
+        string deviceInfo
+        timestamp expiresAt
+        timestamp revokedAt
+        timestamp createdAt
+    }
+
+    EMAIL_VERIFICATION_TOKEN {
+        uuid id PK
+        uuid userId FK
+        string tokenHash
+        timestamp expiresAt
+        timestamp usedAt
+        timestamp createdAt
+    }
+
+    PASSWORD_RESET_TOKEN {
+        uuid id PK
+        uuid userId FK
+        string tokenHash
+        timestamp expiresAt
+        timestamp usedAt
+        timestamp createdAt
+    }
+
+    RESTAURANT {
+        uuid id PK
+        string name
+        string slug UK
+        uuid logoMediaId FK
+        string description
+        enum status
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    RESTAURANT_MEMBERSHIP {
+        uuid id PK
+        uuid userId FK
+        uuid restaurantId FK
+        enum role
+        enum status
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    MEMBERSHIP_PERMISSION {
+        uuid id PK
+        uuid membershipId FK
+        enum permission
+        uuid grantedByUserId FK
+        timestamp grantedAt
+    }
+
+    RESTAURANT_INVITATION {
+        uuid id PK
+        uuid restaurantId FK
+        string invitedEmail
+        enum role
+        uuid invitedByUserId FK
+        string tokenHash
+        enum status
+        timestamp expiresAt
+        timestamp acceptedAt
+        timestamp createdAt
+    }
+
+    BRANCH {
+        uuid id PK
+        uuid restaurantId FK
+        string name
+        string address
+        decimal latitude
+        decimal longitude
+        string timezone
+        string currencyCode
+        enum status
+        boolean orderingEnabled
+        uuid activeMenuPublicationId FK
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    BRANCH_FEE_CONFIG {
+        uuid id PK
+        uuid branchId FK
+        boolean taxEnabled
+        enum taxType
+        int taxValue
+        boolean serviceFeeEnabled
+        enum serviceFeeType
+        int serviceFeeValue
+        boolean packagingFeeEnabled
+        enum packagingFeeType
+        int packagingFeeValue
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    DELIVERY_CONFIG {
+        uuid id PK
+        uuid branchId FK
+        boolean deliveryEnabled
+        decimal originLatitude
+        decimal originLongitude
+        decimal maxRadiusKm
+        int baseFee
+        int perKmFee
+        int minimumOrderAmount
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    BRANCH_WORKING_INTERVAL {
+        uuid id PK
+        uuid branchId FK
+        int weekday
+        string opensAt
+        string closesAt
+        int displayOrder
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    BRANCH_SPECIAL_HOURS {
+        uuid id PK
+        uuid branchId FK
+        date localDate
+        boolean isClosed
+        string opensAt
+        string closesAt
+        string note
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    BRANCH_DAILY_ORDER_COUNTER {
+        uuid id PK
+        uuid branchId FK
+        date businessDate
+        int nextValue
+        timestamp updatedAt
+    }
+
+    BRANCH_TABLE {
+        uuid id PK
+        uuid branchId FK
+        string tableNumber
+        int capacity
+        enum status
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    TABLE_QR_TOKEN {
+        uuid id PK
+        uuid tableId FK
+        string token UK
+        enum status
+        timestamp revokedAt
+        timestamp createdAt
+    }
+
+    CATEGORY {
+        uuid id PK
+        uuid restaurantId FK
+        string name
+        int displayOrder
+        boolean isActive
+        timestamp archivedAt
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    PRODUCT {
+        uuid id PK
+        uuid restaurantId FK
+        uuid categoryId FK
+        string name
+        string displayName
+        string description
+        uuid imageMediaId FK
+        boolean isActive
+        timestamp archivedAt
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    BRANCH_PRODUCT {
+        uuid id PK
+        uuid branchId FK
+        uuid productId FK
+        int branchPrice
+        int branchDiscountPrice
+        enum availability
+        boolean orderingEnabled
+        boolean isVisible
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    MODIFIER_GROUP {
+        uuid id PK
+        uuid restaurantId FK
+        string name
+        boolean isRequired
+        int minSelections
+        int maxSelections
+        int displayOrder
+        boolean isActive
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    MODIFIER_OPTION {
+        uuid id PK
+        uuid modifierGroupId FK
+        string name
+        int priceAdjustment
+        int displayOrder
+        boolean isActive
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    PRODUCT_MODIFIER_GROUP {
+        uuid id PK
+        uuid productId FK
+        uuid modifierGroupId FK
+        int displayOrder
+        timestamp createdAt
+    }
+
+    MENU_DRAFT {
+        uuid id PK
+        uuid branchId FK
+        jsonb layout
+        jsonb theme
+        jsonb categoryConfig
+        jsonb productConfig
+        jsonb displaySettings
+        timestamp lastPublishedAt
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    MENU_PUBLICATION {
+        uuid id PK
+        uuid branchId FK
+        int version
+        int schemaVersion
+        jsonb snapshot
+        uuid publishedByUserId FK
+        timestamp createdAt
+    }
+
+    MEDIA_ASSET {
+        uuid id PK
+        uuid uploadedByUserId FK
+        uuid restaurantId FK
+        string storageKey
+        string publicUrl
+        string mimeType
+        int fileSizeBytes
+        int widthPx
+        int heightPx
+        timestamp createdAt
+        timestamp archivedAt
+    }
+
+    CUSTOMER_ADDRESS {
+        uuid id PK
+        uuid userId FK
+        string label
+        string recipientName
+        string recipientPhone
+        string addressText
+        decimal latitude
+        decimal longitude
+        boolean isDefault
+        timestamp archivedAt
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    CUSTOMER_ORDER {
+        uuid id PK
+        uuid branchId FK
+        uuid customerUserId FK
+        string publicCode UK
+        int displayNumber
+        date businessDate
+        string currencyCode
+        enum orderType
+        enum orderStatus
+        uuid tableId FK
+        jsonb deliveryAddressSnapshot
+        string rejectionReason
+        string cancellationReason
+        uuid cancelledByUserId FK
+        timestamp cancelledAt
+        int subtotal
+        int discountTotal
+        int tax
+        int serviceFee
+        int packagingFee
+        int deliveryFee
+        int grandTotal
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    ORDER_ITEM {
+        uuid id PK
+        uuid orderId FK
+        uuid productId
+        string productName
+        int quantity
+        int unitPrice
+        int discountPrice
+        int itemSubtotal
+        int modifierTotal
+        int taxAllocation
+        int serviceFeeAllocation
+        int packagingFeeAllocation
+        int lineTotal
+        string notes
+        timestamp createdAt
+    }
+
+    ORDER_ITEM_MODIFIER {
+        uuid id PK
+        uuid orderItemId FK
+        uuid modifierOptionId
+        string modifierGroupName
+        string optionName
+        int priceAdjustment
+        timestamp createdAt
+    }
+
+    ORDER_STATUS_HISTORY {
+        uuid id PK
+        uuid orderId FK
+        enum status
+        enum previousStatus
+        uuid changedByUserId FK
+        string note
+        timestamp createdAt
+    }
+
+    PAYMENT {
+        uuid id PK
+        uuid orderId FK
+        enum paymentMethod
+        enum paymentStatus
+        int amount
+        string currencyCode
+        timestamp paidAt
+        timestamp expiresAt
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    PAYMENT_ATTEMPT {
+        uuid id PK
+        uuid paymentId FK
+        int attemptNumber
+        string provider
+        string externalReference
+        int requestedAmount
+        string currencyCode
+        enum status
+        string failureCode
+        string failureReason
+        timestamp startedAt
+        timestamp completedAt
+        timestamp expiresAt
+    }
+
+    PAYMENT_STATUS_HISTORY {
+        uuid id PK
+        uuid paymentId FK
+        enum paymentStatus
+        enum previousPaymentStatus
+        uuid changedByUserId FK
+        string note
+        string transactionId
+        timestamp createdAt
+    }
+
+    %% === Identity & Auth ===
+
+    USER ||--o{ AUTH_ACCOUNT : "authenticates via"
+    USER ||--o{ REFRESH_SESSION : "has sessions"
+    USER ||--o{ EMAIL_VERIFICATION_TOKEN : "receives tokens"
+    USER ||--o{ PASSWORD_RESET_TOKEN : "receives tokens"
+    USER ||--o{ RESTAURANT_MEMBERSHIP : "belongs to restaurants"
+    USER ||--o{ CUSTOMER_ADDRESS : "has addresses"
+    USER ||--o{ CUSTOMER_ORDER : "places orders"
+    USER ||--o{ MEDIA_ASSET : "uploads assets"
+
+    %% === Restaurant & Membership ===
+
+    RESTAURANT ||--o{ RESTAURANT_MEMBERSHIP : "has members"
+    RESTAURANT ||--o{ BRANCH : "has branches"
+    RESTAURANT ||--o{ CATEGORY : "has categories"
+    RESTAURANT ||--o{ PRODUCT : "has products"
+    RESTAURANT ||--o{ MODIFIER_GROUP : "has modifier groups"
+    RESTAURANT ||--o{ RESTAURANT_INVITATION : "sends invitations"
+    RESTAURANT ||--o{ MEDIA_ASSET : "owns tenant assets"
+
+    RESTAURANT_MEMBERSHIP ||--o{ MEMBERSHIP_PERMISSION : "has explicit permissions"
+
+    RESTAURANT_INVITATION }o--|| RESTAURANT : "invitation for"
+
+    %% === Branch Configuration ===
+
+    BRANCH ||--|| BRANCH_FEE_CONFIG : "has fee config"
+    BRANCH ||--o| DELIVERY_CONFIG : "has delivery config"
+    BRANCH ||--o{ BRANCH_TABLE : "has tables"
+    BRANCH ||--o{ BRANCH_PRODUCT : "has branch products"
+    BRANCH ||--|| MENU_DRAFT : "has one draft"
+    BRANCH ||--o{ MENU_PUBLICATION : "has publications"
+    BRANCH ||--o{ CUSTOMER_ORDER : "receives orders"
+    BRANCH ||--o{ BRANCH_WORKING_INTERVAL : "has working intervals"
+    BRANCH ||--o{ BRANCH_SPECIAL_HOURS : "has special hours"
+    BRANCH ||--o{ BRANCH_DAILY_ORDER_COUNTER : "has daily counters"
+    BRANCH }o--|| RESTAURANT : "branch of"
+
+    BRANCH_TABLE ||--o{ TABLE_QR_TOKEN : "has QR tokens"
+    BRANCH_TABLE }o--|| BRANCH : "table in"
+
+    TABLE_QR_TOKEN }o--|| BRANCH_TABLE : "token for"
+
+    %% === Product Catalog ===
+
+    CATEGORY }o--|| RESTAURANT : "category in"
+    CATEGORY ||--o{ PRODUCT : "contains products"
+
+    PRODUCT }o--|| RESTAURANT : "product in"
+    PRODUCT }o--|| CATEGORY : "belongs to category"
+    PRODUCT ||--o{ BRANCH_PRODUCT : "configured per branch"
+    PRODUCT ||--o{ PRODUCT_MODIFIER_GROUP : "has modifier groups"
+
+    BRANCH_PRODUCT }o--|| BRANCH : "product at branch"
+    BRANCH_PRODUCT }o--|| PRODUCT : "branch config for"
+
+    %% === Modifiers ===
+
+    MODIFIER_GROUP }o--|| RESTAURANT : "modifier group in"
+    MODIFIER_GROUP ||--o{ MODIFIER_OPTION : "has options"
+    MODIFIER_GROUP ||--o{ PRODUCT_MODIFIER_GROUP : "linked to products"
+
+    MODIFIER_OPTION }o--|| MODIFIER_GROUP : "option in group"
+
+    PRODUCT_MODIFIER_GROUP }o--|| PRODUCT : "product has"
+    PRODUCT_MODIFIER_GROUP }o--|| MODIFIER_GROUP : "group assigned to"
+
+    %% === Menu Publishing ===
+
+    MENU_DRAFT }o--|| BRANCH : "draft for"
+    MENU_PUBLICATION }o--|| BRANCH : "publication for"
+
+    %% === Orders ===
+
+    CUSTOMER_ORDER }o--|| BRANCH : "order at"
+    CUSTOMER_ORDER }o--|| USER : "order by"
+    CUSTOMER_ORDER |o--o| BRANCH_TABLE : "DINE_IN table"
+    CUSTOMER_ORDER ||--o{ ORDER_ITEM : "has items"
+    CUSTOMER_ORDER ||--o{ ORDER_STATUS_HISTORY : "status history"
+    CUSTOMER_ORDER ||--|| PAYMENT : "has payment"
+
+    ORDER_ITEM }o--|| CUSTOMER_ORDER : "item in order"
+    ORDER_ITEM ||--o{ ORDER_ITEM_MODIFIER : "has selected modifiers"
+
+    ORDER_ITEM_MODIFIER }o--|| ORDER_ITEM : "modifier for item"
+
+    ORDER_STATUS_HISTORY }o--|| CUSTOMER_ORDER : "history of"
+
+    %% === Payments ===
+
+    PAYMENT }o--|| CUSTOMER_ORDER : "payment for"
+    PAYMENT ||--o{ PAYMENT_ATTEMPT : "has attempts"
+    PAYMENT ||--o{ PAYMENT_STATUS_HISTORY : "status history"
+
+    PAYMENT_ATTEMPT }o--|| PAYMENT : "attempt of"
+
+    PAYMENT_STATUS_HISTORY }o--|| PAYMENT : "history of"
+
+    %% === Media ===
+
+    MEDIA_ASSET }o--o| USER : "uploaded by"
+    MEDIA_ASSET }o--o| RESTAURANT : "belongs to tenant"
