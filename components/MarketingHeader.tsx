@@ -211,10 +211,10 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
         variants={headerEntranceVariants}
         initial="hidden"
         animate="visible"
-        className={`sticky top-0 z-50 w-full transition-all duration-300 font-['Vazirmatn'] ${
+        className={`fixed top-0 left-0 right-0 z-50 w-full h-16 transition-all duration-300 font-['Vazirmatn'] ${
           hasScrolled
-            ? 'h-14 bg-white/90 dark:bg-[#080908]/92 backdrop-blur-[16px] border-b border-slate-200 dark:border-[#10b981]/15 shadow-[0_8px_32px_-10px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_-10px_rgba(0,0,0,0.6)]'
-            : 'h-[72px] bg-[#F7F7F8] dark:bg-[#0c0e0d] border-b border-slate-200 dark:border-white/[0.03]'
+            ? 'bg-white/85 dark:bg-[#080908]/85 backdrop-blur-[16px] border-b border-slate-200 dark:border-[#10b981]/15 shadow-sm'
+            : 'bg-white/75 dark:bg-[#0c0e0d]/75 backdrop-blur-[12px] border-b border-slate-200/50 dark:border-white/[0.03]'
         } text-[#18181B] dark:text-white flex items-center justify-between select-none`}
         style={{ direction: 'rtl' }}
       >
@@ -233,22 +233,16 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
             >
               {/* Premium monogram tile with concentric gradients */}
               <div
-                className={`bg-gradient-to-br from-[#10b981] via-[#059669] to-[#047857] flex items-center justify-center shadow-lg shadow-[#10b981]/10 shrink-0 relative overflow-hidden transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.35)] ${
-                  hasScrolled ? 'w-8 h-8 rounded-[10px]' : 'w-10 h-10 rounded-[12px]'
-                }`}
+                className="bg-gradient-to-br from-[#10b981] via-[#059669] to-[#047857] flex items-center justify-center shadow-lg shadow-[#10b981]/10 shrink-0 relative overflow-hidden transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.35)] w-10 h-10 rounded-[12px]"
               >
                 {/* Subtle inner highlight rim */}
                 <div className="absolute inset-0 border border-white/20 rounded-[inherit] pointer-events-none" />
-                <span className={`text-white font-black leading-none select-none transition-all ${
-                  hasScrolled ? 'text-xs' : 'text-sm'
-                }`}>وی</span>
+                <span className="text-white font-black leading-none select-none text-sm">وی</span>
               </div>
 
               {/* Wordmark & Tagline */}
               <div className="flex flex-col text-right">
-                <span className={`font-black tracking-tight text-slate-800 dark:text-white/90 group-hover:text-slate-950 dark:group-hover:text-white transition-all duration-300 ${
-                  hasScrolled ? 'text-sm' : 'text-base'
-                }`}>
+                <span className="font-black tracking-tight text-slate-800 dark:text-white/90 group-hover:text-slate-950 dark:group-hover:text-white transition-all duration-300 text-sm">
                   ویترین
                 </span>
                 {isWindowLarge && (
@@ -271,9 +265,7 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
               className="flex items-center justify-center relative animate-fade-in"
             >
               <nav
-                className={`bg-slate-200/50 dark:bg-white/[0.02] border border-slate-300/30 dark:border-white/[0.05] rounded-full px-1.5 py-1 flex items-center relative shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 ${
-                  hasScrolled ? 'gap-1 h-9' : 'gap-1.5 h-11'
-                }`}
+                className="bg-slate-200/50 dark:bg-white/[0.02] border border-slate-300/30 dark:border-white/[0.05] rounded-full px-1.5 py-1 flex items-center relative shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] transition-all duration-300 gap-1.5 h-11"
               >
                 {NAVIGATION_DATA.map((item) => {
                   const isCurrentActive = activeNavigationId === item.id;
@@ -341,9 +333,7 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
             {/* Day / Night aperture theme control */}
             <button
               onClick={toggleTheme}
-              className={`relative flex items-center justify-center rounded-xl border transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#10b981] ${
-                hasScrolled ? 'w-9 h-9' : 'w-10 h-10'
-              } ${
+              className={`relative flex items-center justify-center rounded-xl border transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#10b981] w-10 h-10 ${
                 theme === 'dark'
                   ? 'bg-[#121614] hover:bg-[#171C19] border-white/10 hover:border-[#10b981]/30 text-[#19C78C] shadow-[0_4px_12px_rgba(0,0,0,0.3)]'
                   : 'bg-[#F1F3F2] hover:bg-white border-slate-200 hover:border-[#10b981]/30 text-slate-700 shadow-[0_2px_8px_rgba(0,0,0,0.04)]'
@@ -383,9 +373,7 @@ export const MarketingHeader: React.FC<MarketingHeaderProps> = ({
             {/* High-end primary CTA: "شروع رایگان" */}
             <button
               onClick={onStartFreeClick}
-              className={`bg-[#10b981] hover:bg-emerald-500 text-white font-black text-xs rounded-xl flex items-center gap-2 shadow-[0_4px_16px_rgba(16,185,129,0.15)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.3)] border-0 cursor-pointer active:scale-95 outline-none focus:ring-2 focus:ring-[#10b981]/50 group transition-all duration-300 ${
-                hasScrolled ? 'h-9 px-4 rounded-lg' : 'h-10 px-5'
-              }`}
+              className="bg-[#10b981] hover:bg-emerald-500 text-white font-black text-xs rounded-xl flex items-center gap-2 shadow-[0_4px_16px_rgba(16,185,129,0.15)] hover:shadow-[0_8px_24px_rgba(16,185,129,0.3)] border-0 cursor-pointer active:scale-95 outline-none focus:ring-2 focus:ring-[#10b981]/50 group transition-all duration-300 h-10 px-5"
             >
               <span>شروع رایگان</span>
               <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center transition-transform group-hover:-translate-x-0.5">

@@ -16,6 +16,8 @@ import { InteractiveProductShowcase } from './InteractiveProductShowcase';
 import { LivingMenuEngine } from './LivingMenuEngine';
 import { ReactiveGridBackground } from './ReactiveGridBackground';
 import { IPhone17ProMaxFrame } from './IPhone17ProMaxFrame';
+import { useTheme } from './ThemeProvider';
+import { MarketingFooter } from './MarketingFooter';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -282,6 +284,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onNavigateFeatures,
   onNavigateSolutions
 }) => {
+  const { theme } = useTheme();
   // Navigation tabs state
   const [activeTemplateId, setActiveTemplateId] = useState<string>('cafe');
   const [activeFaqId, setActiveFaqId] = useState<string | null>(null);
@@ -325,9 +328,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 2: INTERACTIVE HERO SECTION
          ========================================== */}
-      <header ref={heroRef} id="hero" className="relative py-20 lg:py-32 border-b border-slate-200/50 dark:border-white/5 bg-transparent overflow-hidden">
-        
-
+      <header ref={heroRef} id="hero" className="relative pt-28 pb-20 lg:pt-36 lg:pb-32 border-b border-slate-200/50 dark:border-white/5 bg-transparent overflow-hidden">
         {/* Cinematic ambient background glow and stage atmosphere */}
         <div className="absolute top-1/2 left-1/4 w-[700px] h-[700px] -translate-y-1/2 bg-gradient-radial from-[#10b981]/8 to-transparent rounded-full blur-[140px] pointer-events-none z-0 animate-pulse" />
         <div className="absolute -top-40 right-1/3 w-[500px] h-[500px] bg-[#10b981]/4 rounded-full blur-[120px] pointer-events-none z-0" />
@@ -883,70 +884,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ==========================================
           SECTION 13: MARKETING FOOTER
          ========================================== */}
-      <footer className="bg-[#0A0A0A] text-slate-400 py-12 border-t border-white/10 text-right relative z-10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
-            
-            {/* Info Branding Column (Rightmost in RTL) */}
-            <div className="lg:col-span-2 flex flex-col items-start lg:items-start text-right">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 bg-[#10b981] rounded-lg flex items-center justify-center shadow-lg shadow-[#10b981]/20">
-                  <span className="text-white font-black text-lg">وی</span>
-                </div>
-                <span className="text-lg font-black tracking-tight text-white">ویترین</span>
-              </div>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
-                پلتفرم یکپارچه طراحی و توسعه منوی دیجیتال و بستر هوشمند سفارش‌گیری مستقیم. بدون نیاز به واسطه‌ها و بدون پرداخت مبالغ کارمزد تراکنش.
-              </p>
-            </div>
-
-            {/* Link Col 1: Product */}
-            <div>
-              <h4 className="text-xs font-black text-white mb-4">محصول</h4>
-              <ul className="space-y-3 text-xs list-none p-0">
-                <li><a href="#hero" className="text-slate-400 hover:text-white transition-colors no-underline">شبیه‌ساز تعاملی منو</a></li>
-                <li><a href="#how-it-works" className="text-slate-400 hover:text-white transition-colors no-underline">مسیر راه‌اندازی منو</a></li>
-                <li><a href="#faq" className="text-slate-400 hover:text-white transition-colors no-underline">سوالات متداول کاربران</a></li>
-              </ul>
-            </div>
-
-            {/* Link Col 2: Company */}
-            <div>
-              <h4 className="text-xs font-black text-white mb-4">شرکت</h4>
-              <ul className="space-y-3 text-xs list-none p-0">
-                <li><a href="#how-it-works" className="text-slate-400 hover:text-white transition-colors no-underline">درباره ما</a></li>
-                <li><a href="#how-it-works" className="text-slate-400 hover:text-white transition-colors no-underline">راهکارهای صنفی رستوران</a></li>
-                <li><a href="#faq" className="text-slate-400 hover:text-white transition-colors no-underline">سوالات متداول کاربران</a></li>
-              </ul>
-            </div>
-
-            {/* Link Col 3: Legal */}
-            <div>
-              <h4 className="text-xs font-black text-white mb-4">قوانین و پشتیبانی</h4>
-              <ul className="space-y-3 text-xs list-none p-0">
-                <li><a href="#faq" className="text-slate-400 hover:text-white transition-colors no-underline">قوانین و مقررات استفاده</a></li>
-                <li><a href="#faq" className="text-slate-400 hover:text-white transition-colors no-underline">امنیت اطلاعات کاربران</a></li>
-                <li><a href="#faq" className="text-slate-400 hover:text-white transition-colors no-underline">ارتباط با کارشناسان فنی</a></li>
-              </ul>
-            </div>
-
-          </div>
-
-          <div className="h-px bg-slate-900 mb-8" />
-
-          {/* Socials & Copyright */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-600">
-            <div className="flex gap-4">
-              <span className="hover:text-[#10b981] transition-colors cursor-pointer">اینستاگرام</span>
-              <span className="hover:text-[#10b981] transition-colors cursor-pointer">لینکدین</span>
-              <span className="hover:text-[#10b981] transition-colors cursor-pointer">واتساپ ارتباطی</span>
-            </div>
-            <div>
-              <p className="text-center sm:text-right">© 1405 ویترین. تمامی حقوق معنوی این پلتفرم ابری محفوظ می‌باشد.</p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter 
+        theme={theme} 
+        onNavigateHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+        onNavigateSolutions={onNavigateSolutions} 
+      />
 
     </div>
   );

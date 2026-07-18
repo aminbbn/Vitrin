@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { FeatureAtlas, FeatureModuleId } from './FeatureAtlas';
 import { ArrowLeft, Play } from '@phosphor-icons/react';
+import { ReactiveGridBackground } from './ReactiveGridBackground';
 
 interface FeaturesHeroProps {
   onLoginClick?: () => void;

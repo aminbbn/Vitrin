@@ -15,6 +15,7 @@ import {
   Maximize2
 } from 'lucide-react';
 import { IPhone17ProMaxFrame } from './IPhone17ProMaxFrame';
+import { useTheme } from './ThemeProvider';
 
 // ==========================================
 // TYPES & CONSTANTS
@@ -59,6 +60,7 @@ const toPersianNumber = (num: number): string => {
 };
 
 export function InteractiveProductShowcase() {
+  const { theme } = useTheme();
   const isReduced = useReducedMotion();
   const [state, setState] = useState<ProductDemoState>(DEFAULT_STATE);
   const [cartCount, setCartCount] = useState<number>(0);
@@ -142,10 +144,10 @@ export function InteractiveProductShowcase() {
   const easeTransition = isReduced ? { duration: 0.1 } : { duration: 0.4, ease: [0.16, 1, 0.3, 1] };
 
   return (
-    <section id="studio" className="py-24 md:py-32 bg-[#080A09] text-white overflow-hidden relative">
+    <section id="studio" className="py-24 md:py-32 bg-white dark:bg-[#070908] text-slate-900 dark:text-white overflow-hidden relative transition-colors duration-300">
       {/* Cinematic ambient background glow and subtle dot grid */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.03),transparent_60%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:24px_24px] opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.01)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:24px_24px] opacity-40 dark:opacity-20 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -163,22 +165,22 @@ export function InteractiveProductShowcase() {
             {/* Actionable Micro-Badge */}
             <motion.div 
               whileHover={isReduced ? {} : { scale: 1.02 }}
-              className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 px-3.5 py-1.5 rounded-full border border-emerald-500/20 text-[11px] font-black tracking-wider mb-6 cursor-pointer"
+              className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-3.5 py-1.5 rounded-full border border-emerald-500/15 dark:border-emerald-500/20 text-[11px] font-black tracking-wider mb-6 cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 animate-pulse" />
               <span>مدیریت زنده محصولات</span>
             </motion.div>
 
             {/* Main Headline */}
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[1.15] tracking-tight mb-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white leading-[1.15] tracking-tight mb-6">
               محصول را ویرایش کن؛
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-l from-emerald-400 to-teal-200">
+              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-l from-emerald-500 to-teal-500 dark:from-emerald-400 dark:to-teal-200">
                 نتیجه را همان لحظه ببین
               </span>
             </h2>
 
             {/* Main Description */}
-            <p className="text-slate-400 leading-relaxed text-sm sm:text-base font-medium mb-8 max-w-[48ch]">
+            <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm sm:text-base font-medium mb-8 max-w-[48ch]">
               قیمت، موجودی، تخفیف، برچسب‌ها و افزودنی‌های هر محصول را تغییر بده و نتیجه را فوراً در منوی مشتری مشاهده کن.
             </p>
 
@@ -195,10 +197,10 @@ export function InteractiveProductShowcase() {
                   whileHover={isReduced ? {} : { x: -4 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <span className="text-xs sm:text-sm font-semibold text-slate-200 transition-colors group-hover:text-emerald-400">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 transition-colors group-hover:text-emerald-500 dark:group-hover:text-emerald-400">
                     {benefit}
                   </span>
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/25">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 text-[#10b981] dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/15 dark:border-emerald-500/25">
                     <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                 </motion.div>
@@ -206,8 +208,8 @@ export function InteractiveProductShowcase() {
             </div>
 
             {/* Instruction Microcopy */}
-            <div className="pt-4 border-t border-white/5 w-full text-right">
-              <span className="text-xs text-slate-500 font-bold block">
+            <div className="pt-4 border-t border-slate-100 dark:border-white/5 w-full text-right">
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-bold block">
                 💡 یکی از تنظیمات را تغییر بده و نتیجه را در پیش‌نمایش مشتری ببین.
               </span>
             </div>
@@ -227,42 +229,42 @@ export function InteractiveProductShowcase() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none" />
 
             {/* Double-Bezel outer container */}
-            <div className="w-full bg-emerald-950/10 border border-white/5 p-2 rounded-[2.2rem] shadow-2xl relative">
-              <div className="w-full bg-[#101311] rounded-[1.8rem] border border-white/10 overflow-hidden shadow-inner p-4 md:p-6">
+            <div className="w-full bg-slate-100/70 dark:bg-emerald-950/10 border border-slate-200/50 dark:border-white/5 p-2 rounded-[2.2rem] shadow-2xl relative transition-all duration-300">
+              <div className="w-full bg-white dark:bg-[#101311] rounded-[1.8rem] border border-slate-200/60 dark:border-white/10 overflow-hidden shadow-sm dark:shadow-inner p-4 md:p-6 transition-all duration-300">
                 
                 {/* 1. Workspace Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-white/5 mb-6 text-right">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-100 dark:border-white/5 mb-6 text-right">
                   <div className="flex items-center gap-2.5 justify-end sm:justify-start">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[11px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/15">
+                    <span className="text-[11px] font-black text-[#10b981] dark:text-emerald-400 uppercase tracking-widest bg-[#10b981]/10 px-2.5 py-1 rounded-full border border-emerald-500/15">
                       پیش‌نمایش زنده
                     </span>
                   </div>
 
                   <div className="flex flex-col text-right">
-                    <h3 className="text-sm font-black text-white">ویرایش محصول</h3>
-                    <p className="text-[10px] text-slate-500 font-bold mt-0.5">منوی شعبه مرکزی / پیتزا</p>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">ویرایش محصول</h3>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold mt-0.5">منوی شعبه مرکزی / پیتزا</p>
                   </div>
                 </div>
 
                 {/* Mobile Tab Switcher */}
-                <div className="flex lg:hidden bg-[#0B0D0C] p-1.5 rounded-xl border border-white/5 mb-6">
+                <div className="flex lg:hidden bg-slate-50 dark:bg-[#0B0D0C] p-1.5 rounded-xl border border-slate-200/50 dark:border-white/5 mb-6">
                   <button
                     onClick={() => setActiveTab('preview')}
-                    className={`flex-1 py-2.5 rounded-lg text-xs font-black transition-all ${
+                    className={`flex-1 py-2.5 rounded-lg text-xs font-black transition-all border-0 cursor-pointer ${
                       activeTab === 'preview' 
-                        ? 'bg-emerald-500 text-white shadow-lg' 
-                        : 'text-slate-400 hover:text-white'
+                        ? 'bg-[#10b981] text-white shadow-md' 
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-transparent'
                     }`}
                   >
                     پیش‌نمایش مشتری ({toPersianNumber(cartCount)})
                   </button>
                   <button
                     onClick={() => setActiveTab('edit')}
-                    className={`flex-1 py-2.5 rounded-lg text-xs font-black transition-all ${
+                    className={`flex-1 py-2.5 rounded-lg text-xs font-black transition-all border-0 cursor-pointer ${
                       activeTab === 'edit' 
-                        ? 'bg-emerald-500 text-white shadow-lg' 
-                        : 'text-slate-400 hover:text-white'
+                        ? 'bg-[#10b981] text-white shadow-md' 
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-transparent'
                     }`}
                   >
                     تنظیمات محصول
@@ -279,7 +281,7 @@ export function InteractiveProductShowcase() {
                     
                     {/* Product Name Input */}
                     <div className="space-y-2">
-                      <label htmlFor="prod-name" className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                      <label htmlFor="prod-name" className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                         نام محصول
                       </label>
                       <input
@@ -287,21 +289,21 @@ export function InteractiveProductShowcase() {
                         type="text"
                         value={state.name}
                         onChange={(e) => updateState(prev => ({ ...prev, name: e.target.value }))}
-                        className="w-full bg-[#0B0D0C] border border-white/10 rounded-xl px-4 py-3 text-xs text-white font-extrabold text-right focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-all outline-none"
+                        className="w-full bg-slate-50 dark:bg-[#0B0D0C] border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-xs text-slate-900 dark:text-white font-extrabold text-right focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-all outline-none"
                         placeholder="نام محصول را وارد کنید"
                       />
                     </div>
 
                     {/* Price Controller */}
                     <div className="space-y-2">
-                      <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                      <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                         قیمت پایه (تومان)
                       </label>
-                      <div className="flex items-center bg-[#0B0D0C] border border-white/10 rounded-xl overflow-hidden p-1">
+                      <div className="flex items-center bg-slate-50 dark:bg-[#0B0D0C] border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden p-1">
                         <button
                           onClick={() => updateState(prev => ({ ...prev, price: Math.max(10000, prev.price - 10000) }))}
                           aria-label="کاهش قیمت"
-                          className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center text-slate-300"
+                          className="w-9 h-9 border-0 rounded-lg bg-white dark:bg-white/5 shadow-sm dark:shadow-none hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center text-slate-600 dark:text-slate-300 cursor-pointer"
                         >
                           <Minus className="w-4 h-4" />
                         </button>
@@ -309,12 +311,12 @@ export function InteractiveProductShowcase() {
                           type="text"
                           readOnly
                           value={`${toPersianNumber(state.price)} تومان`}
-                          className="flex-1 bg-transparent border-0 text-center text-xs font-black text-emerald-400 select-none outline-none focus:ring-0"
+                          className="flex-1 bg-transparent border-0 text-center text-xs font-black text-emerald-600 dark:text-emerald-400 select-none outline-none focus:ring-0"
                         />
                         <button
                           onClick={() => updateState(prev => ({ ...prev, price: prev.price + 10000 }))}
                           aria-label="افزایش قیمت"
-                          className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center text-slate-300"
+                          className="w-9 h-9 border-0 rounded-lg bg-white dark:bg-white/5 shadow-sm dark:shadow-none hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95 transition-all flex items-center justify-center text-slate-600 dark:text-slate-300 cursor-pointer"
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -322,13 +324,13 @@ export function InteractiveProductShowcase() {
                     </div>
 
                     {/* Product Availability Toggle */}
-                    <div className="flex items-center justify-between bg-[#0B0D0C] border border-white/5 p-4 rounded-xl">
+                    <div className="flex items-center justify-between bg-slate-50 dark:bg-[#0B0D0C] border border-slate-200 dark:border-white/5 p-4 rounded-xl">
                       <button
                         role="switch"
                         aria-checked={state.available}
                         onClick={() => updateState(prev => ({ ...prev, available: !prev.available }))}
-                        className={`w-11 h-6 rounded-full p-1 transition-colors outline-none cursor-pointer flex items-center ${
-                          state.available ? 'bg-emerald-500' : 'bg-slate-800'
+                        className={`w-11 h-6 rounded-full p-1 border-0 transition-colors outline-none cursor-pointer flex items-center ${
+                          state.available ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-800'
                         }`}
                       >
                         <motion.div 
@@ -338,18 +340,18 @@ export function InteractiveProductShowcase() {
                           style={{ marginLeft: state.available ? 'auto' : '0px', marginRight: state.available ? '0px' : 'auto' }}
                         />
                       </button>
-                      <span className="text-xs font-black text-slate-200">موجود در منو</span>
+                      <span className="text-xs font-black text-slate-700 dark:text-slate-200">موجود در منو</span>
                     </div>
 
                     {/* Discount Controls */}
-                    <div className="bg-[#0B0D0C] border border-white/5 p-4 rounded-xl space-y-3">
+                    <div className="bg-slate-50 dark:bg-[#0B0D0C] border border-slate-200 dark:border-white/5 p-4 rounded-xl space-y-3">
                       <div className="flex items-center justify-between">
                         <button
                           role="switch"
                           aria-checked={state.discountEnabled}
                           onClick={() => updateState(prev => ({ ...prev, discountEnabled: !prev.discountEnabled }))}
-                          className={`w-11 h-6 rounded-full p-1 transition-colors outline-none cursor-pointer flex items-center ${
-                            state.discountEnabled ? 'bg-emerald-500' : 'bg-slate-800'
+                          className={`w-11 h-6 rounded-full p-1 border-0 transition-colors outline-none cursor-pointer flex items-center ${
+                            state.discountEnabled ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-800'
                           }`}
                         >
                           <motion.div 
@@ -359,7 +361,7 @@ export function InteractiveProductShowcase() {
                             style={{ marginLeft: state.discountEnabled ? 'auto' : '0px', marginRight: state.discountEnabled ? '0px' : 'auto' }}
                           />
                         </button>
-                        <span className="text-xs font-black text-slate-200">تخفیف محصول</span>
+                        <span className="text-xs font-black text-slate-700 dark:text-slate-200">تخفیف محصول</span>
                       </div>
 
                       <AnimatePresence>
@@ -376,10 +378,10 @@ export function InteractiveProductShowcase() {
                                 <button
                                   key={percent}
                                   onClick={() => updateState(prev => ({ ...prev, discountPercent: percent }))}
-                                  className={`relative px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${
+                                  className={`relative border-0 px-3 py-1.5 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
                                     state.discountPercent === percent
                                       ? 'bg-emerald-500 text-white'
-                                      : 'bg-white/5 text-slate-400 hover:text-white'
+                                      : 'bg-white dark:bg-white/5 border border-slate-100 dark:border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
                                   }`}
                                 >
                                   {state.discountPercent === percent && (
@@ -400,7 +402,7 @@ export function InteractiveProductShowcase() {
 
                     {/* Tags Multi-select */}
                     <div className="space-y-2">
-                      <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                      <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                         برچسب‌های محصول
                       </label>
                       <div className="flex flex-wrap gap-1.5 justify-end">
@@ -419,12 +421,12 @@ export function InteractiveProductShowcase() {
                               }}
                               className={`px-3 py-1.5 rounded-xl text-[10px] font-extrabold border transition-all cursor-pointer ${
                                 isSelected
-                                  ? 'bg-emerald-500/15 border-emerald-500/35 text-emerald-400'
-                                  : 'bg-white/5 border-transparent text-slate-400 hover:text-white'
+                                  ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30 dark:border-emerald-500/35 text-emerald-700 dark:text-emerald-400'
+                                  : 'bg-slate-50 dark:bg-white/5 border-slate-200/50 dark:border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
                               }`}
                             >
                               <div className="flex items-center gap-1.5">
-                                {isSelected && <Check className="w-3 h-3 text-emerald-400" />}
+                                {isSelected && <Check className="w-3 h-3 text-emerald-700 dark:text-emerald-400" />}
                                 <span>{tag.label}</span>
                               </div>
                             </button>
@@ -435,7 +437,7 @@ export function InteractiveProductShowcase() {
 
                     {/* Add-ons Selector */}
                     <div className="space-y-2">
-                      <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                      <label className="text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                         افزودنی‌های اختیاری
                       </label>
                       <div className="space-y-1.5">
@@ -454,17 +456,17 @@ export function InteractiveProductShowcase() {
                               }}
                               className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-right transition-all cursor-pointer ${
                                 isEnabled
-                                  ? 'bg-emerald-500/5 border-emerald-500/20 text-white'
-                                  : 'bg-white/5 border-transparent text-slate-400 hover:text-slate-300'
+                                  ? 'bg-emerald-500/5 border-emerald-500/20 text-slate-900 dark:text-white'
+                                  : 'bg-slate-50 dark:bg-white/5 border-slate-200/50 dark:border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-850 dark:hover:text-slate-300'
                               }`}
                             >
-                              <span className="text-[10px] font-bold font-mono text-emerald-400">
+                              <span className="text-[10px] font-bold font-mono text-emerald-600 dark:text-emerald-400">
                                 +{toPersianNumber(addon.price)} تومان
                               </span>
                               <div className="flex items-center gap-2">
                                 <span className="text-[11px] font-extrabold">{addon.label}</span>
                                 <div className={`w-4 h-4 rounded flex items-center justify-center border transition-all ${
-                                  isEnabled ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-white/20'
+                                  isEnabled ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 dark:border-white/20'
                                 }`}>
                                   {isEnabled && <Check className="w-3 h-3 stroke-[3]" />}
                                 </div>
@@ -479,7 +481,7 @@ export function InteractiveProductShowcase() {
                     <div className="pt-2 flex justify-end">
                       <button
                         onClick={handleReset}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 text-xs font-black transition-all cursor-pointer active:scale-95"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200/50 dark:border-transparent text-xs font-black transition-all cursor-pointer active:scale-95"
                       >
                         <span>بازنشانی دمو</span>
                         <RotateCw className="w-3.5 h-3.5" />
@@ -492,7 +494,7 @@ export function InteractiveProductShowcase() {
                       MIDDLE SYNC ARTERI: Pulse Animation Indicator
                      ========================================== */}
                   <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center relative">
-                    <div className="h-full w-[2px] bg-white/5 relative flex items-center justify-center">
+                    <div className="h-full w-[2px] bg-slate-100 dark:bg-white/5 relative flex items-center justify-center">
                       <AnimatePresence>
                         {isPulseActive && (
                           <motion.div
@@ -504,7 +506,7 @@ export function InteractiveProductShowcase() {
                         )}
                       </AnimatePresence>
                     </div>
-                    <div className="absolute top-1/2 -translate-y-1/2 bg-[#101311] px-2.5 py-1 rounded-full border border-white/5 text-[9px] font-extrabold text-slate-500 rotate-90 whitespace-nowrap tracking-wider">
+                    <div className="absolute top-1/2 -translate-y-1/2 bg-white dark:bg-[#101311] px-2.5 py-1 rounded-full border border-slate-200/50 dark:border-white/5 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 rotate-90 whitespace-nowrap tracking-wider">
                       همگام‌سازی آنی
                     </div>
                   </div>
@@ -671,13 +673,13 @@ export function InteractiveProductShowcase() {
                 </div>
 
                 {/* 4. Sync/Autosave Status Footer bar */}
-                <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-2.5 text-right">
+                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center gap-2.5 text-right">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-slate-500 font-bold">آخرین ویرایش: کمتر از 2 ثانیه پیش</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">آخرین ویرایش: کمتر از 2 ثانیه پیش</span>
                   </div>
 
-                  <div className="flex items-center gap-2 bg-[#0B0D0C] border border-white/5 px-4 py-1.5 rounded-lg">
-                    <span className="text-[10px] text-slate-300 font-extrabold">
+                  <div className="flex items-center gap-2 bg-slate-50 dark:bg-[#0B0D0C] border border-slate-200/50 dark:border-white/5 px-4 py-1.5 rounded-lg">
+                    <span className="text-[10px] text-slate-600 dark:text-slate-300 font-extrabold">
                       {syncStatus === 'saving' && "در حال ذخیره و همگام‌سازی…"}
                       {syncStatus === 'saved' && "تغییرات ذخیره شد"}
                       {syncStatus === 'published' && "تغییرات ذخیره و منتشر شد"}

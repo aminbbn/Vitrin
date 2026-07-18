@@ -17,21 +17,21 @@ const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, sh
   const inputType = showPassword ? 'text' : type;
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 w-full">
       <div className="flex justify-between items-end">
-        <label className={`text-xs font-bold block ${error ? 'text-red-500' : 'text-slate-700'}`}>{label}</label>
+        <label className={`text-xs font-bold block ${error ? 'text-red-500 dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}`}>{label}</label>
         {error && (
           <motion.span 
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="text-[10px] font-bold text-red-500"
+            className="text-[10px] font-bold text-red-500 dark:text-red-400"
           >
             {error}
           </motion.span>
         )}
       </div>
       <div className="relative group">
-        <div className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${error ? 'text-red-400' : `text-slate-400 group-focus-within:text-${brandColor}-600`}`}>
+        <div className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors z-10 ${error ? 'text-red-400' : `text-slate-400 dark:text-slate-500 group-focus-within:text-${brandColor}-600 dark:group-focus-within:text-emerald-400`}`}>
           <Icon className="w-5 h-5" />
         </div>
         <input 
@@ -39,9 +39,12 @@ const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, sh
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full bg-white text-slate-900 text-sm font-medium border rounded-xl py-3 pl-11 outline-none transition-all placeholder:text-slate-400/70 
+          className={`w-full bg-white dark:bg-[#0d221e] text-slate-900 dark:text-slate-100 text-sm font-medium border rounded-xl py-3 pl-11 outline-none transition-all placeholder:text-slate-400/70 dark:placeholder:text-slate-500
             ${showPasswordToggle ? 'pr-11' : 'pr-4'}
-            ${error ? 'border-red-200 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' : `border-slate-200 focus:border-${brandColor}-500 focus:ring-4 focus:ring-${brandColor}-500/10`}
+            ${error 
+              ? 'border-red-200 dark:border-red-500/30 focus:border-red-500 focus:ring-4 focus:ring-red-500/10' 
+              : `border-slate-200 dark:border-white/10 focus:border-${brandColor}-500 focus:ring-4 focus:ring-${brandColor}-500/10 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/15`
+            }
           `}
           dir="ltr" 
           style={{ textAlign: 'left' }}
@@ -50,7 +53,7 @@ const ModernInput = ({ label, type, value, onChange, placeholder, icon: Icon, sh
            <button 
              type="button"
              onClick={() => setShowPassword(!showPassword)}
-             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+             className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 p-1 border-0 bg-transparent cursor-pointer"
            >
              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
            </button>
@@ -101,9 +104,9 @@ const TypewriterText = ({ brandColor }: { brandColor: string }) => {
   }, [subIndex, index, reverse]);
 
   return (
-    <span className="inline-block min-h-[40px] text-2xl font-black text-slate-900">
+    <span className="inline-block min-h-[40px] text-2xl font-black text-slate-900 dark:text-white">
       {WELCOME_MESSAGES[index].substring(0, subIndex)}
-      <span className={`${blink ? 'opacity-100' : 'opacity-0'} text-${brandColor}-500`}>|</span>
+      <span className={`${blink ? 'opacity-100' : 'opacity-0'} text-${brandColor}-500 dark:text-emerald-400`}>|</span>
     </span>
   );
 };
@@ -178,8 +181,23 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
     setRestaurantName('');
   };
 
+  const formPanelVariants = {
+    hidden: { opacity: 0, x: 30 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { 
+        duration: 0.65, 
+        ease: [0.16, 1, 0.3, 1] 
+      } 
+    }
+  };
+
   return (
-    <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 bg-slate-50/50 relative">
+    <motion.div 
+      variants={formPanelVariants}
+      className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 lg:p-12 bg-transparent relative min-h-dvh lg:min-h-0 transition-colors duration-300"
+    >
       <motion.div 
         key={authMode}
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -190,13 +208,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
       >
         {/* Header */}
         <div className="text-center mb-10">
-          <div className={`inline-flex items-center justify-center w-14 h-14 bg-${brandColor}-600 rounded-2xl shadow-lg shadow-${brandColor}-200 mb-6`}>
-            <ConciergeBell className="w-7 h-7 text-white" />
+          <div className={`inline-flex items-center justify-center w-14 h-14 bg-${brandColor}-600 dark:bg-emerald-500 rounded-2xl shadow-lg shadow-${brandColor}-200/80 dark:shadow-none dark:ring-1 dark:ring-emerald-500/30 mb-6`}>
+            <ConciergeBell className="w-7 h-7 text-white dark:text-slate-950" />
           </div>
           <div className="h-16 flex items-center justify-center mb-2">
              <TypewriterText brandColor={brandColor} />
           </div>
-          <p className="text-slate-500 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             {authMode === 'login' ? 'لطفا برای ورود به پنل، مشخصات خود را وارد کنید' : 'برای شروع، اطلاعات رستوران خود را ثبت کنید'}
           </p>
         </div>
@@ -261,26 +279,26 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
                      />
                      <div className={`w-5 h-5 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
                         rememberMe 
-                           ? `bg-${brandColor}-500 border-${brandColor}-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]` 
-                           : `bg-white border-slate-200 group-hover:border-${brandColor}-200`
+                           ? `bg-${brandColor}-500 border-${brandColor}-500 dark:bg-emerald-500 dark:border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] dark:shadow-none` 
+                           : `bg-white dark:bg-[#0d221e] border-slate-200 dark:border-white/10 group-hover:border-${brandColor}-200 dark:group-hover:border-emerald-500/50`
                      }`}>
                         <Check className={`w-3.5 h-3.5 text-white transition-all duration-200 ${rememberMe ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`} strokeWidth={3} />
                      </div>
                   </div>
-                  <span className={`text-xs font-bold transition-colors ${rememberMe ? 'text-slate-800' : 'text-slate-500'}`}>مرا به خاطر بسپار</span>
+                  <span className={`text-xs font-bold transition-colors ${rememberMe ? 'text-slate-800 dark:text-slate-200' : 'text-slate-500 dark:text-slate-400'}`}>مرا به خاطر بسپار</span>
                </label>
-               <a href="#" className={`text-xs font-bold text-${brandColor}-600 hover:text-${brandColor}-700 transition-colors`}>رمز عبور را فراموش کردید؟</a>
+               <a href="#" className={`text-xs font-bold text-${brandColor}-600 hover:text-${brandColor}-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors`}>رمز عبور را فراموش کردید؟</a>
             </div>
           )}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-slate-900 text-white rounded-xl py-4 font-bold text-sm shadow-xl shadow-slate-900/20 hover:bg-slate-800 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
+            className="w-full text-sm font-bold rounded-xl py-4 flex items-center justify-center gap-2 mt-4 transition-all active:scale-[0.98] cursor-pointer bg-slate-900 text-white hover:bg-slate-800 shadow-xl shadow-slate-900/10 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400 dark:shadow-lg dark:shadow-emerald-500/15 border-0"
           >
             {isLoading ? (
                <>
-                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                 <div className="w-4 h-4 border-2 border-white/30 border-t-white dark:border-slate-950/30 dark:border-t-slate-950 rounded-full animate-spin" />
                  <span>در حال پردازش...</span>
                </>
             ) : (
@@ -295,23 +313,23 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, brandColor }) => {
         {/* Footer / Toggle Mode */}
         <div className="text-center mt-10">
            {authMode === 'login' ? (
-              <p className="text-xs text-slate-500">
-                 حساب کاربری ندارید؟ <button onClick={() => switchMode('signup')} className={`font-bold text-${brandColor}-600 hover:underline`}>ثبت‌نام کنید</button>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                 حساب کاربری ندارید؟ <button type="button" onClick={() => switchMode('signup')} className={`font-bold bg-transparent border-0 text-${brandColor}-600 dark:text-emerald-400 hover:underline cursor-pointer`}>ثبت‌نام کنید</button>
               </p>
            ) : (
-              <p className="text-xs text-slate-500">
-                 قبلاً ثبت‌نام کرده‌اید؟ <button onClick={() => switchMode('login')} className={`font-bold text-${brandColor}-600 hover:underline`}>وارد شوید</button>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                 قبلاً ثبت‌نام کرده‌اید؟ <button type="button" onClick={() => switchMode('login')} className={`font-bold bg-transparent border-0 text-${brandColor}-600 dark:text-emerald-400 hover:underline cursor-pointer`}>وارد شوید</button>
               </p>
            )}
         </div>
 
       </motion.div>
-      <div className="absolute bottom-6 left-0 right-0 text-center">
-         <p className="text-[10px] text-slate-400 font-medium">
+      <div className="absolute bottom-6 left-0 right-0 text-center pointer-events-none">
+         <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
             © 2025 ویترین. تمامی حقوق محفوظ است.
          </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -251,7 +251,7 @@ const App: React.FC = () => {
           <ReactiveGridBackground intensity="normal" />
         </div>
 
-        <div className="relative z-10 flex flex-col min-h-screen">
+        <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
           <MarketingHeader
             theme={theme}
             toggleTheme={toggleTheme}

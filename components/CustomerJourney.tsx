@@ -471,7 +471,7 @@ export const CustomerJourney: React.FC = () => {
   return (
     <section 
       ref={sectionRef}
-      className="py-20 lg:py-28 bg-[#F8F9FA] dark:bg-[#121614] border-t border-b border-slate-200/50 dark:border-white/5 scroll-mt-20 overflow-hidden relative select-none font-['Vazirmatn']"
+      className="py-20 lg:py-28 bg-[#F8F9FA]/60 dark:bg-[#121614]/40 backdrop-blur-[2px] border-t border-b border-slate-200/50 dark:border-white/5 scroll-mt-20 overflow-hidden relative select-none font-['Vazirmatn']"
       style={{ direction: 'rtl' }}
     >
       <div className="max-w-[1280px] mx-auto px-6 md:px-8 relative z-10">
@@ -530,7 +530,7 @@ export const CustomerJourney: React.FC = () => {
           
           {/* RIGHT SIDE: Active Step Explanatory Panel (RTL alignment) */}
           <div className="lg:col-span-5 flex flex-col justify-between h-full order-1 lg:order-2">
-            <div className="bg-white dark:bg-[#161B18] border border-slate-200/50 dark:border-white/5 rounded-3xl p-8 shadow-xl shadow-slate-100/40 dark:shadow-none relative overflow-hidden flex flex-col justify-between min-h-[380px]">
+            <div className="bg-white/70 dark:bg-[#161b18]/75 backdrop-blur-sm border border-slate-200/60 dark:border-white/10 rounded-3xl p-8 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.03)] dark:shadow-none relative overflow-hidden flex flex-col justify-between min-h-[380px]">
               
               {/* Background abstract graphic */}
               <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-emerald-500/5 to-transparent blur-3xl rounded-full pointer-events-none" />
@@ -679,8 +679,8 @@ export const CustomerJourney: React.FC = () => {
                       onClick={() => handleStepSelect(index)}
                       className={`absolute w-[290px] sm:w-[330px] md:w-[370px] h-[270px] rounded-[32px] cursor-pointer ${
                         isActive 
-                          ? 'ring-2 ring-[#10b981]/50 dark:ring-[#19C78C]/50 shadow-[0_24px_50px_-16px_rgba(16,185,129,0.3)] bg-slate-950 p-1.5' 
-                          : 'shadow-md border border-slate-200/50 dark:border-white/5 bg-white dark:bg-[#161B18] hover:border-slate-300 dark:hover:border-white/10'
+                          ? 'ring-1 ring-[#10b981]/40 shadow-[0_24px_50px_-16px_rgba(16,185,129,0.25)] bg-[#0c0f0d] p-1.5' 
+                          : 'shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-slate-200/60 dark:border-white/[0.06] bg-white/75 dark:bg-[#121614]/75 backdrop-blur-sm hover:border-slate-300 dark:hover:border-white/15'
                       } transition-all duration-300`}
                     >
                       {isActive ? (

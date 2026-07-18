@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ReactiveGridBackground } from './ReactiveGridBackground';
+import { MarketingFooter } from './MarketingFooter';
+import { useTheme } from './ThemeProvider';
 import { 
   Sparkles, 
   CheckCircle2, 
@@ -44,6 +46,7 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
   onNavigateHome,
   onNavigateFeatures
 }) => {
+  const { theme } = useTheme();
   const prefersReducedMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<TabType>('cafe');
   const heroRef = useRef<HTMLDivElement | null>(null);
@@ -141,11 +144,13 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
   const [formMsg, setFormMsg] = useState('');
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName || !formVenue || !formPhone) {
-      alert('لطفاً فیلدهای ستاره‌دار اجباری را تکمیل کنید.');
+    setFormError(null);
+    if (!formName.trim() || !formVenue.trim() || !formPhone.trim()) {
+      setFormError('لطفاً فیلدهای ستاره‌دار اجباری را تکمیل کنید.');
       return;
     }
     setIsSubmitting(true);
@@ -159,9 +164,9 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
     <div className="min-h-screen bg-transparent text-app-text font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden leading-relaxed transition-colors duration-300" style={{ direction: 'rtl' }}>
       
       {/* Hero Header Section */}
-      <header ref={heroRef} className="relative py-12 lg:py-16 bg-[#0A0A0A]/75 backdrop-blur-md text-white overflow-hidden border-b border-white/10">
+      <header ref={heroRef} className="relative py-12 lg:py-16 bg-app-surface/60 backdrop-blur-md text-app-text overflow-hidden border-b border-app-border">
         
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(16, 185, 129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16, 185, 129,0.02)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
           
           <div className="inline-flex items-center gap-2 bg-[#10b981]/15 text-[#10b981] px-4 py-2 rounded-full border border-[#10b981]/35 text-xs font-black mb-6">
@@ -169,11 +174,11 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
             <span>راهکارهای صنفی هوشمند ویترین</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none mb-6 max-w-4xl mx-auto">
-            منوی دیجیتال و سفارش‌گیری <span className="text-[#10b981]">متناسب با کسب‌وکار شما</span>
+          <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-6 max-w-4xl mx-auto">
+            منوی دیجیتال و سفارش‌گیری <span className="text-[#10b981] dark:text-[#19C78C]">متناسب با کسب‌وکار شما</span>
           </h1>
 
-          <p className="text-base sm:text-xl text-[#71717A] max-w-2xl mx-auto mb-10 font-medium">
+          <p className="text-base sm:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 font-medium">
             رویکرد و ساختار کافه با رستوران سنتی یا فست‌فود چندشعبه‌ای کاملاً متفاوت است. راهکارهای شخصی‌سازی شده ویترین را بررسی کنید و منوی مناسب صنف خود را بسازید.
           </p>
 
@@ -186,8 +191,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
               }}
               className={`px-5 py-3 rounded-2xl text-xs font-black transition-all border ${
                 activeTab === 'cafe' 
-                  ? 'bg-[#10b981] text-white border-transparent shadow-lg shadow-[#10b981]/25' 
-                  : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
+                  ? 'bg-[#10b981] dark:bg-[#19C78C] text-white border-transparent shadow-lg shadow-[#10b981]/25' 
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10'
               }`}
             >
               1. کافه‌ها و بارهای نوشیدنی
@@ -200,8 +205,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
               }}
               className={`px-5 py-3 rounded-2xl text-xs font-black transition-all border ${
                 activeTab === 'restaurant' 
-                  ? 'bg-[#10b981] text-white border-transparent shadow-lg shadow-[#10b981]/25' 
-                  : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
+                  ? 'bg-[#10b981] dark:bg-[#19C78C] text-white border-transparent shadow-lg shadow-[#10b981]/25' 
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10'
               }`}
             >
               2. رستوران‌های سنتی و فرنگی
@@ -214,8 +219,8 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
               }}
               className={`px-5 py-3 rounded-2xl text-xs font-black transition-all border ${
                 activeTab === 'chain' 
-                  ? 'bg-[#10b981] text-white border-transparent shadow-lg shadow-[#10b981]/25' 
-                  : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'
+                  ? 'bg-[#10b981] dark:bg-[#19C78C] text-white border-transparent shadow-lg shadow-[#10b981]/25' 
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10'
               }`}
             >
               3. فست‌فودها و زنجیره‌ای‌ها
@@ -973,14 +978,14 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ type: "spring", stiffness: 100, damping: 15 }}
-              className="lg:col-span-7 bg-[#0A0A0A] dark:bg-[#050605] text-white p-8 md:p-10 rounded-[2.5rem] border border-white/10 dark:border-zinc-800/80 shadow-2xl relative"
+              className="lg:col-span-7 bg-slate-50/70 dark:bg-[#0b0e0c]/80 text-slate-900 dark:text-white p-8 md:p-10 rounded-[2.5rem] border border-slate-200/60 dark:border-white/[0.06] shadow-2xl relative backdrop-blur-md"
             >
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16, 185, 129,0.02)_0%,transparent_60%)] pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.02)_0%,transparent_60%)] pointer-events-none" />
               
               <div className="text-right mb-8">
                 <span className="text-[10px] font-black text-[#10b981] bg-[#10b981]/10 px-3 py-1 rounded-full border border-[#10b981]/20">فرم ارتباط آنلاین</span>
-                <h3 className="text-2xl font-black text-white mt-4 mb-2">درخواست رایگان دمو و مشاوره تلفنی</h3>
-                <p className="text-slate-400 text-xs font-bold">شعب کافی‌شاپ و رستوران خود را با مشاوران ما ارتقا دهید.</p>
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white mt-4 mb-2">درخواست رایگان دمو و مشاوره تلفنی</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-xs font-bold">شعب کافی‌شاپ و رستوران خود را با مشاوران ما ارتقا دهید.</p>
               </div>
 
               {formSubmitted ? (
@@ -990,16 +995,16 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   transition={{ type: "spring", stiffness: 180, damping: 10, mass: 1.1 }}
                   className="bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-2xl text-center space-y-4"
                 >
-                  <div className="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl">
+                  <div className="w-12 h-12 bg-emerald-500/20 text-[#10b981] dark:text-[#19C78C] rounded-full flex items-center justify-center mx-auto text-xl">
                     ✓
                   </div>
-                  <h4 className="font-black text-white text-lg">درخواست دمو با موفقیت ثبت شد</h4>
-                  <p className="text-slate-300 text-xs leading-relaxed max-w-md mx-auto">
+                  <h4 className="font-black text-slate-900 dark:text-white text-lg">درخواست دمو با موفقیت ثبت شد</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed max-w-md mx-auto">
                     همکاران ما در بخش پشتیبانی فنی استودیو ویترین طی حداکثر 24 ساعت آینده با شماره <span className="font-mono text-[#10b981] font-bold">{formPhone}</span> با شما تماس گرفته و پنل آزمایشی را فعال خواهند کرد.
                   </p>
                   <button 
                     onClick={() => setFormSubmitted(false)}
-                    className="mt-4 px-4 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors"
+                    className="mt-4 px-4 py-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer"
                   >
                     ارسال درخواست مجدد
                   </button>
@@ -1009,56 +1014,66 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-[10px] text-slate-400 font-black block mb-2">نام و نام خانوادگی شما *</label>
+                      <label className="text-[10px] text-slate-600 dark:text-slate-400 font-black block mb-2">نام و نام خانوادگی شما *</label>
                       <input 
                         type="text" 
                         required
                         value={formName}
                         onChange={(e) => setFormName(e.target.value)}
                         placeholder="مثال: علیرضا رضایی"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold text-right focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent"
+                        className="w-full bg-white dark:bg-[#111412] border border-slate-200 dark:border-white/[0.08] rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white font-bold text-right focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-600 transition-all"
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] text-slate-400 font-black block mb-2">نام کافی‌شاپ یا رستوران شما *</label>
+                      <label className="text-[10px] text-slate-600 dark:text-slate-400 font-black block mb-2">نام کافی‌شاپ یا رستوران شما *</label>
                       <input 
                         type="text" 
                         required
                         value={formVenue}
                         onChange={(e) => setFormVenue(e.target.value)}
                         placeholder="مثال: کافه قصر کارامل"
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold text-right focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent"
+                        className="w-full bg-white dark:bg-[#111412] border border-slate-200 dark:border-white/[0.08] rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white font-bold text-right focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-600 transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-slate-400 font-black block mb-2">شماره تماس (ترجیحاً دارای واتساپ/تلگرام) *</label>
+                    <label className="text-[10px] text-slate-600 dark:text-slate-400 font-black block mb-2">شماره تماس (ترجیحاً دارای واتساپ/تلگرام) *</label>
                     <input 
                       type="tel" 
                       required
                       value={formPhone}
                       onChange={(e) => setFormPhone(e.target.value)}
                       placeholder="مثال: 09123456789"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold text-left font-mono focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent"
+                      className="w-full bg-white dark:bg-[#111412] border border-slate-200 dark:border-white/[0.08] rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white font-bold text-left font-mono focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-600 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-slate-400 font-black block mb-2">پیام یا سوال اختصاصی شما (اختیاری)</label>
+                    <label className="text-[10px] text-slate-600 dark:text-slate-400 font-black block mb-2">پیام یا سوال اختصاصی شما (اختیاری)</label>
                     <textarea 
                       rows={3}
                       value={formMsg}
                       onChange={(e) => setFormMsg(e.target.value)}
                       placeholder="اگر تمایل دارید جزئیاتی از تعداد صندلی‌ها یا شعب بنویسید..."
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold text-right focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent"
+                      className="w-full bg-white dark:bg-[#111412] border border-slate-200 dark:border-white/[0.08] rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white font-bold text-right focus:outline-none focus:ring-2 focus:ring-[#10b981]/40 focus:border-transparent placeholder-slate-400 dark:placeholder-slate-600 transition-all"
                     />
                   </div>
+
+                  {formError && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 dark:text-red-400 text-xs font-bold text-center"
+                    >
+                      {formError}
+                    </motion.p>
+                  )}
 
                   <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-4 bg-[#10b981] hover:bg-[#10b981]/90 text-white rounded-xl text-sm font-black transition-all active:scale-95 shadow-lg shadow-[#10b981]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-55"
+                    className="w-full py-4 bg-[#10b981] hover:bg-emerald-600 dark:bg-[#19C78C] dark:hover:bg-[#12cb8d] text-white rounded-xl text-sm font-black transition-all active:scale-95 shadow-lg shadow-[#10b981]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-55 border-0"
                   >
                     <span>{isSubmitting ? 'در حال ثبت...' : 'ارسال درخواست ثبت دمو'}</span>
                     <Send className="w-4 h-4" />
@@ -1212,89 +1227,11 @@ export const SolutionsPage: React.FC<SolutionsPageProps> = ({
       </section>
 
       {/* Footer Section */}
-      <footer id="solutions-footer" className="bg-[#0A0A0A] text-[#71717A] pt-12 pb-10 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16 text-right">
-            
-            {/* Brand Col */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#10b981] rounded-xl flex items-center justify-center">
-                  <span className="text-white font-black text-xl">وی</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-lg font-black text-white">ویترین استودیو</span>
-                  <span className="text-[9px] uppercase tracking-[0.15em] font-medium text-[#71717A] mt-0.5">VITRIN STUDIO</span>
-                </div>
-              </div>
-              <p className="text-xs text-slate-500 font-bold leading-relaxed max-w-sm">
-                پلتفرم ابری یکپارچه طراحی و توسعه منوی دیجیتال و سفارش‌گیری مستقیم. بدون کارمزد، بدون واسطه و بدون سختی کدنویسی.
-              </p>
-            </div>
-
-            {/* Links Col 1: Product */}
-            <div>
-              <h4 className="text-xs font-black text-white mb-4">محصول</h4>
-              <ul className="space-y-2.5 text-xs">
-                <li>
-                  <button 
-                    onClick={onNavigateFeatures}
-                    className="hover:text-white transition-colors cursor-pointer text-right"
-                  >
-                    امکانات پلتفرم
-                  </button>
-                </li>
-                <li><button onClick={onNavigateHome} className="hover:text-white transition-colors text-right">صفحه اصلی</button></li>
-                <li><a href="#solutions-tabs" className="hover:text-white transition-colors">راهکارهای صنفی</a></li>
-                <li><a href="#demo-form" className="hover:text-white transition-colors">درخواست دمو آنلاین</a></li>
-              </ul>
-            </div>
-
-            {/* Links Col 2: Company */}
-            <div>
-              <h4 className="text-xs font-black text-white mb-4">شرکت</h4>
-              <ul className="space-y-2.5 text-xs">
-                <li><a href="#demo-form" className="hover:text-white transition-colors">درباره ما</a></li>
-                <li><a href="#demo-form" className="hover:text-white transition-colors">ارتباط با ما</a></li>
-                <li><button onClick={onNavigateFeatures} className="hover:text-white transition-colors text-right">بلاگ و مقالات</button></li>
-                <li><a href="#final-cta" className="hover:text-white transition-colors">همکاری با ما</a></li>
-              </ul>
-            </div>
-
-            {/* Links Col 3: Resources */}
-            <div>
-              <h4 className="text-xs font-black text-white mb-4">منابع</h4>
-              <ul className="space-y-2.5 text-xs">
-                <li><a href="#demo-form" className="hover:text-white transition-colors">مرکز راهنمایی</a></li>
-                <li><a href="#demo-form" className="hover:text-white transition-colors">پشتیبانی فنی</a></li>
-                <li><a href="#final-cta" className="hover:text-white transition-colors">امنیت داده‌ها</a></li>
-                <li><a href="#demo-form" className="hover:text-white transition-colors">قوانین و مقررات</a></li>
-              </ul>
-            </div>
-
-          </div>
-
-          <div className="h-px bg-slate-900 mb-8" />
-
-          {/* Socials & Copyright Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-600">
-            <div className="flex gap-4">
-              <a href="#" className="hover:text-[#10b981] transition-colors" aria-label="WhatsApp">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.253 8.477 3.52 2.262 2.268 3.51 5.28 3.505 8.484-.011 6.541-5.348 11.878-11.954 11.878H12a11.815 11.815 0 01-5.683-1.448L.057 24zm8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413zM17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
-              </a>
-              <a href="#" className="hover:text-[#10b981] transition-colors" aria-label="Instagram">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-              </a>
-              <a href="#" className="hover:text-[#10b981] transition-colors" aria-label="Twitter">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </a>
-            </div>
-            <div>
-              <p>© 1405 ویترین. تمامی حقوق این پلتفرم محفوظ و تحت مالکیت معنوی می‌باشد.</p>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter 
+        theme={theme} 
+        onNavigateHome={onNavigateHome} 
+        onNavigateSolutions={() => {}} 
+      />
 
     </div>
   );
