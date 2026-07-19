@@ -11,5 +11,6 @@ import { RestaurantRoleGuard } from './guards/restaurant-role.guard.js';
     RestaurantMembershipGuard,
     RestaurantRoleGuard,
   ],
+  exports: [RestaurantMembershipGuard, RestaurantRoleGuard],
 })
 export class RestaurantsModule {}
