@@ -7,3 +7,747 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum AuthProvider {
+  GOOGLE
+}
+
+enum RestaurantStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum BranchStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum MembershipRole {
+  OWNER
+  MANAGER
+  ORDER_OPERATOR
+  CASHIER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+enum PermissionCode {
+  MENU_PUBLISH
+  MENU_ROLLBACK
+}
+
+enum FeeType {
+  FIXED
+  PERCENTAGE
+}
+
+enum BranchTableStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TableQrTokenStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum ProductAvailability {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum OrderType {
+  DINE_IN
+  TAKEAWAY
+  DELIVERY
+}
+
+enum OrderStatus {
+  PENDING_APPROVAL
+  REJECTED
+  ACCEPTED
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  ONLINE
+  IN_PERSON
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  FAILED
+  EXPIRED
+  REFUNDED
+}
+
+enum PaymentAttemptStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  passwordHash    String?
+  fullName        String
+  avatarMediaId   String?    @unique
+  emailVerifiedAt DateTime?
+  status          UserStatus @default(ACTIVE)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  avatarMedia             MediaAsset?              @relation("UserAvatar", fields: [avatarMediaId], references: [id], onDelete: SetNull)
+  authAccounts            AuthAccount[]
+  refreshSessions         RefreshSession[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  memberships             RestaurantMembership[]
+  sentInvitations         RestaurantInvitation[]   @relation("InvitationSender")
+  grantedPermissions      MembershipPermission[]   @relation("PermissionGrantor")
+  publishedMenus          MenuPublication[]        @relation("MenuPublisher")
+  customerAddresses       CustomerAddress[]
+  customerOrders          CustomerOrder[]          @relation("OrderCustomer")
+  cancelledOrders         CustomerOrder[]          @relation("OrderCanceller")
+  orderStatusChanges      OrderStatusHistory[]     @relation("OrderStatusChanger")
+  paymentStatusChanges    PaymentStatusHistory[]   @relation("PaymentStatusChanger")
+  uploadedMediaAssets     MediaAsset[]             @relation("MediaUploader")
+
+  @@index([status])
+}
+
+model AuthAccount {
+  id                String       @id @default(uuid())
+  userId            String
+  provider          AuthProvider
+  providerAccountId String
+  providerEmail     String?
+  createdAt         DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model RefreshSession {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique
+  deviceInfo String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+  @@index([revokedAt])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+}
+
+model Restaurant {
+  id          String           @id @default(uuid())
+  name        String
+  slug        String           @unique
+  logoMediaId String?          @unique
+  description String?
+  status      RestaurantStatus @default(ACTIVE)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  logoMedia      MediaAsset?            @relation("RestaurantLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
+  memberships    RestaurantMembership[]
+  invitations    RestaurantInvitation[]
+  branches       Branch[]
+  categories     Category[]
+  products       Product[]
+  modifierGroups ModifierGroup[]
+  mediaAssets    MediaAsset[]           @relation("RestaurantMediaAssets")
+
+  @@index([status])
+}
+
+model Branch {
+  id                      String       @id @default(uuid())
+  restaurantId            String
+  name                    String
+  address                 String?
+  latitude                Decimal?
+  longitude               Decimal?
+  timezone                String       @default("Asia/Tehran")
+  currencyCode            String       @default("IRR")
+  status                  BranchStatus @default(ACTIVE)
+  orderingEnabled         Boolean      @default(true)
+  activeMenuPublicationId String?      @unique
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  restaurant            Restaurant                @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  activeMenuPublication MenuPublication?          @relation("ActiveMenuPublication", fields: [activeMenuPublicationId], references: [id], onDelete: SetNull)
+  feeConfig             BranchFeeConfig?
+  deliveryConfig        DeliveryConfig?
+  workingIntervals      BranchWorkingInterval[]
+  specialHours          BranchSpecialHours[]
+  dailyOrderCounters    BranchDailyOrderCounter[]
+  tables                BranchTable[]
+  branchProducts        BranchProduct[]
+  menuDraft             MenuDraft?
+  menuPublications      MenuPublication[]         @relation("BranchMenuPublications")
+  orders                CustomerOrder[]
+
+  @@index([restaurantId, status])
+  @@index([restaurantId, name])
+}
+
+model RestaurantMembership {
+  id           String           @id @default(uuid())
+  userId       String
+  restaurantId String
+  role         MembershipRole
+  status       MembershipStatus @default(ACTIVE)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  user        User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  restaurant  Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  permissions MembershipPermission[]
+
+  @@unique([userId, restaurantId])
+  @@index([restaurantId, status, role])
+}
+
+model RestaurantInvitation {
+  id              String           @id @default(uuid())
+  restaurantId    String
+  invitedEmail    String
+  role            MembershipRole
+  invitedByUserId String
+  tokenHash       String           @unique
+  status          InvitationStatus @default(PENDING)
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+  createdAt       DateTime         @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  invitedBy  User       @relation("InvitationSender", fields: [invitedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([restaurantId, invitedEmail, status])
+  @@index([expiresAt, status])
+}
+
+model MembershipPermission {
+  id              String         @id @default(uuid())
+  membershipId    String
+  permission      PermissionCode
+  grantedAt       DateTime       @default(now())
+  grantedByUserId String
+
+  membership RestaurantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  grantedBy  User                 @relation("PermissionGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([membershipId, permission])
+  @@index([grantedByUserId])
+}
+
+model BranchFeeConfig {
+  id                  String   @id @default(uuid())
+  branchId            String   @unique
+  taxEnabled          Boolean  @default(false)
+  taxType             FeeType  @default(PERCENTAGE)
+  taxValue            Int      @default(0)
+  serviceFeeEnabled   Boolean  @default(false)
+  serviceFeeType      FeeType  @default(PERCENTAGE)
+  serviceFeeValue     Int      @default(0)
+  packagingFeeEnabled Boolean  @default(false)
+  packagingFeeType    FeeType  @default(FIXED)
+  packagingFeeValue   Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+}
+
+model DeliveryConfig {
+  id                 String   @id @default(uuid())
+  branchId           String   @unique
+  deliveryEnabled    Boolean  @default(false)
+  originLatitude     Decimal
+  originLongitude    Decimal
+  maxRadiusKm        Decimal
+  baseFee            Int      @default(0)
+  perKmFee           Int?
+  minimumOrderAmount Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+}
+
+model BranchWorkingInterval {
+  id           String   @id @default(uuid())
+  branchId     String
+  weekday      Int
+  opensAt      String
+  closesAt     String
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, weekday, displayOrder])
+  @@index([branchId, weekday])
+}
+
+model BranchSpecialHours {
+  id        String   @id @default(uuid())
+  branchId  String
+  /// Stored as a normalized date-only value at 00:00:00 UTC.
+  localDate DateTime
+  isClosed  Boolean  @default(false)
+  opensAt   String?
+  closesAt  String?
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, localDate])
+  @@index([localDate])
+}
+
+model BranchDailyOrderCounter {
+  id           String   @id @default(uuid())
+  branchId     String
+  /// Stored as a normalized date-only value at 00:00:00 UTC.
+  businessDate DateTime
+  nextValue    Int      @default(1)
+  updatedAt    DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, businessDate])
+}
+
+model BranchTable {
+  id          String            @id @default(uuid())
+  branchId    String
+  tableNumber String
+  capacity    Int?
+  status      BranchTableStatus @default(ACTIVE)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  branch   Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  qrTokens TableQrToken[]
+  orders   CustomerOrder[]
+
+  @@unique([branchId, tableNumber])
+  @@index([branchId, status])
+}
+
+model TableQrToken {
+  id        String             @id @default(uuid())
+  tableId   String
+  token     String             @unique
+  status    TableQrTokenStatus @default(ACTIVE)
+  revokedAt DateTime?
+  createdAt DateTime           @default(now())
+
+  table BranchTable @relation(fields: [tableId], references: [id], onDelete: Restrict)
+
+  @@index([tableId, status])
+}
+
+model Category {
+  id           String    @id @default(uuid())
+  restaurantId String
+  name         String
+  displayOrder Int       @default(0)
+  isActive     Boolean   @default(true)
+  archivedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  products   Product[]
+
+  @@unique([restaurantId, displayOrder])
+  @@index([restaurantId, isActive, archivedAt])
+}
+
+model Product {
+  id           String    @id @default(uuid())
+  restaurantId String
+  categoryId   String
+  name         String
+  displayName  String
+  description  String?
+  imageMediaId String?
+  isActive     Boolean   @default(true)
+  archivedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  restaurant     Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  category       Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  imageMedia     MediaAsset?            @relation("ProductImage", fields: [imageMediaId], references: [id], onDelete: SetNull)
+  branchProducts BranchProduct[]
+  modifierGroups ProductModifierGroup[]
+
+  @@index([restaurantId, categoryId])
+  @@index([restaurantId, isActive, archivedAt])
+}
+
+model BranchProduct {
+  id                  String              @id @default(uuid())
+  branchId            String
+  productId           String
+  branchPrice         Int
+  branchDiscountPrice Int?
+  availability        ProductAvailability @default(AVAILABLE)
+  orderingEnabled     Boolean             @default(true)
+  isVisible           Boolean             @default(true)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  branch  Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, productId])
+  @@index([branchId, isVisible, availability])
+  @@index([productId])
+}
+
+model ModifierGroup {
+  id            String   @id @default(uuid())
+  restaurantId  String
+  name          String
+  isRequired    Boolean  @default(false)
+  minSelections Int      @default(0)
+  maxSelections Int?
+  displayOrder  Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  restaurant Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  options    ModifierOption[]
+  products   ProductModifierGroup[]
+
+  @@unique([restaurantId, displayOrder])
+  @@index([restaurantId, isActive])
+}
+
+model ModifierOption {
+  id              String   @id @default(uuid())
+  modifierGroupId String
+  name            String
+  priceAdjustment Int      @default(0)
+  displayOrder    Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  modifierGroup ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([modifierGroupId, displayOrder])
+  @@index([modifierGroupId, isActive])
+}
+
+model ProductModifierGroup {
+  id              String   @id @default(uuid())
+  productId       String
+  modifierGroupId String
+  displayOrder    Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  modifierGroup ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Restrict)
+
+  @@unique([productId, modifierGroupId])
+  @@unique([productId, displayOrder])
+  @@index([modifierGroupId])
+}
+
+model MenuDraft {
+  id              String    @id @default(uuid())
+  branchId        String    @unique
+  layout          Json
+  theme           Json
+  categoryConfig  Json
+  productConfig   Json
+  displaySettings Json
+  lastPublishedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Restrict)
+}
+
+model MenuPublication {
+  id                String   @id @default(uuid())
+  branchId          String
+  version           Int
+  schemaVersion     Int      @default(1)
+  snapshot          Json
+  publishedByUserId String
+  createdAt         DateTime @default(now())
+
+  branch          Branch  @relation("BranchMenuPublications", fields: [branchId], references: [id], onDelete: Restrict)
+  publishedBy     User    @relation("MenuPublisher", fields: [publishedByUserId], references: [id], onDelete: Restrict)
+  activeForBranch Branch? @relation("ActiveMenuPublication")
+
+  @@unique([branchId, version])
+  @@index([branchId, createdAt])
+  @@index([publishedByUserId])
+}
+
+model CustomerAddress {
+  id             String    @id @default(uuid())
+  userId         String
+  label          String
+  recipientName  String
+  recipientPhone String
+  addressText    String
+  latitude       Decimal?
+  longitude      Decimal?
+  isDefault      Boolean   @default(false)
+  archivedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, isDefault, archivedAt])
+}
+
+model CustomerOrder {
+  id                      String      @id @default(uuid())
+  branchId                String
+  customerUserId          String
+  publicCode              String      @unique
+  displayNumber           Int
+  /// Stored as a normalized date-only value at 00:00:00 UTC.
+  businessDate            DateTime
+  currencyCode            String
+  orderType               OrderType
+  orderStatus             OrderStatus @default(PENDING_APPROVAL)
+  tableId                 String?
+  deliveryAddressSnapshot Json?
+  rejectionReason         String?
+  cancellationReason      String?
+  cancelledByUserId       String?
+  cancelledAt             DateTime?
+  subtotal                Int
+  discountTotal           Int         @default(0)
+  tax                     Int         @default(0)
+  serviceFee              Int         @default(0)
+  packagingFee            Int         @default(0)
+  deliveryFee             Int         @default(0)
+  grandTotal              Int
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+
+  branch        Branch               @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  customer      User                 @relation("OrderCustomer", fields: [customerUserId], references: [id], onDelete: Restrict)
+  table         BranchTable?         @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  cancelledBy   User?                @relation("OrderCanceller", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+  payment       Payment?
+
+  @@unique([branchId, businessDate, displayNumber])
+  @@index([branchId, orderStatus, createdAt])
+  @@index([customerUserId, createdAt])
+  @@index([tableId])
+}
+
+model OrderItem {
+  id                     String   @id @default(uuid())
+  orderId                String
+  /// Traceability-only identifier; intentionally not modeled as a foreign key.
+  productId              String?
+  productName            String
+  quantity               Int
+  unitPrice              Int
+  discountPrice          Int?
+  itemSubtotal           Int
+  modifierTotal          Int      @default(0)
+  taxAllocation          Int      @default(0)
+  serviceFeeAllocation   Int      @default(0)
+  packagingFeeAllocation Int      @default(0)
+  lineTotal              Int
+  notes                  String?
+  createdAt              DateTime @default(now())
+
+  order     CustomerOrder       @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  modifiers OrderItemModifier[]
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model OrderItemModifier {
+  id                String   @id @default(uuid())
+  orderItemId       String
+  /// Traceability-only identifier; intentionally not modeled as a foreign key.
+  modifierOptionId  String?
+  modifierGroupName String
+  optionName        String
+  priceAdjustment   Int
+  createdAt         DateTime @default(now())
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Restrict)
+
+  @@index([orderItemId])
+  @@index([modifierOptionId])
+}
+
+model OrderStatusHistory {
+  id              String       @id @default(uuid())
+  orderId         String
+  status          OrderStatus
+  previousStatus  OrderStatus?
+  changedByUserId String?
+  note            String?
+  createdAt       DateTime     @default(now())
+
+  order     CustomerOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  changedBy User?         @relation("OrderStatusChanger", fields: [changedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt])
+  @@index([changedByUserId])
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  orderId       String        @unique
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(UNPAID)
+  amount        Int
+  currencyCode  String
+  paidAt        DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  order         CustomerOrder          @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  attempts      PaymentAttempt[]
+  statusHistory PaymentStatusHistory[]
+
+  @@index([paymentStatus, expiresAt])
+}
+
+model PaymentAttempt {
+  id                String               @id @default(uuid())
+  paymentId         String
+  attemptNumber     Int
+  provider          String
+  externalReference String?
+  requestedAmount   Int
+  currencyCode      String
+  status            PaymentAttemptStatus @default(PENDING)
+  failureCode       String?
+  failureReason     String?
+  startedAt         DateTime             @default(now())
+  completedAt       DateTime?
+  expiresAt         DateTime?
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@unique([paymentId, attemptNumber])
+  @@index([paymentId, status])
+  @@index([externalReference])
+}
+
+model PaymentStatusHistory {
+  id                    String         @id @default(uuid())
+  paymentId             String
+  paymentStatus         PaymentStatus
+  previousPaymentStatus PaymentStatus?
+  changedByUserId       String?
+  note                  String?
+  transactionId         String?
+  createdAt             DateTime       @default(now())
+
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  changedBy User?   @relation("PaymentStatusChanger", fields: [changedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([paymentId, createdAt])
+  @@index([changedByUserId])
+  @@index([transactionId])
+}
+
+model MediaAsset {
+  id               String    @id @default(uuid())
+  uploadedByUserId String
+  restaurantId     String?
+  storageKey       String    @unique
+  publicUrl        String
+  mimeType         String
+  fileSizeBytes    Int
+  widthPx          Int?
+  heightPx         Int?
+  createdAt        DateTime  @default(now())
+  archivedAt       DateTime?
+
+  uploadedBy        User        @relation("MediaUploader", fields: [uploadedByUserId], references: [id], onDelete: Restrict)
+  restaurant        Restaurant? @relation("RestaurantMediaAssets", fields: [restaurantId], references: [id], onDelete: Restrict)
+  avatarForUser     User?       @relation("UserAvatar")
+  logoForRestaurant Restaurant? @relation("RestaurantLogo")
+  productImages     Product[]   @relation("ProductImage")
+
+  @@index([restaurantId, archivedAt])
+  @@index([uploadedByUserId])
+}
