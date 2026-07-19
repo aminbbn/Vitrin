@@ -17,6 +17,7 @@ import {
   Plus
 } from 'lucide-react';
 import { Order, OrderStatus } from '../types';
+import { useOrders } from '../data/useRepositories';
 
 // --- Mock Data ---
 const INITIAL_ORDERS: Order[] = [
@@ -49,10 +50,7 @@ interface OrderBoardProps {
 }
 
 const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, clearHighlight }) => {
-  const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('vitrin_orders');
-    return saved ? JSON.parse(saved) : INITIAL_ORDERS;
-  });
+  const { orders, loading, createOrder, updateOrderStatus } = useOrders();
   
   // Real-time Drag State for Design Studio Layer style
   const [draggedOrder, setDraggedOrder] = useState<Order | null>(null);
@@ -62,27 +60,6 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [localHighlight, setLocalHighlight] = useState<string | null>(null);
-
-  React.useEffect(() => {
-    localStorage.setItem('vitrin_orders', JSON.stringify(orders));
-  }, [orders]);
-
-  React.useEffect(() => {
-    const handleSync = () => {
-      const saved = localStorage.getItem('vitrin_orders');
-      if (saved) {
-        setOrders(JSON.parse(saved));
-      }
-    };
-    window.addEventListener('focus', handleSync);
-    window.addEventListener('storage', handleSync);
-    const interval = setInterval(handleSync, 2000); // Check every 2s for active sync
-    return () => {
-      window.removeEventListener('focus', handleSync);
-      window.removeEventListener('storage', handleSync);
-      clearInterval(interval);
-    };
-  }, []);
 
   React.useEffect(() => {
     if (highlightedItemId) {
@@ -119,8 +96,12 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, 
     notes: ''
   });
 
-  const updateStatus = (id: string, newStatus: OrderStatus) => {
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
+  const updateStatus = async (id: string, newStatus: OrderStatus) => {
+    try {
+      await updateOrderStatus(id, newStatus);
+    } catch (e) {
+      console.error('Error updating order status:', e);
+    }
     setActiveDropdown(null);
   };
 
@@ -166,7 +147,7 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, 
     setActiveDropCol(null);
   };
 
-  const handleCreateOrder = () => {
+  const handleCreateOrder = async () => {
     if (!newOrderData.tableNumber || !newOrderData.items || !newOrderData.totalPrice) return;
 
     const newOrder: Order = {
@@ -180,7 +161,11 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, 
       timestamp: 'هم‌اکنون'
     };
 
-    setOrders([newOrder, ...orders]);
+    try {
+      await createOrder(newOrder);
+    } catch (e) {
+      console.error('Error creating order:', e);
+    }
     setIsNewOrderModalOpen(false);
     setNewOrderData({ tableNumber: '', customerName: '', items: '', totalPrice: '', notes: '' });
   };
@@ -194,6 +179,17 @@ const OrderBoard: React.FC<OrderBoardProps> = ({ brandColor, highlightedItemId, 
       case 'delivered': return 4;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full w-full bg-slate-50 dark:bg-slate-950 font-['Vazirmatn']" dir="rtl">
+        <div className="flex flex-col items-center gap-4">
+          <div className={`w-12 h-12 rounded-full border-4 border-slate-200 border-t-${brandColor}-500 animate-spin`} />
+          <p className="text-sm text-slate-400 font-medium">در حال بارگذاری اطلاعات...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 font-['Vazirmatn'] relative transition-colors duration-300" onClick={() => setActiveDropdown(null)}>

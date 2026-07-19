@@ -34,6 +34,7 @@ export interface Branch {
   address: string;
   phone?: string;
   createdAt: string;
+  activeMenuPublicationId?: string | null;
 }
 
 export interface RestaurantMembership {

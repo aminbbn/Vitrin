@@ -11,6 +11,7 @@ interface CategoryDisplayBlockProps {
   isSelected?: boolean;
   onClick?: () => void;
   onCategoryClick: (categoryId: string) => void;
+  categories?: any[];
 }
 
 export const CategoryDisplayBlock: React.FC<CategoryDisplayBlockProps> = ({
@@ -20,8 +21,10 @@ export const CategoryDisplayBlock: React.FC<CategoryDisplayBlockProps> = ({
   isSelected = false,
   onClick,
   onCategoryClick,
+  categories: propCategories,
 }) => {
-  const [categories, setCategories] = useState<any[]>(INITIAL_CATEGORIES);
+  const [localCategories, setLocalCategories] = useState<any[]>(INITIAL_CATEGORIES);
+  const categories = propCategories || localCategories;
   const layout = element?.settings?.layout || 'grid'; // 'grid' or 'scroll'
   const columns = element?.settings?.columns || 2;
   const visibleCategories = element?.settings?.visibleCategories || [];
@@ -76,7 +79,7 @@ export const CategoryDisplayBlock: React.FC<CategoryDisplayBlockProps> = ({
         try {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) {
-            setCategories(parsed);
+            setLocalCategories(parsed);
           }
         } catch (e) {
           console.error(e);

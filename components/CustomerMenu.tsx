@@ -25,6 +25,10 @@ import {
 import { ComponentItem, Product } from '../types';
 import { Search3DAnimation } from './Search3DAnimation';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '../constants';
+import { useTenant, useCatalog, useMenuDraft, useCustomerContext, useOrders } from '../data/useRepositories';
+import { useAppSession } from '../data/AppSessionProvider';
+import { useRepositories } from '../data/RepositoryProvider';
+import { MenuPublication, BranchProduct } from '../domain';
 
 // --- SHARED MOCK DATA (Ideally this comes from a shared context or API) ---
 
@@ -40,40 +44,37 @@ import {
 } from './menu-blocks';
 
 const ProfileModal = ({ isOpen, onClose, brandColor }: { isOpen: boolean; onClose: () => void; brandColor: string }) => {
+  const { context, saveContext } = useCustomerContext();
+  const { orders } = useOrders();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [table, setTable] = useState('5');
-  const [orders, setOrders] = useState<any[]>([]);
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      const savedName = localStorage.getItem('vitrin_customer_name') || '';
-      const savedPhone = localStorage.getItem('vitrin_customer_phone') || '';
-      const savedTable = localStorage.getItem('vitrin_customer_table') || '5';
-      const savedOrders = localStorage.getItem('vitrin_orders') || '[]';
-      
-      setName(savedName);
-      setPhone(savedPhone);
-      setTable(savedTable);
-      try {
-        setOrders(JSON.parse(savedOrders));
-      } catch (e) {
-        setOrders([]);
-      }
+    if (isOpen && context) {
+      setName(context.name || '');
+      setPhone(context.phone || '');
+      setTable(context.table || '5');
       setIsSaved(false);
     }
-  }, [isOpen]);
+  }, [isOpen, context]);
 
-  const handleSave = () => {
-    localStorage.setItem('vitrin_customer_name', name.trim());
-    localStorage.setItem('vitrin_customer_phone', phone.trim());
-    localStorage.setItem('vitrin_customer_table', table);
-    setIsSaved(true);
-    setTimeout(() => {
-      setIsSaved(false);
-      onClose();
-    }, 1200);
+  const handleSave = async () => {
+    try {
+      await saveContext({
+        name: name.trim(),
+        phone: phone.trim(),
+        table: table
+      });
+      setIsSaved(true);
+      setTimeout(() => {
+        setIsSaved(false);
+        onClose();
+      }, 1200);
+    } catch (e) {
+      console.error('Error saving customer info:', e);
+    }
   };
 
   const getStatusLabel = (status: string) => {
@@ -255,82 +256,201 @@ const getTagStyles = (tag: string) => {
   return 'bg-slate-50 text-slate-600 border-slate-100';
 };
 
-const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements, theme, toggleTheme }) => {
+const CustomerMenu: React.FC<CustomerMenuProps> = ({ 
+  liveElements, 
+  theme, 
+  toggleTheme, 
+  source = 'PUBLICATION' 
+}) => {
+  const { menuRepository, catalogRepository } = useRepositories();
+  const { activeBranch } = useAppSession();
+  
+  const branchId = activeBranch?.id || 'b1';
+
+  const { restaurant, brandColor: tenantBrandColor, loading: tenantLoading } = useTenant();
+  const { categories: repoCategories, products: repoProducts, loading: catalogLoading } = useCatalog();
+  const { draftElements, publishedElements, loading: draftLoading } = useMenuDraft();
+
+  // Load the active publication for this branch
+  const [activePub, setActivePub] = useState<MenuPublication | null>(null);
+  const [loadingPub, setLoadingPub] = useState(true);
+
+  useEffect(() => {
+    const fetchPub = async () => {
+      try {
+        setLoadingPub(true);
+        const pub = await menuRepository.getActivePublication(branchId);
+        setActivePub(pub);
+      } catch (err) {
+        console.error('Error fetching active publication:', err);
+      } finally {
+        setLoadingPub(false);
+      }
+    };
+    fetchPub();
+  }, [branchId, menuRepository]);
+
+  // Load live BranchProducts for cross-referencing availability & visibility
+  const [liveBranchProducts, setLiveBranchProducts] = useState<BranchProduct[]>([]);
+  useEffect(() => {
+    const loadLiveBranchProducts = async () => {
+      try {
+        const productsList = repoProducts && repoProducts.length > 0 ? repoProducts : INITIAL_PRODUCTS;
+        const list: BranchProduct[] = [];
+        for (const p of productsList) {
+          const bp = await catalogRepository.getBranchProduct(p.id, branchId);
+          if (bp) {
+            list.push(bp);
+          }
+        }
+        setLiveBranchProducts(list);
+      } catch (err) {
+        console.error('Error loading live branch products:', err);
+      }
+    };
+    if (repoProducts && repoProducts.length > 0) {
+      loadLiveBranchProducts();
+    }
+  }, [repoProducts, branchId, catalogRepository]);
+
   const [elements, setElements] = useState<ComponentItem[]>([]);
+  const [resolvedCategories, setResolvedCategories] = useState<any[]>([]);
+  const [resolvedProducts, setResolvedProducts] = useState<any[]>([]);
+
   const [cart, setCart] = useState<{ product: Product, qty: number, selectedModifiers?: Record<string, string>, singlePrice?: number }[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [brandColor, setBrandColor] = useState('emerald');
-  const [restaurantName, setRestaurantName] = useState('رستوران لیمو');
-  const [restaurantLogo, setRestaurantLogo] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
-  const [categories, setCategories] = useState<any[]>(INITIAL_CATEGORIES);
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+
+  const brandColor = tenantBrandColor || 'emerald';
+  const restaurantName = restaurant?.name || 'رستوران لیمو';
+  const restaurantLogo = restaurant?.logoUrl || '';
 
   useEffect(() => {
-    const handleSync = () => {
-      // 1. Try to get brand color, Name & Logo
-      const savedColor = localStorage.getItem('vitrin_brand_color');
-      const savedName = localStorage.getItem('vitrin_restaurant_name');
-      const savedLogo = localStorage.getItem('vitrin_restaurant_logo');
-      if (savedColor) setBrandColor(savedColor);
-      if (savedName) setRestaurantName(savedName);
-      if (savedLogo) setRestaurantLogo(savedLogo);
-
-      // 2. Sync Categories & Products
-      const savedCats = localStorage.getItem('vitrin_categories');
-      if (savedCats) {
-        try {
-          setCategories(JSON.parse(savedCats).sort((a: any, b: any) => a.order - b.order));
-        } catch (e) {
-          console.error(e);
-        }
-      } else {
-        setCategories(INITIAL_CATEGORIES);
-      }
-
-      const savedProds = localStorage.getItem('vitrin_products');
-      if (savedProds) {
-        try {
-          setProducts(JSON.parse(savedProds));
-        } catch (e) {
-          console.error(e);
-        }
-      } else {
-        setProducts(INITIAL_PRODUCTS);
-      }
-
-      // 3. Load Elements Logic - Prioritize draft design for perfect preview matching
+    if (source === 'PREVIEW_DRAFT') {
+      // 1. Elements
       if (liveElements && liveElements.length > 0) {
         setElements(liveElements);
+      } else if (draftElements && draftElements.length > 0) {
+        setElements(draftElements);
       } else {
-        const draft = localStorage.getItem('vitrin_designer_draft');
-        const published = localStorage.getItem('vitrin_published_design');
-        
-        if (draft) {
-          setElements(JSON.parse(draft));
-        } else if (published) {
-          setElements(JSON.parse(published));
-        }
+        setElements([]);
       }
-    };
 
-    handleSync();
+      // 2. Categories
+      const cats = repoCategories && repoCategories.length > 0 
+        ? [...repoCategories].sort((a: any, b: any) => a.order - b.order) 
+        : INITIAL_CATEGORIES;
+      setResolvedCategories(cats);
 
-    window.addEventListener('focus', handleSync);
-    window.addEventListener('storage', handleSync);
-    const interval = setInterval(handleSync, 1000);
+      // 3. Products mapped with live draft pricing & live availability
+      const prodsList = repoProducts && repoProducts.length > 0 ? repoProducts : INITIAL_PRODUCTS;
+      const mapped = prodsList.map(p => {
+        const bp = liveBranchProducts.find(x => x.productId === p.id);
+        const price = bp ? (bp.pendingPriceRial !== undefined && bp.hasPendingPublishPrice ? bp.pendingPriceRial : bp.branchPriceRial) : 0;
+        const discountPrice = bp ? (bp.pendingDiscountPriceRial !== undefined && bp.hasPendingPublishPrice ? bp.pendingDiscountPriceRial : bp.branchDiscountPriceRial) : undefined;
+        const isAvailable = bp ? bp.isAvailable : true;
+        const isVisible = bp ? bp.isVisible : true;
+        const orderingEnabled = bp ? bp.orderingEnabled : true;
+        return {
+          ...p,
+          price,
+          discountPrice,
+          isAvailable,
+          isVisible,
+          orderingEnabled
+        };
+      }).filter(p => p.isVisible);
+      setResolvedProducts(mapped);
 
-    return () => {
-      window.removeEventListener('focus', handleSync);
-      window.removeEventListener('storage', handleSync);
-      clearInterval(interval);
-    };
-  }, [liveElements]);
+    } else {
+      // source === 'PUBLICATION'
+      if (!activePub) {
+        setElements([]);
+        setResolvedCategories([]);
+        setResolvedProducts([]);
+        return;
+      }
+
+      // 1. Elements from snapshot
+      setElements(activePub.snapshot.elements || []);
+
+      // 2. Categories from snapshot
+      const cats = activePub.snapshot.categories && activePub.snapshot.categories.length > 0
+        ? [...activePub.snapshot.categories].sort((a: any, b: any) => a.order - b.order)
+        : [];
+      setResolvedCategories(cats);
+
+      // 3. Products from snapshot mapped with snapshot pricing and live availability & visibility
+      const prodsList = activePub.snapshot.products || [];
+      const mapped = prodsList.map((p: any) => {
+        // Pricing comes strictly from snapshot branch products list
+        const snapBp = activePub.snapshot.branchProducts.find(x => x.productId === p.id);
+        const price = snapBp ? snapBp.branchPriceRial : 0;
+        const discountPrice = snapBp ? snapBp.branchDiscountPriceRial : undefined;
+
+        // Availability and visibility come live!
+        const liveBp = liveBranchProducts.find(x => x.productId === p.id);
+        const isAvailable = liveBp ? liveBp.isAvailable : true;
+        const isVisible = liveBp ? liveBp.isVisible : true;
+        const orderingEnabled = liveBp ? liveBp.orderingEnabled : true;
+
+        return {
+          ...p,
+          price,
+          discountPrice,
+          isAvailable,
+          isVisible,
+          orderingEnabled
+        };
+      }).filter(p => p.isVisible);
+      setResolvedProducts(mapped);
+    }
+  }, [source, liveElements, draftElements, activePub, repoCategories, repoProducts, liveBranchProducts]);
+
+  const categories = resolvedCategories;
+  const products = resolvedProducts;
+
+  if (tenantLoading || catalogLoading || draftLoading || loadingPub) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center font-['Vazirmatn']">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-emerald-600 rounded-full animate-spin" />
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold">در حال بارگذاری منو...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (source === 'PUBLICATION' && !activePub) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center p-6 text-center font-['Vazirmatn'] relative" style={{ direction: 'rtl' }}>
+        <div className="absolute inset-0 opacity-40">
+          <div className="w-full h-full bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#334155_1px,transparent_1px)]" />
+        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700/50 max-w-md w-full relative z-10 flex flex-col items-center gap-6"
+        >
+          <div className="w-20 h-20 rounded-2xl bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-500 animate-pulse animate-none">
+            <Clock className="w-10 h-10 animate-none" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-extrabold text-slate-800 dark:text-slate-100">منو هنوز منتشر نشده است</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">این شعبه هنوز منوی عمومی خود را منتشر نکرده است. لطفاً بعداً مراجعه کنید یا با مدیریت تماس بگیرید.</p>
+          </div>
+          <div className="text-xs font-mono text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/40 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-800">
+            {restaurantName} - {activeBranch?.name || 'شعبه مرکزی'}
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const addToCart = (product: Product, qty: number, selectedModifiers?: Record<string, string>, singlePrice?: number) => {
     setCart(prev => {
@@ -593,80 +713,84 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({ liveElements, theme, toggle
         ) : (
           <>
             {elements.map((el) => {
-              if (el.hidden) return null;
-              if (el.type === 'hero') {
-                return (
-                  <HeroBlock 
-                    key={el.id} 
-                    element={el} 
-                    brandColor={brandColor} 
-                    mode="live" 
-                  />
-                );
-              }
-              if (el.type === 'featured') {
-                return (
-                  <FeaturedBlock 
-                    key={el.id} 
-                    element={el} 
-                    onProductClick={setSelectedProduct} 
-                    brandColor={brandColor} 
-                    mode="live" 
-                  />
-                );
-              }
-              if (el.type === 'category-display') {
-                return (
-                  <CategoryDisplayBlock 
-                    key={el.id}
-                    element={el}
-                    brandColor={brandColor} 
-                    onCategoryClick={(id) => setActiveCategoryId(id)} 
-                    mode="live"
-                  />
-                );
-              }
-              if (el.type === 'footer') {
-                return (
-                  <FooterBlock 
-                    key={el.id} 
-                    element={el} 
-                    brandColor={brandColor} 
-                    mode="live" 
-                  />
-                );
-              }
-              // Fallback for default or custom blocks
-              return (
-                <div 
-                  key={el.id}
-                  className="mx-4 my-2 p-6 rounded-2xl bg-white border border-slate-100 shadow-sm text-center"
-                >
-                  <div className="py-4">
-                    <h3 style={{ color: el.settings?.color || 'black', fontSize: el.settings?.fontSize }} className="font-bold">
-                      {el.settings?.title}
-                    </h3>
-                    {el.type === 'action-btn' && (
-                      <button className={`mt-3 bg-${brandColor}-600 text-white px-6 py-2 rounded-xl text-sm font-bold w-full`}>
-                        کلیک کنید
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+               if (el.hidden) return null;
+               if (el.type === 'hero') {
+                 return (
+                   <HeroBlock 
+                     key={el.id} 
+                     element={el} 
+                     brandColor={brandColor} 
+                     mode="live" 
+                   />
+                 );
+               }
+               if (el.type === 'featured') {
+                 return (
+                   <FeaturedBlock 
+                     key={el.id} 
+                     element={el} 
+                     onProductClick={setSelectedProduct} 
+                     brandColor={brandColor} 
+                     mode="live" 
+                     products={products}
+                   />
+                 );
+               }
+               if (el.type === 'category-display') {
+                 return (
+                   <CategoryDisplayBlock 
+                     key={el.id}
+                     element={el}
+                     brandColor={brandColor} 
+                     onCategoryClick={(id) => setActiveCategoryId(id)} 
+                     mode="live"
+                     categories={categories}
+                   />
+                 );
+               }
+               if (el.type === 'footer') {
+                 return (
+                   <FooterBlock 
+                     key={el.id} 
+                     element={el} 
+                     brandColor={brandColor} 
+                     mode="live" 
+                   />
+                 );
+               }
+               // Fallback for default or custom blocks
+               return (
+                 <div 
+                   key={el.id}
+                   className="mx-4 my-2 p-6 rounded-2xl bg-white border border-slate-100 shadow-sm text-center"
+                 >
+                   <div className="py-4">
+                     <h3 style={{ color: el.settings?.color || 'black', fontSize: el.settings?.fontSize }} className="font-bold">
+                       {el.settings?.title}
+                     </h3>
+                     {el.type === 'action-btn' && (
+                       <button className={`mt-3 bg-${brandColor}-600 text-white px-6 py-2 rounded-xl text-sm font-bold w-full`}>
+                         کلیک کنید
+                       </button>
+                     )}
+                   </div>
+                 </div>
+               );
+             })}
 
-            <AnimatePresence>
-              {activeCategoryId && (
-                <CategoryProductsScreen
-                  categoryId={activeCategoryId}
-                  onBack={() => setActiveCategoryId(null)}
-                  onProductClick={setSelectedProduct}
-                  brandColor={brandColor}
-                  mode="live"
-                />
-              )}
-            </AnimatePresence>
+             <AnimatePresence>
+               {activeCategoryId && (
+                 <CategoryProductsScreen
+                   categoryId={activeCategoryId}
+                   onBack={() => setActiveCategoryId(null)}
+                   onProductClick={setSelectedProduct}
+                   brandColor={brandColor}
+                   mode="live"
+                   categories={categories}
+                   products={products}
+                 />
+               )}
+             </AnimatePresence>
           </>
         )}
       </div>

@@ -124,6 +124,10 @@ export interface Product {
   isAvailable?: boolean;
   discountPrice?: number;
   tags?: string[];
+  pendingPrice?: number;
+  pendingDiscountPrice?: number;
+  hasPendingPublishPrice?: boolean;
+  internalName?: string;
 }
 
 export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered';
@@ -149,14 +153,14 @@ export function toProductViewModel(
   branchProduct?: BranchProduct,
   categoryName?: string
 ): Product {
-  const legacyModifiers: ModifierGroup[] = domainProduct.modifierGroups.map(g => ({
+  const legacyModifiers: ModifierGroup[] = (domainProduct.modifierGroups || []).map(g => ({
     id: g.id,
     name: g.name,
     type: g.type,
-    options: g.options.map(opt => ({
+    options: (g.options || []).map(opt => ({
       id: opt.id,
       name: opt.name,
-      price: opt.priceRial
+      price: opt.priceRial / 10 // Convert from Rial to Toman
     }))
   }));
 
@@ -165,16 +169,20 @@ export function toProductViewModel(
     name: domainProduct.name,
     category: categoryName || 'دسته بندی نشده',
     categoryId: domainProduct.categoryId,
-    description: domainProduct.description,
-    price: branchProduct ? branchProduct.branchPriceRial : 0,
+    description: domainProduct.description || '',
+    price: branchProduct ? (branchProduct.branchPriceRial / 10) : 0,
     image: domainProduct.imageUrl || '',
     modifiers: legacyModifiers,
-    estimatedTime: domainProduct.estimatedTime,
+    estimatedTime: domainProduct.estimatedTime || '',
     rating: domainProduct.rating,
     isAvailable: branchProduct ? branchProduct.isAvailable : true,
-    discountPrice: branchProduct ? branchProduct.branchDiscountPriceRial : undefined,
-    tags: domainProduct.tags,
-    rawMaterials: [] // Empty fallback since legacy raw materials are excluded from domain models
+    discountPrice: (branchProduct && branchProduct.branchDiscountPriceRial) ? (branchProduct.branchDiscountPriceRial / 10) : undefined,
+    tags: domainProduct.tags || [],
+    rawMaterials: [], // Empty fallback since legacy raw materials are excluded from domain models
+    pendingPrice: (branchProduct && branchProduct.pendingPriceRial !== undefined) ? (branchProduct.pendingPriceRial / 10) : undefined,
+    pendingDiscountPrice: (branchProduct && branchProduct.pendingDiscountPriceRial !== undefined) ? (branchProduct.pendingDiscountPriceRial / 10) : undefined,
+    hasPendingPublishPrice: branchProduct ? branchProduct.hasPendingPublishPrice : false,
+    internalName: domainProduct.internalName || domainProduct.name
   };
 }
 

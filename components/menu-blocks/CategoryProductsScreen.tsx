@@ -13,6 +13,8 @@ interface CategoryProductsScreenProps {
   // Optional overrides for edit mode
   layoutStyle?: 'grid' | 'list';
   columns?: number;
+  categories?: Category[];
+  products?: Product[];
 }
 
 const getTagStyles = (tag: string) => {
@@ -40,9 +42,14 @@ export const CategoryProductsScreen: React.FC<CategoryProductsScreenProps> = ({
   mode,
   layoutStyle: editLayoutStyle,
   columns: editColumns,
+  categories: propCategories,
+  products: propProducts,
 }) => {
-  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [localCategories, setLocalCategories] = useState<Category[]>(INITIAL_CATEGORIES);
+  const [localProducts, setLocalProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+
+  const categories = propCategories || localCategories;
+  const products = propProducts || localProducts;
 
   // Layout preferences for live mode
   const [liveLayoutStyle, setLiveLayoutStyle] = useState<'grid' | 'list'>('grid');
@@ -56,14 +63,14 @@ export const CategoryProductsScreen: React.FC<CategoryProductsScreenProps> = ({
       if (savedCats) {
         try {
           const parsed = JSON.parse(savedCats);
-          if (Array.isArray(parsed)) setCategories(parsed);
+          if (Array.isArray(parsed)) setLocalCategories(parsed);
         } catch (e) {}
       }
       const savedProds = localStorage.getItem('vitrin_products');
       if (savedProds) {
         try {
           const parsed = JSON.parse(savedProds);
-          if (Array.isArray(parsed)) setProducts(parsed);
+          if (Array.isArray(parsed)) setLocalProducts(parsed);
         } catch (e) {}
       }
     };

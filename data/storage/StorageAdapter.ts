@@ -5,6 +5,43 @@ export interface VitrinStorageSchema {
   auth: {
     isAuthenticated: boolean;
     userId: string | null;
+    activeRestaurantId?: string | null;
+    activeBranchId?: string | null;
+    users?: Record<string, {
+      id: string;
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      status: string;
+      password?: string;
+    }>;
+    customMemberships?: {
+      id: string;
+      userId: string;
+      restaurantId: string;
+      role: string;
+      status: string;
+      permissions: string[];
+      createdAt: string;
+    }[];
+    customRestaurants?: {
+      id: string;
+      name: string;
+      slug: string;
+      logoUrl?: string;
+      description?: string;
+      address?: string;
+      phone?: string;
+      createdAt: string;
+    }[];
+    customBranches?: {
+      id: string;
+      restaurantId: string;
+      name: string;
+      address: string;
+      phone?: string;
+      createdAt: string;
+    }[];
   };
   tenant: {
     restaurantName: string;
@@ -24,6 +61,9 @@ export interface VitrinStorageSchema {
   menu: {
     designerDraft: any[];
     publishedDesign: any[];
+    drafts?: Record<string, any[]>;
+    publications?: Record<string, any[]>;
+    activePublications?: Record<string, string>;
   };
   orders: {
     orders: any[];
@@ -51,6 +91,8 @@ const DEFAULT_SCHEMA: VitrinStorageSchema = {
   auth: {
     isAuthenticated: false,
     userId: null,
+    activeRestaurantId: null,
+    activeBranchId: null,
   },
   tenant: {
     restaurantName: 'رستوران ایتالیایی لیمو',
@@ -70,6 +112,9 @@ const DEFAULT_SCHEMA: VitrinStorageSchema = {
   menu: {
     designerDraft: [],
     publishedDesign: [],
+    drafts: {},
+    publications: {},
+    activePublications: {},
   },
   orders: {
     orders: [],

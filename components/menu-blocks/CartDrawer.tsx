@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Trash2, Minus, Plus, Check } from 'lucide-react';
 import { Product } from '../../types';
+import { useOrders, useCustomerContext } from '../../data/useRepositories';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -31,6 +32,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const isMobile = device === 'mobile';
   const isEdit = mode === 'edit';
 
+  const { context } = useCustomerContext();
+  const { createOrder } = useOrders();
+
   // Checkout Fields
   const [tableNumber, setTableNumber] = useState('5');
   const [customerName, setCustomerName] = useState('');
@@ -38,6 +42,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [placedOrderId, setPlacedOrderId] = useState('');
   const [finalTotal, setFinalTotal] = useState(0);
+
+  useEffect(() => {
+    if (context) {
+      if (context.table) setTableNumber(context.table);
+      if (context.name) setCustomerName(context.name);
+    }
+  }, [context]);
 
   useEffect(() => {
     if (isOpen) {
@@ -62,7 +73,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (isEdit) {
       // Simple simulation for Studio
       setPlacedOrderId(`#${Math.floor(10000 + Math.random() * 90000)}`);
@@ -105,9 +116,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
       timestamp: 'هم‌اکنون',
     };
 
-    const saved = localStorage.getItem('vitrin_orders');
-    const existingOrders = saved ? JSON.parse(saved) : [];
-    localStorage.setItem('vitrin_orders', JSON.stringify([newOrder, ...existingOrders]));
+    try {
+      await createOrder(newOrder);
+    } catch (e) {
+      console.error('Error placing order:', e);
+    }
 
     setPlacedOrderId(orderId);
     setFinalTotal(cartTotal);

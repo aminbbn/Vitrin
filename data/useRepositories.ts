@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRepositories } from './RepositoryProvider';
-import { Category, Product, Restaurant } from '../domain';
+import { Category, Product, Restaurant, MenuPublication } from '../domain';
 import { ComponentItem } from '../types';
+import { useAppSession } from './AppSessionProvider';
 
 /**
  * Custom helper to track mount status and prevent updates on unmounted components.
@@ -202,7 +203,8 @@ export function useCatalog() {
     saveCategories,
     saveProducts,
     updateCategoryPageSettings,
-    refetch: loadCatalog
+    refetch: loadCatalog,
+    catalogRepository
   };
 }
 
@@ -210,23 +212,31 @@ export function useCatalog() {
  * Hook for managing menu visual design draft and published menus.
  */
 export function useMenuDraft() {
-  const { menuRepository } = useRepositories();
+  const { menuRepository, catalogRepository } = useRepositories();
+  const { activeBranch, user } = useAppSession();
   const [draftElements, setDraftElements] = useState<ComponentItem[]>([]);
   const [publishedElements, setPublishedElements] = useState<ComponentItem[]>([]);
+  const [activePublication, setActivePublication] = useState<MenuPublication | null>(null);
+  const [publicationHistory, setPublicationHistory] = useState<MenuPublication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isMounted = useIsMounted();
+  
+  const branchId = activeBranch?.id || 'b1';
 
   const loadMenu = useCallback(async () => {
     try {
       setLoading(true);
-      const [draft, published] = await Promise.all([
-        menuRepository.getDesignerDraft(),
-        menuRepository.getPublishedDesign()
+      const [draft, activePub, history] = await Promise.all([
+        menuRepository.getDesignerDraft(branchId),
+        menuRepository.getActivePublication(branchId),
+        menuRepository.getPublicationHistory(branchId)
       ]);
       if (isMounted()) {
         setDraftElements(draft);
-        setPublishedElements(published);
+        setActivePublication(activePub);
+        setPublishedElements(activePub ? activePub.snapshot.elements : []);
+        setPublicationHistory(history);
         setError(null);
       }
     } catch (err: any) {
@@ -238,7 +248,7 @@ export function useMenuDraft() {
         setLoading(false);
       }
     }
-  }, [menuRepository, isMounted]);
+  }, [menuRepository, branchId, isMounted]);
 
   useEffect(() => {
     loadMenu();
@@ -246,7 +256,7 @@ export function useMenuDraft() {
 
   const saveDraft = async (elements: ComponentItem[]) => {
     try {
-      await menuRepository.saveDesignerDraft(elements);
+      await menuRepository.saveDesignerDraft(branchId, elements);
       if (isMounted()) {
         setDraftElements(elements);
       }
@@ -260,11 +270,47 @@ export function useMenuDraft() {
 
   const publishMenu = async (elements: ComponentItem[]) => {
     try {
-      await menuRepository.publishMenu(elements);
-      if (isMounted()) {
-        setDraftElements(elements);
-        setPublishedElements(elements);
+      // 1. Fetch live catalog state for snapshoting
+      const [categories, products] = await Promise.all([
+        catalogRepository.getCategories(),
+        catalogRepository.getProducts()
+      ]);
+      
+      // 2. Fetch branch products
+      const branchProducts: any[] = [];
+      for (const p of products) {
+        const bp = await catalogRepository.getBranchProduct(p.id, branchId);
+        if (bp) {
+          branchProducts.push(bp);
+        }
       }
+
+      // 3. First publish any pending branch product price changes in the catalog!
+      await catalogRepository.publishBranchProducts(branchId);
+
+      // Now fetch them again to get the updated published price
+      const publishedBranchProducts: any[] = [];
+      for (const p of products) {
+        const bp = await catalogRepository.getBranchProduct(p.id, branchId);
+        if (bp) {
+          publishedBranchProducts.push(bp);
+        }
+      }
+
+      // 4. Create versioned publication
+      const publishedBy = user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'مدیر سیستم';
+      const newPub = await menuRepository.publishMenu(
+        branchId,
+        publishedBy,
+        elements,
+        categories,
+        products,
+        publishedBranchProducts
+      );
+
+      // 5. Reload
+      await loadMenu();
+      return newPub;
     } catch (err: any) {
       if (isMounted()) {
         setError(err?.message || 'Error publishing menu');
@@ -276,6 +322,8 @@ export function useMenuDraft() {
   return {
     draftElements,
     publishedElements,
+    activePublication,
+    publicationHistory,
     loading,
     error,
     saveDraft,
@@ -389,3 +437,7 @@ export function useCustomerContext() {
     saveContext
   };
 }
+
+export { useAppSession, AppSessionProvider } from './SessionProvider';
+export type { AppSessionContextType } from './SessionProvider';
+

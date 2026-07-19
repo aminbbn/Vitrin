@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { CheckCircle2, Sparkles, X, ChevronLeft, ChevronDown } from 'lucide-react';
+import { CheckCircle2, Sparkles, X, ChevronLeft, ChevronDown, User, Eye, Store, Sun, Moon } from 'lucide-react';
 import { ViewState, Notification, ComponentItem } from './types';
 import { SIDEBAR_LINKS, SEARCH_ITEMS } from './constants';
 import Dashboard from './components/Dashboard';
@@ -26,14 +26,13 @@ import { MarketingHeader } from './components/MarketingHeader';
 import { useTheme } from './components/ThemeProvider';
 import { ReactiveGridBackground } from './components/ReactiveGridBackground';
 import { useRepositories } from './data/RepositoryProvider';
-import { useTenant, useMenuDraft } from './data/useRepositories';
+import { useTenant, useMenuDraft, useAppSession } from './data/useRepositories';
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
   { id: '1', type: 'order', title: 'سفارش جدید #12895', message: '2 پیتزا پپرونی، 1 سالاد سزار - میز 5', time: '2 دقیقه پیش', read: false, link: 'orders' },
 ];
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showLoginFlow, setShowLoginFlow] = useState(false);
   const [marketingRoute, setMarketingRoute] = useState<'home' | 'features' | 'solutions'>('home');
   const [pendingSection, setPendingSection] = useState<string | null>(null);
@@ -89,13 +88,25 @@ const App: React.FC = () => {
 
   // REPOSITORIES & HOOKS
   const { authRepository } = useRepositories();
+  const {
+    user,
+    isAuthenticated,
+    isEmailVerified,
+    memberships,
+    activeRestaurant,
+    activeBranch,
+    role,
+    loading: sessionLoading,
+    refetchSession
+  } = useAppSession();
+
   const { restaurant, brandColor, updateInfo, updateBrandColor, loading: tenantLoading } = useTenant();
   const { draftElements: canvasElements, saveDraft: setCanvasElements, publishMenu, loading: menuLoading } = useMenuDraft();
-  const [authLoading, setAuthLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false);
 
   // Set local state for backward compatibility if needed, though we can use restaurant info directly
-  const restaurantName = restaurant?.name || 'رستوران ایتالیایی لیمو';
-  const restaurantLogo = restaurant?.logoUrl || '';
+  const restaurantName = activeRestaurant?.name || restaurant?.name || 'رستوران ایتالیایی لیمو';
+  const restaurantLogo = activeRestaurant?.logoUrl || restaurant?.logoUrl || '';
 
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -105,19 +116,7 @@ const App: React.FC = () => {
   // Notification State
   const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const authed = await authRepository.isAuthenticated();
-        setIsAuthenticated(authed);
-      } catch (e) {
-        console.error('Error checking auth:', e);
-      } finally {
-        setAuthLoading(false);
-      }
-    };
-    checkAuth();
-  }, [authRepository]);
+  // Session updates already handled by AppSessionProvider
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
@@ -137,7 +136,7 @@ const App: React.FC = () => {
     setAuthLoading(true);
     try {
       await authRepository.login('mock-password', name);
-      setIsAuthenticated(true);
+      await refetchSession();
       if (name) {
         await updateInfo({ name });
       }
@@ -152,7 +151,7 @@ const App: React.FC = () => {
     setAuthLoading(true);
     try {
       await authRepository.logout();
-      setIsAuthenticated(false);
+      await refetchSession();
       setActiveView('dashboard');
     } catch (e) {
       console.error('Error logging out:', e);
@@ -180,12 +179,39 @@ const App: React.FC = () => {
   };
 
   const renderView = () => {
-    if (tenantLoading || menuLoading || authLoading) {
+    if (tenantLoading || menuLoading || authLoading || sessionLoading) {
       return (
         <div className="flex items-center justify-center h-full w-full bg-app-bg">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-emerald-500 animate-spin" />
             <p className="text-sm text-slate-400 font-medium">در حال بارگذاری اطلاعات...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (isAuthenticated && memberships.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-full w-full bg-app-bg p-8 font-['Vazirmatn'] text-right">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[2rem] max-w-lg shadow-2xl flex flex-col items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+              <Store className="w-8 h-8" />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-xl font-black text-slate-800 dark:text-slate-100">پنل مدیریت فروشگاه</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                حساب کاربری شما (**{user?.firstName} {user?.lastName}**) به عنوان حساب مشتری ثبت شده است و فاقد هرگونه عضویت یا دسترسی مدیریتی به فروشگاه‌ها است.
+              </p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                در صورت نیاز، می‌توانید از شبیه‌ساز بالای صفحه برای تغییر نقش خود به مالک یا مدیر سیستم استفاده کنید.
+              </p>
+            </div>
+            <button 
+              onClick={handlePreviewShop}
+              className="px-6 py-3 bg-emerald-600 text-white rounded-2xl font-black text-xs hover:bg-emerald-700 transition-all shadow-lg active:scale-95"
+            >
+              مشاهده منوی مشتریان
+            </button>
           </div>
         </div>
       );
@@ -246,12 +272,100 @@ const App: React.FC = () => {
 
   const isStandaloneCustomerView = new URLSearchParams(window.location.search).get('view') === 'customer-menu';
   if (isStandaloneCustomerView) return <CustomerMenu />;
+
+  if (isAuthenticated && memberships.length === 0) {
+    return (
+      <div className="min-h-screen bg-app-bg text-app-text transition-colors duration-300 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden flex flex-col relative" style={{ direction: 'rtl' }}>
+        <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
+          <ReactiveGridBackground intensity="normal" />
+        </div>
+        <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
+          {/* Simple Customer Navigation Header */}
+          <header className="h-20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md relative z-20">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/20">V</div>
+              <span className="text-base font-black text-slate-800 dark:text-slate-100">ویترین</span>
+            </div>
+            <div className="flex items-center gap-3">
+              {toggleTheme && (
+                <button 
+                  onClick={toggleTheme} 
+                  className="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all animate-none"
+                >
+                  {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-slate-600" />}
+                </button>
+              )}
+              <button 
+                onClick={handleLogout}
+                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
+              >
+                خروج
+              </button>
+            </div>
+          </header>
+
+          <div className="flex-grow flex items-center justify-center p-6">
+            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#10b981]/10 rounded-full blur-2xl" />
+              <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/40 text-[#10b981] dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <User className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2 font-['Vazirmatn']">حساب کاربری مشتری</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6 font-['Vazirmatn']">
+                شما با موفقیت به عنوان مشتری وارد شده‌اید. در حال حاضر شما عضویت فروشگاهی ندارید، اما می‌توانید منوی دیجیتال لایو فروشگاه را بررسی و سفارشات خود را پیگیری کنید.
+              </p>
+              <div className="flex flex-col gap-2">
+                <button 
+                  onClick={() => setActiveView('customer-menu')}
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                  <Eye className="w-4 h-4" /> مشاهده منوی دیجیتال
+                </button>
+                <button 
+                  onClick={handleLogout}
+                  className="w-full py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs rounded-2xl active:scale-95 transition-all"
+                >
+                  خروج از حساب کاربری
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
+  if (isAuthenticated && !isEmailVerified) {
+    return (
+      <LoginPage 
+        brandColor={brandColor} 
+        onBackToLanding={async () => {
+          await authRepository.logout();
+          await refetchSession();
+          setShowLoginFlow(false);
+        }}
+      />
+    );
+  }
+
+  if (isAuthenticated && isEmailVerified && memberships.length === 0 && activeView !== 'customer-menu') {
+    return (
+      <LoginPage 
+        brandColor={brandColor} 
+        onBackToLanding={async () => {
+          await authRepository.logout();
+          await refetchSession();
+          setShowLoginFlow(false);
+        }}
+        onProceedAsCustomer={() => setActiveView('customer-menu')}
+      />
+    );
+  }
+
   if (!isAuthenticated) {
     if (showLoginFlow) {
       return (
         <LoginPage 
-          onLogin={handleLogin} 
           brandColor={brandColor} 
           onBackToLanding={() => setShowLoginFlow(false)} 
         />

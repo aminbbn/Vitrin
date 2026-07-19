@@ -13,6 +13,7 @@ interface FeaturedBlockProps {
   onProductClick: (product: Product) => void;
   cart?: any[];
   device?: 'mobile' | 'tablet';
+  products?: Product[];
 }
 
 const getTagStyles = (tag: string) => {
@@ -41,8 +42,11 @@ export const FeaturedBlock: React.FC<FeaturedBlockProps> = ({
   onProductClick,
   cart = [],
   device = 'mobile',
+  products: propProducts,
 }) => {
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [localProducts, setLocalProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+
+  const products = propProducts || localProducts;
 
   useEffect(() => {
     const handleLoadProducts = () => {
@@ -51,7 +55,7 @@ export const FeaturedBlock: React.FC<FeaturedBlockProps> = ({
         try {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setProducts(parsed);
+            setLocalProducts(parsed);
           }
         } catch (e) {
           console.error(e);

@@ -8,6 +8,7 @@ export interface CatalogRepository {
   saveProducts(products: Product[]): Promise<void>;
   getBranchProduct(productId: string, branchId: string): Promise<BranchProduct | null>;
   saveBranchProduct(branchProduct: BranchProduct): Promise<void>;
+  publishBranchProducts(branchId: string): Promise<void>;
   
   // UI Display Settings
   getCategoryPageSettings(): Promise<{ layout: 'grid' | 'list'; columns: number }>;
