@@ -9,6 +9,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+  const jwtSecret = configService.get<string>('JWT_ACCESS_SECRET');
+  if (!jwtSecret || jwtSecret.length < 32) {
+    throw new Error(
+      'JWT_ACCESS_SECRET must be set and at least 32 characters long.',
+    );
+  }
+
   const port = configService.get<number>('PORT', 3000);
   const frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:5173');
 
@@ -33,6 +40,7 @@ async function bootstrap() {
     .setTitle('Vitrin API')
     .setDescription('Backend API for Vitrin restaurant menu and ordering platform')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
