@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -18,17 +18,14 @@ export class HealthService {
       environment: this.configService.get<string>('NODE_ENV', 'development'),
     };
 
-    const database = await this.checkDatabase();
+    let database: 'up' | 'down';
+    try {
+      await this.prismaService.$queryRaw`SELECT 1`;
+      database = 'up';
+    } catch {
+      throw new ServiceUnavailableException();
+    }
 
     return { ...base, database };
-  }
-
-  private async checkDatabase(): Promise<'up' | 'down'> {
-    try {
-      await this.prismaService.$queryRawUnsafe('SELECT 1');
-      return 'up';
-    } catch {
-      return 'down';
-    }
   }
 }

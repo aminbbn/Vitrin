@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import { ServiceUnavailableException } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 describe('HealthService', () => {
   let service: HealthService;
-  let prismaService: { $queryRawUnsafe: jest.Mock };
+  let prismaService: { $queryRaw: jest.Mock };
 
   beforeEach(async () => {
-    prismaService = { $queryRawUnsafe: jest.fn() };
+    prismaService = { $queryRaw: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -32,52 +33,68 @@ describe('HealthService', () => {
     service = module.get<HealthService>(HealthService);
   });
 
-  it('should return status ok', async () => {
+  it('should return status ok when database is healthy', async () => {
+    prismaService.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     const result = await service.check();
     expect(result.status).toBe('ok');
   });
 
   it('should return service name vitrin-backend', async () => {
+    prismaService.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     const result = await service.check();
     expect(result.service).toBe('vitrin-backend');
   });
 
   it('should return timestamp', async () => {
+    prismaService.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     const result = await service.check();
     expect(result.timestamp).toBeDefined();
     expect(new Date(result.timestamp).toISOString()).toBe(result.timestamp);
   });
 
   it('should return uptime as a number', async () => {
+    prismaService.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     const result = await service.check();
     expect(typeof result.uptime).toBe('number');
   });
 
   it('should return environment from ConfigService', async () => {
+    prismaService.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     const result = await service.check();
     expect(result.environment).toBeDefined();
   });
 
   it('should return database as up when query succeeds', async () => {
-    prismaService.$queryRawUnsafe.mockResolvedValue([{ '1': 1 }]);
+    prismaService.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     const result = await service.check();
     expect(result.database).toBe('up');
   });
 
-  it('should return database as down when query fails', async () => {
-    prismaService.$queryRawUnsafe.mockRejectedValue(new Error('Connection refused'));
-    const result = await service.check();
-    expect(result.database).toBe('down');
+  it('should throw ServiceUnavailableException when database query fails', async () => {
+    prismaService.$queryRaw.mockRejectedValue(new Error('Connection refused'));
+    await expect(service.check()).rejects.toThrow(ServiceUnavailableException);
   });
 
-  it('should preserve all existing response fields', async () => {
-    prismaService.$queryRawUnsafe.mockResolvedValue([{ '1': 1 }]);
+  it('should not expose database error details', async () => {
+    prismaService.$queryRaw.mockRejectedValue(
+      new Error('SQLITE_CANTOPEN: unable to open database file'),
+    );
+    try {
+      await service.check();
+      fail('Expected ServiceUnavailableException');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ServiceUnavailableException);
+    }
+  });
+
+  it('should preserve all response fields on success', async () => {
+    prismaService.$queryRaw.mockResolvedValue([{ '1': 1 }]);
     const result = await service.check();
-    expect(result).toHaveProperty('status');
-    expect(result).toHaveProperty('service');
+    expect(result).toHaveProperty('status', 'ok');
+    expect(result).toHaveProperty('service', 'vitrin-backend');
     expect(result).toHaveProperty('timestamp');
     expect(result).toHaveProperty('uptime');
     expect(result).toHaveProperty('environment');
-    expect(result).toHaveProperty('database');
+    expect(result).toHaveProperty('database', 'up');
   });
 });
