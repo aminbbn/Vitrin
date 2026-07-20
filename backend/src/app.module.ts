@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { BranchProductsModule } from './branch-products/branch-products.module.js';
 import { CatalogModule } from './catalog/catalog.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -16,6 +17,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     AuthModule,
     RestaurantsModule,
     CatalogModule,
+    BranchProductsModule,
   ],
 })
 export class AppModule {}
