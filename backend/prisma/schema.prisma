@@ -30,8 +30,6 @@ enum BranchStatus {
 enum MembershipRole {
   OWNER
   MANAGER
-  ORDER_OPERATOR
-  CASHIER
 }
 
 enum MembershipStatus {
@@ -52,11 +50,6 @@ enum PermissionCode {
   MENU_ROLLBACK
 }
 
-enum FeeType {
-  FIXED
-  PERCENTAGE
-}
-
 enum BranchTableStatus {
   ACTIVE
   INACTIVE
@@ -70,43 +63,6 @@ enum TableQrTokenStatus {
 enum ProductAvailability {
   AVAILABLE
   UNAVAILABLE
-}
-
-enum OrderType {
-  DINE_IN
-  TAKEAWAY
-  DELIVERY
-}
-
-enum OrderStatus {
-  PENDING_APPROVAL
-  REJECTED
-  ACCEPTED
-  PREPARING
-  READY
-  OUT_FOR_DELIVERY
-  COMPLETED
-  CANCELLED
-}
-
-enum PaymentMethod {
-  ONLINE
-  IN_PERSON
-}
-
-enum PaymentStatus {
-  UNPAID
-  PENDING
-  PAID
-  FAILED
-  EXPIRED
-  REFUNDED
-}
-
-enum PaymentAttemptStatus {
-  PENDING
-  SUCCESS
-  FAILED
 }
 
 model User {
@@ -129,11 +85,6 @@ model User {
   sentInvitations         RestaurantInvitation[]   @relation("InvitationSender")
   grantedPermissions      MembershipPermission[]   @relation("PermissionGrantor")
   publishedMenus          MenuPublication[]        @relation("MenuPublisher")
-  customerAddresses       CustomerAddress[]
-  customerOrders          CustomerOrder[]          @relation("OrderCustomer")
-  cancelledOrders         CustomerOrder[]          @relation("OrderCanceller")
-  orderStatusChanges      OrderStatusHistory[]     @relation("OrderStatusChanger")
-  paymentStatusChanges    PaymentStatusHistory[]   @relation("PaymentStatusChanger")
   uploadedMediaAssets     MediaAsset[]             @relation("MediaUploader")
 
   @@index([status])
@@ -226,23 +177,19 @@ model Branch {
   timezone                String       @default("Asia/Tehran")
   currencyCode            String       @default("IRR")
   status                  BranchStatus @default(ACTIVE)
-  orderingEnabled         Boolean      @default(true)
+  publicMenuEnabled       Boolean      @default(true)
   activeMenuPublicationId String?      @unique
   createdAt               DateTime     @default(now())
   updatedAt               DateTime     @updatedAt
 
-  restaurant            Restaurant                @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
-  activeMenuPublication MenuPublication?          @relation("ActiveMenuPublication", fields: [activeMenuPublicationId], references: [id], onDelete: SetNull)
-  feeConfig             BranchFeeConfig?
-  deliveryConfig        DeliveryConfig?
+  restaurant            Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  activeMenuPublication MenuPublication?        @relation("ActiveMenuPublication", fields: [activeMenuPublicationId], references: [id], onDelete: SetNull)
   workingIntervals      BranchWorkingInterval[]
   specialHours          BranchSpecialHours[]
-  dailyOrderCounters    BranchDailyOrderCounter[]
   tables                BranchTable[]
   branchProducts        BranchProduct[]
   menuDraft             MenuDraft?
-  menuPublications      MenuPublication[]         @relation("BranchMenuPublications")
-  orders                CustomerOrder[]
+  menuPublications      MenuPublication[]       @relation("BranchMenuPublications")
 
   @@index([restaurantId, status])
   @@index([restaurantId, name])
@@ -298,40 +245,6 @@ model MembershipPermission {
   @@index([grantedByUserId])
 }
 
-model BranchFeeConfig {
-  id                  String   @id @default(uuid())
-  branchId            String   @unique
-  taxEnabled          Boolean  @default(false)
-  taxType             FeeType  @default(PERCENTAGE)
-  taxValue            Int      @default(0)
-  serviceFeeEnabled   Boolean  @default(false)
-  serviceFeeType      FeeType  @default(PERCENTAGE)
-  serviceFeeValue     Int      @default(0)
-  packagingFeeEnabled Boolean  @default(false)
-  packagingFeeType    FeeType  @default(FIXED)
-  packagingFeeValue   Int      @default(0)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-}
-
-model DeliveryConfig {
-  id                 String   @id @default(uuid())
-  branchId           String   @unique
-  deliveryEnabled    Boolean  @default(false)
-  originLatitude     Decimal
-  originLongitude    Decimal
-  maxRadiusKm        Decimal
-  baseFee            Int      @default(0)
-  perKmFee           Int?
-  minimumOrderAmount Int      @default(0)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-}
-
 model BranchWorkingInterval {
   id           String   @id @default(uuid())
   branchId     String
@@ -366,19 +279,6 @@ model BranchSpecialHours {
   @@index([localDate])
 }
 
-model BranchDailyOrderCounter {
-  id           String   @id @default(uuid())
-  branchId     String
-  /// Stored as a normalized date-only value at 00:00:00 UTC.
-  businessDate DateTime
-  nextValue    Int      @default(1)
-  updatedAt    DateTime @updatedAt
-
-  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
-
-  @@unique([branchId, businessDate])
-}
-
 model BranchTable {
   id          String            @id @default(uuid())
   branchId    String
@@ -388,9 +288,8 @@ model BranchTable {
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
-  branch   Branch          @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  branch   Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
   qrTokens TableQrToken[]
-  orders   CustomerOrder[]
 
   @@unique([branchId, tableNumber])
   @@index([branchId, status])
@@ -456,7 +355,6 @@ model BranchProduct {
   branchPrice         Int
   branchDiscountPrice Int?
   availability        ProductAvailability @default(AVAILABLE)
-  orderingEnabled     Boolean             @default(true)
   isVisible           Boolean             @default(true)
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
@@ -551,182 +449,6 @@ model MenuPublication {
   @@unique([branchId, version])
   @@index([branchId, createdAt])
   @@index([publishedByUserId])
-}
-
-model CustomerAddress {
-  id             String    @id @default(uuid())
-  userId         String
-  label          String
-  recipientName  String
-  recipientPhone String
-  addressText    String
-  latitude       Decimal?
-  longitude      Decimal?
-  isDefault      Boolean   @default(false)
-  archivedAt     DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
-
-  @@index([userId, isDefault, archivedAt])
-}
-
-model CustomerOrder {
-  id                      String      @id @default(uuid())
-  branchId                String
-  customerUserId          String
-  publicCode              String      @unique
-  displayNumber           Int
-  /// Stored as a normalized date-only value at 00:00:00 UTC.
-  businessDate            DateTime
-  currencyCode            String
-  orderType               OrderType
-  orderStatus             OrderStatus @default(PENDING_APPROVAL)
-  tableId                 String?
-  deliveryAddressSnapshot Json?
-  rejectionReason         String?
-  cancellationReason      String?
-  cancelledByUserId       String?
-  cancelledAt             DateTime?
-  subtotal                Int
-  discountTotal           Int         @default(0)
-  tax                     Int         @default(0)
-  serviceFee              Int         @default(0)
-  packagingFee            Int         @default(0)
-  deliveryFee             Int         @default(0)
-  grandTotal              Int
-  createdAt               DateTime    @default(now())
-  updatedAt               DateTime    @updatedAt
-
-  branch        Branch               @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  customer      User                 @relation("OrderCustomer", fields: [customerUserId], references: [id], onDelete: Restrict)
-  table         BranchTable?         @relation(fields: [tableId], references: [id], onDelete: SetNull)
-  cancelledBy   User?                @relation("OrderCanceller", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
-  items         OrderItem[]
-  statusHistory OrderStatusHistory[]
-  payment       Payment?
-
-  @@unique([branchId, businessDate, displayNumber])
-  @@index([branchId, orderStatus, createdAt])
-  @@index([customerUserId, createdAt])
-  @@index([tableId])
-}
-
-model OrderItem {
-  id                     String   @id @default(uuid())
-  orderId                String
-  /// Traceability-only identifier; intentionally not modeled as a foreign key.
-  productId              String?
-  productName            String
-  quantity               Int
-  unitPrice              Int
-  discountPrice          Int?
-  itemSubtotal           Int
-  modifierTotal          Int      @default(0)
-  taxAllocation          Int      @default(0)
-  serviceFeeAllocation   Int      @default(0)
-  packagingFeeAllocation Int      @default(0)
-  lineTotal              Int
-  notes                  String?
-  createdAt              DateTime @default(now())
-
-  order     CustomerOrder       @relation(fields: [orderId], references: [id], onDelete: Restrict)
-  modifiers OrderItemModifier[]
-
-  @@index([orderId])
-  @@index([productId])
-}
-
-model OrderItemModifier {
-  id                String   @id @default(uuid())
-  orderItemId       String
-  /// Traceability-only identifier; intentionally not modeled as a foreign key.
-  modifierOptionId  String?
-  modifierGroupName String
-  optionName        String
-  priceAdjustment   Int
-  createdAt         DateTime @default(now())
-
-  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Restrict)
-
-  @@index([orderItemId])
-  @@index([modifierOptionId])
-}
-
-model OrderStatusHistory {
-  id              String       @id @default(uuid())
-  orderId         String
-  status          OrderStatus
-  previousStatus  OrderStatus?
-  changedByUserId String?
-  note            String?
-  createdAt       DateTime     @default(now())
-
-  order     CustomerOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
-  changedBy User?         @relation("OrderStatusChanger", fields: [changedByUserId], references: [id], onDelete: SetNull)
-
-  @@index([orderId, createdAt])
-  @@index([changedByUserId])
-}
-
-model Payment {
-  id            String        @id @default(uuid())
-  orderId       String        @unique
-  paymentMethod PaymentMethod
-  paymentStatus PaymentStatus @default(UNPAID)
-  amount        Int
-  currencyCode  String
-  paidAt        DateTime?
-  expiresAt     DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  order         CustomerOrder          @relation(fields: [orderId], references: [id], onDelete: Restrict)
-  attempts      PaymentAttempt[]
-  statusHistory PaymentStatusHistory[]
-
-  @@index([paymentStatus, expiresAt])
-}
-
-model PaymentAttempt {
-  id                String               @id @default(uuid())
-  paymentId         String
-  attemptNumber     Int
-  provider          String
-  externalReference String?
-  requestedAmount   Int
-  currencyCode      String
-  status            PaymentAttemptStatus @default(PENDING)
-  failureCode       String?
-  failureReason     String?
-  startedAt         DateTime             @default(now())
-  completedAt       DateTime?
-  expiresAt         DateTime?
-
-  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
-
-  @@unique([paymentId, attemptNumber])
-  @@index([paymentId, status])
-  @@index([externalReference])
-}
-
-model PaymentStatusHistory {
-  id                    String         @id @default(uuid())
-  paymentId             String
-  paymentStatus         PaymentStatus
-  previousPaymentStatus PaymentStatus?
-  changedByUserId       String?
-  note                  String?
-  transactionId         String?
-  createdAt             DateTime       @default(now())
-
-  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
-  changedBy User?   @relation("PaymentStatusChanger", fields: [changedByUserId], references: [id], onDelete: SetNull)
-
-  @@index([paymentId, createdAt])
-  @@index([changedByUserId])
-  @@index([transactionId])
 }
 
 model MediaAsset {

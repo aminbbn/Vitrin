@@ -157,7 +157,7 @@ export class RestaurantsService {
       timezone: branch.timezone,
       currencyCode: branch.currencyCode,
       status: branch.status,
-      orderingEnabled: branch.orderingEnabled,
+      publicMenuEnabled: branch.publicMenuEnabled,
       createdAt: branch.createdAt,
     };
   }
@@ -176,7 +176,7 @@ export class RestaurantsService {
       timezone: b.timezone,
       currencyCode: b.currencyCode,
       status: b.status,
-      orderingEnabled: b.orderingEnabled,
+      publicMenuEnabled: b.publicMenuEnabled,
       createdAt: b.createdAt,
     }));
   }

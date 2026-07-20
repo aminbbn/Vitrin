@@ -81,7 +81,7 @@ CREATE TABLE "Branch" (
     "timezone" TEXT NOT NULL DEFAULT 'Asia/Tehran',
     "currencyCode" TEXT NOT NULL DEFAULT 'IRR',
     "status" TEXT NOT NULL DEFAULT 'ACTIVE',
-    "orderingEnabled" BOOLEAN NOT NULL DEFAULT true,
+    "publicMenuEnabled" BOOLEAN NOT NULL DEFAULT true,
     "activeMenuPublicationId" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
@@ -130,40 +130,6 @@ CREATE TABLE "MembershipPermission" (
 );
 
 -- CreateTable
-CREATE TABLE "BranchFeeConfig" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "branchId" TEXT NOT NULL,
-    "taxEnabled" BOOLEAN NOT NULL DEFAULT false,
-    "taxType" TEXT NOT NULL DEFAULT 'PERCENTAGE',
-    "taxValue" INTEGER NOT NULL DEFAULT 0,
-    "serviceFeeEnabled" BOOLEAN NOT NULL DEFAULT false,
-    "serviceFeeType" TEXT NOT NULL DEFAULT 'PERCENTAGE',
-    "serviceFeeValue" INTEGER NOT NULL DEFAULT 0,
-    "packagingFeeEnabled" BOOLEAN NOT NULL DEFAULT false,
-    "packagingFeeType" TEXT NOT NULL DEFAULT 'FIXED',
-    "packagingFeeValue" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "BranchFeeConfig_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "DeliveryConfig" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "branchId" TEXT NOT NULL,
-    "deliveryEnabled" BOOLEAN NOT NULL DEFAULT false,
-    "originLatitude" DECIMAL NOT NULL,
-    "originLongitude" DECIMAL NOT NULL,
-    "maxRadiusKm" DECIMAL NOT NULL,
-    "baseFee" INTEGER NOT NULL DEFAULT 0,
-    "perKmFee" INTEGER,
-    "minimumOrderAmount" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "DeliveryConfig_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
 CREATE TABLE "BranchWorkingInterval" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "branchId" TEXT NOT NULL,
@@ -188,16 +154,6 @@ CREATE TABLE "BranchSpecialHours" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "BranchSpecialHours_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "BranchDailyOrderCounter" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "branchId" TEXT NOT NULL,
-    "businessDate" DATETIME NOT NULL,
-    "nextValue" INTEGER NOT NULL DEFAULT 1,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "BranchDailyOrderCounter_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -262,7 +218,6 @@ CREATE TABLE "BranchProduct" (
     "branchPrice" INTEGER NOT NULL,
     "branchDiscountPrice" INTEGER,
     "availability" TEXT NOT NULL DEFAULT 'AVAILABLE',
-    "orderingEnabled" BOOLEAN NOT NULL DEFAULT true,
     "isVisible" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
@@ -335,147 +290,6 @@ CREATE TABLE "MenuPublication" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "MenuPublication_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "MenuPublication_publishedByUserId_fkey" FOREIGN KEY ("publishedByUserId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "CustomerAddress" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "userId" TEXT NOT NULL,
-    "label" TEXT NOT NULL,
-    "recipientName" TEXT NOT NULL,
-    "recipientPhone" TEXT NOT NULL,
-    "addressText" TEXT NOT NULL,
-    "latitude" DECIMAL,
-    "longitude" DECIMAL,
-    "isDefault" BOOLEAN NOT NULL DEFAULT false,
-    "archivedAt" DATETIME,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "CustomerAddress_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "CustomerOrder" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "branchId" TEXT NOT NULL,
-    "customerUserId" TEXT NOT NULL,
-    "publicCode" TEXT NOT NULL,
-    "displayNumber" INTEGER NOT NULL,
-    "businessDate" DATETIME NOT NULL,
-    "currencyCode" TEXT NOT NULL,
-    "orderType" TEXT NOT NULL,
-    "orderStatus" TEXT NOT NULL DEFAULT 'PENDING_APPROVAL',
-    "tableId" TEXT,
-    "deliveryAddressSnapshot" JSONB,
-    "rejectionReason" TEXT,
-    "cancellationReason" TEXT,
-    "cancelledByUserId" TEXT,
-    "cancelledAt" DATETIME,
-    "subtotal" INTEGER NOT NULL,
-    "discountTotal" INTEGER NOT NULL DEFAULT 0,
-    "tax" INTEGER NOT NULL DEFAULT 0,
-    "serviceFee" INTEGER NOT NULL DEFAULT 0,
-    "packagingFee" INTEGER NOT NULL DEFAULT 0,
-    "deliveryFee" INTEGER NOT NULL DEFAULT 0,
-    "grandTotal" INTEGER NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "CustomerOrder_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "CustomerOrder_customerUserId_fkey" FOREIGN KEY ("customerUserId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "CustomerOrder_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "BranchTable" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT "CustomerOrder_cancelledByUserId_fkey" FOREIGN KEY ("cancelledByUserId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "OrderItem" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "orderId" TEXT NOT NULL,
-    "productId" TEXT,
-    "productName" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL,
-    "unitPrice" INTEGER NOT NULL,
-    "discountPrice" INTEGER,
-    "itemSubtotal" INTEGER NOT NULL,
-    "modifierTotal" INTEGER NOT NULL DEFAULT 0,
-    "taxAllocation" INTEGER NOT NULL DEFAULT 0,
-    "serviceFeeAllocation" INTEGER NOT NULL DEFAULT 0,
-    "packagingFeeAllocation" INTEGER NOT NULL DEFAULT 0,
-    "lineTotal" INTEGER NOT NULL,
-    "notes" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "CustomerOrder" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "OrderItemModifier" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "orderItemId" TEXT NOT NULL,
-    "modifierOptionId" TEXT,
-    "modifierGroupName" TEXT NOT NULL,
-    "optionName" TEXT NOT NULL,
-    "priceAdjustment" INTEGER NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "OrderItemModifier_orderItemId_fkey" FOREIGN KEY ("orderItemId") REFERENCES "OrderItem" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "OrderStatusHistory" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "orderId" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
-    "previousStatus" TEXT,
-    "changedByUserId" TEXT,
-    "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "OrderStatusHistory_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "CustomerOrder" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "OrderStatusHistory_changedByUserId_fkey" FOREIGN KEY ("changedByUserId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "Payment" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "orderId" TEXT NOT NULL,
-    "paymentMethod" TEXT NOT NULL,
-    "paymentStatus" TEXT NOT NULL DEFAULT 'UNPAID',
-    "amount" INTEGER NOT NULL,
-    "currencyCode" TEXT NOT NULL,
-    "paidAt" DATETIME,
-    "expiresAt" DATETIME,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Payment_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "CustomerOrder" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "PaymentAttempt" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "paymentId" TEXT NOT NULL,
-    "attemptNumber" INTEGER NOT NULL,
-    "provider" TEXT NOT NULL,
-    "externalReference" TEXT,
-    "requestedAmount" INTEGER NOT NULL,
-    "currencyCode" TEXT NOT NULL,
-    "status" TEXT NOT NULL DEFAULT 'PENDING',
-    "failureCode" TEXT,
-    "failureReason" TEXT,
-    "startedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "completedAt" DATETIME,
-    "expiresAt" DATETIME,
-    CONSTRAINT "PaymentAttempt_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "PaymentStatusHistory" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "paymentId" TEXT NOT NULL,
-    "paymentStatus" TEXT NOT NULL,
-    "previousPaymentStatus" TEXT,
-    "changedByUserId" TEXT,
-    "note" TEXT,
-    "transactionId" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "PaymentStatusHistory_paymentId_fkey" FOREIGN KEY ("paymentId") REFERENCES "Payment" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "PaymentStatusHistory_changedByUserId_fkey" FOREIGN KEY ("changedByUserId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -571,12 +385,6 @@ CREATE INDEX "MembershipPermission_grantedByUserId_idx" ON "MembershipPermission
 CREATE UNIQUE INDEX "MembershipPermission_membershipId_permission_key" ON "MembershipPermission"("membershipId", "permission");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BranchFeeConfig_branchId_key" ON "BranchFeeConfig"("branchId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "DeliveryConfig_branchId_key" ON "DeliveryConfig"("branchId");
-
--- CreateIndex
 CREATE INDEX "BranchWorkingInterval_branchId_weekday_idx" ON "BranchWorkingInterval"("branchId", "weekday");
 
 -- CreateIndex
@@ -587,9 +395,6 @@ CREATE INDEX "BranchSpecialHours_localDate_idx" ON "BranchSpecialHours"("localDa
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BranchSpecialHours_branchId_localDate_key" ON "BranchSpecialHours"("branchId", "localDate");
-
--- CreateIndex
-CREATE UNIQUE INDEX "BranchDailyOrderCounter_branchId_businessDate_key" ON "BranchDailyOrderCounter"("branchId", "businessDate");
 
 -- CreateIndex
 CREATE INDEX "BranchTable_branchId_status_idx" ON "BranchTable"("branchId", "status");
@@ -656,66 +461,6 @@ CREATE INDEX "MenuPublication_publishedByUserId_idx" ON "MenuPublication"("publi
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MenuPublication_branchId_version_key" ON "MenuPublication"("branchId", "version");
-
--- CreateIndex
-CREATE INDEX "CustomerAddress_userId_isDefault_archivedAt_idx" ON "CustomerAddress"("userId", "isDefault", "archivedAt");
-
--- CreateIndex
-CREATE UNIQUE INDEX "CustomerOrder_publicCode_key" ON "CustomerOrder"("publicCode");
-
--- CreateIndex
-CREATE INDEX "CustomerOrder_branchId_orderStatus_createdAt_idx" ON "CustomerOrder"("branchId", "orderStatus", "createdAt");
-
--- CreateIndex
-CREATE INDEX "CustomerOrder_customerUserId_createdAt_idx" ON "CustomerOrder"("customerUserId", "createdAt");
-
--- CreateIndex
-CREATE INDEX "CustomerOrder_tableId_idx" ON "CustomerOrder"("tableId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "CustomerOrder_branchId_businessDate_displayNumber_key" ON "CustomerOrder"("branchId", "businessDate", "displayNumber");
-
--- CreateIndex
-CREATE INDEX "OrderItem_orderId_idx" ON "OrderItem"("orderId");
-
--- CreateIndex
-CREATE INDEX "OrderItem_productId_idx" ON "OrderItem"("productId");
-
--- CreateIndex
-CREATE INDEX "OrderItemModifier_orderItemId_idx" ON "OrderItemModifier"("orderItemId");
-
--- CreateIndex
-CREATE INDEX "OrderItemModifier_modifierOptionId_idx" ON "OrderItemModifier"("modifierOptionId");
-
--- CreateIndex
-CREATE INDEX "OrderStatusHistory_orderId_createdAt_idx" ON "OrderStatusHistory"("orderId", "createdAt");
-
--- CreateIndex
-CREATE INDEX "OrderStatusHistory_changedByUserId_idx" ON "OrderStatusHistory"("changedByUserId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Payment_orderId_key" ON "Payment"("orderId");
-
--- CreateIndex
-CREATE INDEX "Payment_paymentStatus_expiresAt_idx" ON "Payment"("paymentStatus", "expiresAt");
-
--- CreateIndex
-CREATE INDEX "PaymentAttempt_paymentId_status_idx" ON "PaymentAttempt"("paymentId", "status");
-
--- CreateIndex
-CREATE INDEX "PaymentAttempt_externalReference_idx" ON "PaymentAttempt"("externalReference");
-
--- CreateIndex
-CREATE UNIQUE INDEX "PaymentAttempt_paymentId_attemptNumber_key" ON "PaymentAttempt"("paymentId", "attemptNumber");
-
--- CreateIndex
-CREATE INDEX "PaymentStatusHistory_paymentId_createdAt_idx" ON "PaymentStatusHistory"("paymentId", "createdAt");
-
--- CreateIndex
-CREATE INDEX "PaymentStatusHistory_changedByUserId_idx" ON "PaymentStatusHistory"("changedByUserId");
-
--- CreateIndex
-CREATE INDEX "PaymentStatusHistory_transactionId_idx" ON "PaymentStatusHistory"("transactionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MediaAsset_storageKey_key" ON "MediaAsset"("storageKey");

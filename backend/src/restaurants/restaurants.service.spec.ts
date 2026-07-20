@@ -309,7 +309,7 @@ describe('RestaurantsService', () => {
       timezone: 'Asia/Tehran',
       currencyCode: 'IRR',
       status: 'ACTIVE',
-      orderingEnabled: true,
+      publicMenuEnabled: true,
       createdAt: new Date('2025-01-01'),
     };
 
@@ -404,7 +404,7 @@ describe('RestaurantsService', () => {
           timezone: 'Asia/Tehran',
           currencyCode: 'IRR',
           status: 'ACTIVE',
-          orderingEnabled: true,
+          publicMenuEnabled: true,
           createdAt: new Date('2025-01-01'),
         },
         {
@@ -415,7 +415,7 @@ describe('RestaurantsService', () => {
           timezone: 'Asia/Tehran',
           currencyCode: 'IRR',
           status: 'ACTIVE',
-          orderingEnabled: true,
+          publicMenuEnabled: true,
           createdAt: new Date('2025-01-02'),
         },
       ]);
@@ -493,7 +493,7 @@ describe('RestaurantsService', () => {
         timezone: 'Asia/Tehran',
         currencyCode: 'IRR',
         status: 'ACTIVE',
-        orderingEnabled: true,
+        publicMenuEnabled: true,
         createdAt: new Date(),
         latitude: null,
         longitude: null,

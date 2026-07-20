@@ -101,38 +101,8 @@ erDiagram
         string timezone
         string currencyCode
         enum status
-        boolean orderingEnabled
+        boolean publicMenuEnabled
         uuid activeMenuPublicationId FK
-        timestamp createdAt
-        timestamp updatedAt
-    }
-
-    BRANCH_FEE_CONFIG {
-        uuid id PK
-        uuid branchId FK
-        boolean taxEnabled
-        enum taxType
-        int taxValue
-        boolean serviceFeeEnabled
-        enum serviceFeeType
-        int serviceFeeValue
-        boolean packagingFeeEnabled
-        enum packagingFeeType
-        int packagingFeeValue
-        timestamp createdAt
-        timestamp updatedAt
-    }
-
-    DELIVERY_CONFIG {
-        uuid id PK
-        uuid branchId FK
-        boolean deliveryEnabled
-        decimal originLatitude
-        decimal originLongitude
-        decimal maxRadiusKm
-        int baseFee
-        int perKmFee
-        int minimumOrderAmount
         timestamp createdAt
         timestamp updatedAt
     }
@@ -157,14 +127,6 @@ erDiagram
         string closesAt
         string note
         timestamp createdAt
-        timestamp updatedAt
-    }
-
-    BRANCH_DAILY_ORDER_COUNTER {
-        uuid id PK
-        uuid branchId FK
-        date businessDate
-        int nextValue
         timestamp updatedAt
     }
 
@@ -219,7 +181,6 @@ erDiagram
         int branchPrice
         int branchDiscountPrice
         enum availability
-        boolean orderingEnabled
         boolean isVisible
         timestamp createdAt
         timestamp updatedAt
@@ -294,126 +255,6 @@ erDiagram
         timestamp archivedAt
     }
 
-    CUSTOMER_ADDRESS {
-        uuid id PK
-        uuid userId FK
-        string label
-        string recipientName
-        string recipientPhone
-        string addressText
-        decimal latitude
-        decimal longitude
-        boolean isDefault
-        timestamp archivedAt
-        timestamp createdAt
-        timestamp updatedAt
-    }
-
-    CUSTOMER_ORDER {
-        uuid id PK
-        uuid branchId FK
-        uuid customerUserId FK
-        string publicCode UK
-        int displayNumber
-        date businessDate
-        string currencyCode
-        enum orderType
-        enum orderStatus
-        uuid tableId FK
-        jsonb deliveryAddressSnapshot
-        string rejectionReason
-        string cancellationReason
-        uuid cancelledByUserId FK
-        timestamp cancelledAt
-        int subtotal
-        int discountTotal
-        int tax
-        int serviceFee
-        int packagingFee
-        int deliveryFee
-        int grandTotal
-        timestamp createdAt
-        timestamp updatedAt
-    }
-
-    ORDER_ITEM {
-        uuid id PK
-        uuid orderId FK
-        uuid productId
-        string productName
-        int quantity
-        int unitPrice
-        int discountPrice
-        int itemSubtotal
-        int modifierTotal
-        int taxAllocation
-        int serviceFeeAllocation
-        int packagingFeeAllocation
-        int lineTotal
-        string notes
-        timestamp createdAt
-    }
-
-    ORDER_ITEM_MODIFIER {
-        uuid id PK
-        uuid orderItemId FK
-        uuid modifierOptionId
-        string modifierGroupName
-        string optionName
-        int priceAdjustment
-        timestamp createdAt
-    }
-
-    ORDER_STATUS_HISTORY {
-        uuid id PK
-        uuid orderId FK
-        enum status
-        enum previousStatus
-        uuid changedByUserId FK
-        string note
-        timestamp createdAt
-    }
-
-    PAYMENT {
-        uuid id PK
-        uuid orderId FK
-        enum paymentMethod
-        enum paymentStatus
-        int amount
-        string currencyCode
-        timestamp paidAt
-        timestamp expiresAt
-        timestamp createdAt
-        timestamp updatedAt
-    }
-
-    PAYMENT_ATTEMPT {
-        uuid id PK
-        uuid paymentId FK
-        int attemptNumber
-        string provider
-        string externalReference
-        int requestedAmount
-        string currencyCode
-        enum status
-        string failureCode
-        string failureReason
-        timestamp startedAt
-        timestamp completedAt
-        timestamp expiresAt
-    }
-
-    PAYMENT_STATUS_HISTORY {
-        uuid id PK
-        uuid paymentId FK
-        enum paymentStatus
-        enum previousPaymentStatus
-        uuid changedByUserId FK
-        string note
-        string transactionId
-        timestamp createdAt
-    }
-
     %% === Identity & Auth ===
 
     USER ||--o{ AUTH_ACCOUNT : "authenticates via"
@@ -421,8 +262,6 @@ erDiagram
     USER ||--o{ EMAIL_VERIFICATION_TOKEN : "receives tokens"
     USER ||--o{ PASSWORD_RESET_TOKEN : "receives tokens"
     USER ||--o{ RESTAURANT_MEMBERSHIP : "belongs to restaurants"
-    USER ||--o{ CUSTOMER_ADDRESS : "has addresses"
-    USER ||--o{ CUSTOMER_ORDER : "places orders"
     USER ||--o{ MEDIA_ASSET : "uploads assets"
 
     %% === Restaurant & Membership ===
@@ -441,16 +280,12 @@ erDiagram
 
     %% === Branch Configuration ===
 
-    BRANCH ||--|| BRANCH_FEE_CONFIG : "has fee config"
-    BRANCH ||--o| DELIVERY_CONFIG : "has delivery config"
     BRANCH ||--o{ BRANCH_TABLE : "has tables"
     BRANCH ||--o{ BRANCH_PRODUCT : "has branch products"
     BRANCH ||--|| MENU_DRAFT : "has one draft"
     BRANCH ||--o{ MENU_PUBLICATION : "has publications"
-    BRANCH ||--o{ CUSTOMER_ORDER : "receives orders"
     BRANCH ||--o{ BRANCH_WORKING_INTERVAL : "has working intervals"
     BRANCH ||--o{ BRANCH_SPECIAL_HOURS : "has special hours"
-    BRANCH ||--o{ BRANCH_DAILY_ORDER_COUNTER : "has daily counters"
     BRANCH }o--|| RESTAURANT : "branch of"
 
     BRANCH_TABLE ||--o{ TABLE_QR_TOKEN : "has QR tokens"
@@ -486,32 +321,6 @@ erDiagram
 
     MENU_DRAFT }o--|| BRANCH : "draft for"
     MENU_PUBLICATION }o--|| BRANCH : "publication for"
-
-    %% === Orders ===
-
-    CUSTOMER_ORDER }o--|| BRANCH : "order at"
-    CUSTOMER_ORDER }o--|| USER : "order by"
-    CUSTOMER_ORDER |o--o| BRANCH_TABLE : "DINE_IN table"
-    CUSTOMER_ORDER ||--o{ ORDER_ITEM : "has items"
-    CUSTOMER_ORDER ||--o{ ORDER_STATUS_HISTORY : "status history"
-    CUSTOMER_ORDER ||--|| PAYMENT : "has payment"
-
-    ORDER_ITEM }o--|| CUSTOMER_ORDER : "item in order"
-    ORDER_ITEM ||--o{ ORDER_ITEM_MODIFIER : "has selected modifiers"
-
-    ORDER_ITEM_MODIFIER }o--|| ORDER_ITEM : "modifier for item"
-
-    ORDER_STATUS_HISTORY }o--|| CUSTOMER_ORDER : "history of"
-
-    %% === Payments ===
-
-    PAYMENT }o--|| CUSTOMER_ORDER : "payment for"
-    PAYMENT ||--o{ PAYMENT_ATTEMPT : "has attempts"
-    PAYMENT ||--o{ PAYMENT_STATUS_HISTORY : "status history"
-
-    PAYMENT_ATTEMPT }o--|| PAYMENT : "attempt of"
-
-    PAYMENT_STATUS_HISTORY }o--|| PAYMENT : "history of"
 
     %% === Media ===
 

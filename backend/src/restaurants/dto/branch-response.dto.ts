@@ -23,7 +23,7 @@ export class BranchResponseDto {
   status!: string;
 
   @ApiProperty()
-  orderingEnabled!: boolean;
+  publicMenuEnabled!: boolean;
 
   @ApiProperty()
   createdAt!: Date;

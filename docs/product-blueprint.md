@@ -1,1009 +1,472 @@
-# ویترین — نقشه راه محصول (Product Blueprint)
+# Vitrin — Product Blueprint (Menu-Only MVP)
 
-**نسخه:** 1.1
-**تاریخ:** ۱۶ ژوئیه ۲۰۲۶
-**وضعیت:** ✅ Approved Product Blueprint — تمام تصمیمات مالک محصول نهایی شده است.
-
----
-
-## فهرست مطالب
-
-1. [تعریف محصول](#۱-تعریف-محصول)
-2. [تعریف بازیگران](#۲-تعریف-بازیگران)
-3. [تصمیمات تایید شده](#۳-تصمیمات-تایید-شده)
-4. [تصمیمات محصول نهایی شده](#۴-تصمیمات-محصول-نهایی-شده)
-5. [حوزه‌های پلتفرم](#۵-حوزه‌های-پلتفرم)
-6. [سفرهای کاربری اصلی](#۶-سفرهای-کاربری-اصلی)
-7. [چرخه حیات سفارش و پرداخت](#۷-چرخه-حیات-سفارش-و-پرداخت)
-8. [چرخه انتشار منو](#۸-چرخه-انتشار-منو)
-9. [ماتریس نقش و دسترسی](#۹-ماتریس-نقش-و-دسترسی)
-10. [واژه‌نامه حوزه تخصصی](#۱۰-واژه‌نامه-حوزه-تخصصی)
-11. [موجودی فرانت‌اند](#۱۱-موجودی-فرانت‌اند)
-12. [دامنه MVP — Core و Extended](#۱۲-دامنه-mvp)
-13. [خارج از MVP اول](#۱۳-خارج-از-mvp-اول)
-14. [ترتیب پیاده‌سازی](#۱۴-ترتیب-پیاده‌سازی)
-15. [تصمیمات آینده (غیرblocking)](#۱۵-تصمیمات-آینده)
-16. [معیارهای پذیرش نقشه راه](#۱۶-معیارهای-پذیرش-نقشه-راه)
+**Version:** 2.0
+**Date:** 2026-07-20
+**Status:** Menu-Only MVP — all transactional features removed.
 
 ---
 
-## ۱. تعریف محصول
+## Table of Contents
 
-**ویترین (Vitrin)** یک پلتفرم SaaS برای رستوران‌هاست که امکان ایجاد منوی دیجیتال تعاملی، مدیریت سفارشات، و پرداخت آنلاین/حضوری را فراهم می‌کند. مشتریان می‌توانند از طریق QR Code روی میز یا لینک مستقیم، منوی رستوران را مرور کرده و سفارش ثبت کنند.
-
-**مخاطبان هدف:** رستوران‌ها، کافه‌ها، فست‌فودها و هر کسب‌وکار حوزه غذا که نیاز به منوی دیجیتال و مدیریت سفارش دارند.
-
----
-
-## ۲. تعریف بازیگران
-
-### ۲.۱ کاربر عادی (Customer)
-
-- هر کاربری که از منوی عمومی رستوران بازدید می‌کند.
-- برای مشاهده منو نیاز به احراز هویت ندارد.
-- برای ثبت سفارش باید حساب کاربری داشته باشد.
-- می‌تواند در چندین رستوران سفارش ثبت کند.
-- دارای پروفایل، آدرس‌ها و تاریخچه سفارشات است.
-
-### ۲.۲ مالک رستوران (Restaurant Owner)
-
-- کاربری که یک رستوران ایجاد کرده یا مالکیت آن را بر عهده دارد.
-- دسترسی کامل به تمام تنظیمات رستوران شامل شعبه‌ها، اعضا، نقش‌ها، انتشار منو و تنظیمات پرداخت.
-- یک کاربر می‌تواند مالک چندین رستوران باشد.
-
-### ۲.۳ مدیر رستوران (Manager)
-
-- کاربری که توسط OWNER به یک رستوران دعوت شده و نقش MANAGER دریافت کرده.
-- دسترسی به مدیریت محصولات، دسته‌بندی‌ها، طراحی منو، سفارشات و گزارش‌ها.
-- بدون دسترسی به انتقال مالکیت و تنظیمات صورتحساب.
-- بدون دسترسی به Publish یا Rollback مگر با مجوز صریح OWNER.
-
-### ۲.۴ اپراتور سفارش (Order Operator)
-
-- کاربری که فقط می‌تواند سفارشات را مشاهده، تایید یا رد کند.
-- دسترسی به وضعیت انجام سفارش.
-- بدون دسترسی به تنظیمات رستوران.
-
-### ۲.۵ صندوقدار (Cashier)
-
-- کاربری که سفارشات قابل پرداخت را مشاهده و پرداخت حضوری را ثبت می‌کند.
-- بدون دسترسی به ویرایش منو.
-- بدون دسترسی به رد سفارش به‌طور پیش‌فرض.
-
-### ۲.۶ ادمین پلتفرم (Internal Admin) — خارج از MVP اول
-
-- مدیریت رستوران‌ها و کاربران پلتفرم.
-- پشتیبانی و تعلیق سرویس.
+1. [Product Definition](#1-product-definition)
+2. [Actor Definitions](#2-actor-definitions)
+3. [Confirmed Decisions](#3-confirmed-deisions)
+4. [Finalized Product Decisions](#4-finalized-product-decisions)
+5. [Platform Domains](#5-platform-domains)
+6. [Core User Journeys](#6-core-user-journeys)
+7. [Menu Publishing Lifecycle](#7-menu-publishing-lifecycle)
+8. [Role and Permission Matrix](#8-role-and-permission-matrix)
+9. [Glossary](#9-glossary)
+10. [Frontend Inventory](#10-frontend-inventory)
+11. [MVP Scope](#11-mvp-scope)
+12. [Implementation Order](#12-implementation-order)
+13. [Future Decisions (Non-blocking)](#13-future-decisions)
+14. [Roadmap Acceptance Criteria](#14-roadmap-acceptance-criteria)
 
 ---
 
-## ۳. تصمیمات تایید شده
+## 1. Product Definition
 
-| ردیف | تصمیم |
-|------|-------|
-| ۱ | یک کاربر می‌تواند مالک یا عضو هر تعداد رستوران باشد. |
-| ۲ | یک رستوران می‌تواند هر تعداد شعبه داشته باشد. |
-| ۳ | انواع سفارش: DINE_IN · TAKEAWAY · DELIVERY |
-| ۴ | هر میز رستوران QR Code اختصاصی خود را دارد. |
-| ۵ | مشتریان برای مشاهده منو نیاز به احراز هویت ندارند؛ احراز هویت فقط هنگام checkout یا ثبت سفارش الزامی است. |
-| ۶ | روش‌های پرداخت: ONLINE · IN_PERSON |
-| ۷ | هر سفارش ثبت‌شده نیاز به تایید رستوران دارد. |
-| ۸ | نقش‌های عضویت: OWNER · MANAGER · ORDER_OPERATOR · CASHIER |
-| ۹ | هر شعبه به‌طور مستقل دارای: قیمت محصول، قیمت تخفیف، وضعیت موجودی (AVAILABLE/UNAVAILABLE)، و وضعیت سفارش‌پذیری است. |
-| ۱۰ | انتشار منو شامل: Draft ویرایشی → Preview مشتری‌نما → Publish → تاریخچه انتشار ساده → Rollback کامل به نسخه قبلی. بدون مقایسه فیلد-به-فیلد در MVP. |
-| ۱۱ | روش‌های احراز هویت: Email + Password و Google Login |
-| ۱۲ | یک ایمیل به یک User واحد نگاشت می‌شود. کاربر می‌تواند هر دو روش را استفاده کند. اکانت‌های Google با ایمیل تایید شده مشابه به User موجود لینک می‌شوند. کاربران فقط-Google می‌توانند passwordHash خالی داشته باشند. تایید ایمیل و بازیابی رمز الزامی است. معماری Access Token و Refresh Token لازم است. شماره تلفن اطلاعات پروفایل است، نه روش ورود. |
-| ۱۳ | یک User می‌تواند همزمان مشتری عادی، OWNER یک رستوران، و MANAGER رستوران دیگر باشد. نقش‌ها به RestaurantMembership تعلق دارند، نه مستقیماً به User. |
-| ۱۴ | انقضا پرداخت آنلاین دقیقاً ۱۵ دقیقه پس از تایید رستوران. در صورت انقضا: PaymentStatus → EXPIRED، OrderStatus → CANCELLED، cancellationReason → PAYMENT_EXPIRED. |
-| ۱۵ | تایید/رد جزئی سفارش در MVP اول پشتیبانی نمی‌شود. رستوران باید کل سفارش را بپذیرد یا رد کند. دلیل رد قابل مشاهده برای مشتری است. |
-| ۱۶ | مشتری فقط در وضعیت PENDING_APPROVAL می‌تواند سفارش را لغو کند. پس از تایید رستوران فقط کارکنان مجاز رستوران می‌توانند لغو کنند. هر لغو شامل cancellationReason، cancelledBy، cancelledAt و رکورد OrderStatusHistory است. |
-| ۱۷ | هر شعبه مستقل tax، serviceFee، packagingFee، deliveryFee، وضعیت فعال/غیرفعال هر هزینه، و نوع (ثابت/درصدی) را پیکربندی می‌کند. تمام مقادیر پولی به‌صورت عدد صحیح در کوچکترین واحد ارز ذخیره می‌شوند. |
-| ۱۸ | محدوده ارسال MVP: شعاع جغرافیایی. هر شعبه: deliveryEnabled، عرض/طول جغرافیایی، حداکثر شعاع، هزینه پایه، هزینه اختیاری بر اساس فاصله، حداقل مبلغ سفارش ارسالی. بدون ردیابی نقشه زنده. |
-| ۱۹ | انتشار منو مستقل برای هر شعبه. هر شعبه Draft و نسخه منتشر شده فعال مستقل خود را دارد. انتشارات بین شعبه‌ها مشترک نیستند. کاتالوگ محصولات اصلی می‌تواند مشترک باشد. |
-| ۲۰ | MANAGER به‌طور پیش‌فرض دسترسی به Publish و Rollback ندارد. OWNER می‌تواند به‌طور صریح مجوزهای MENU_PUBLISH و MENU_ROLLBACK را به Manager اعطا کند. احراز هویت بر اساس مجوزهاست، نه نمای دکمه‌ها در فرانت‌اند. |
-| ۲۱ | موجودی MVP فقط شامل وضعیت AVAILABLE/UNAVAILABLE است. حسابداری موجودی عددی در MVP اول اجرا نمی‌شود. تغییر وضعیت موجودی فوراً اعمال می‌شود و نیاز به انتشار منوی جدید ندارد. |
-| ۲۲ | توکن‌های QR میزها باید یکتا، غیرتوالی، غیرقابل حدس، قابل جایگزینی و قابل لغو باشند. جایگزینی توکن، توکن قبلی را باطل می‌کند. توکن عمومی QR نباید شناسه‌های داخلی دیتابیس را فاش کند. |
-| ۲۳ | تایید ایمیل قبل از اولین سفارش برای اکانت‌های Email + Password الزامی است. همچنین قبل از پذیرش دعوت‌نامه رستوران یا ایجاد رستوران الزامی است. ایمیل تایید شده Google به‌صورت خودکار تایید شده محسوب می‌شود. کاربر با ایمیل تایید نشده می‌تواند وارد شود اما از اقدامات محافظت شده محدود می‌شود. |
+**Vitrin** is a SaaS platform for restaurants that provides a **digital menu** accessible via QR codes or direct links. Customers can browse published menus without authentication.
+
+**This MVP is a read-only digital restaurant menu for customers.** There is no cart, no order creation, no payment capability, and no delivery system. Authentication is exclusively for restaurant administrators.
+
+**Target audience:** Restaurants, cafes, fast-food outlets, and any food business that needs a digital menu presence.
 
 ---
 
-## ۴. تصمیمات محصول نهایی شده
+## 2. Actor Definitions
 
-> **وضعیت:** تمام ۱۰ تصمیم زیر توسط مالک محصول تایید شده و نهایی هستند.
+### 2.1 Customer
 
-### ۴.۱ انقضا پرداخت آنلاین
+- Any user who browses a restaurant's public menu.
+- **No authentication is required to browse the menu.**
+- No ordering, checkout, or payment capability exists in this MVP.
 
-- پرداخت آنلاین دقیقاً **۱۵ دقیقه** پس از تایید رستوران منقضی می‌شود.
-- شمارش معکوس از لحظه‌ای آغاز می‌شود که سفارش برای پرداخت واجد شرایط می‌شود (وضعیت ACCEPTED).
-- در صورت انقضا:
-  - `PaymentStatus` → `EXPIRED`
-  - `OrderStatus` → `CANCELLED`
-  - `cancellationReason` → `PAYMENT_EXPIRED`
-  - `OrderStatusHistory` باید این انتقال را ثبت کند.
-- مشتری نمی‌تواند روی جلسه پرداخت منقضی شده پرداخت کند.
-- ایجاد جلسه پرداخت جدید خارج از MVP اول مگر در آینده پشتیبانی شود.
+### 2.2 Restaurant Owner
 
-### ۴.۲ تایید/رد جزئی سفارش
+- A user who has created a restaurant or owns it.
+- Full access to all restaurant settings including branches, members, roles, and menu publication.
+- Can manage branches, categories, products, modifiers, menu drafts, and publications.
 
-- تایید یا رد جزئی در MVP اول پشتیبانی نمی‌شود.
-- رستوران باید **کل سفارش** را بپذیرد یا رد کند.
-- اقلام ناموجود پس از ثبت توسط کارکنان قابل حذف نیستند.
-- رد سفارش می‌تواند شامل دلیلی باشد که برای مشتری قابل مشاهده است.
+### 2.3 Manager
 
-### ۴.۳ لغو مشتری
+- A user invited by the OWNER with the MANAGER role.
+- Access to manage products, categories, modifiers, menu design, and branch configuration.
+- No access to ownership transfer.
+- No access to Publish or Rollback unless explicitly granted by OWNER.
 
-- مشتری فقط در وضعیت `PENDING_APPROVAL` می‌تواند سفارش را لغو کند.
-- پس از تایید رستوران، مشتری اجازه لغو ندارد.
-- پس از تایید، فقط کارکنان مجاز رستوران می‌توانند لغو کنند.
-- هر عمل لugo باید شامل موارد زیر باشد:
-  - `cancellationReason`
-  - `cancelledBy`
-  - `cancelledAt`
-  - رکورد `OrderStatusHistory`
+### 2.4 Platform Admin (Internal Admin) — Out of Scope
 
-### ۴.۴ پیکربندی مالی شعبه
-
-هر شعبه به‌طور مستقل پیکربندی می‌کند:
-
-- `tax` (مالیات)
-- `serviceFee` (حق سرویس)
-- `packagingFee` (هزینه بسته‌بندی)
-- `deliveryFee` rules (قوانین هزینه ارسال)
-- وضعیت فعال/غیرفعال هر هزینه
-- نوع هزینه: ثابت یا درصدی (در صورت کاربرد)
-
-تمام مقادیر پولی به‌صورت **عدد صحیح** در **کوچکترین واحد ارز پشتیبانی شده** ذخیره می‌شوند.
-
-### ۴.۵ محدوده ارسال
-
-MVP اول از پوشش ارسال مبتنی بر **شعاع جغرافیایی** استفاده می‌کند.
-
-هر شعبه می‌تواند تعریف کند:
-
-- `deliveryEnabled`
-- عرض جغرافیایی مبدأ
-- طول جغرافیایی مبدأ
-- حداکثر شعاع ارسال
-- هزینه پایه ارسال
-- پیکربندی اختیاری هزینه بر اساس فاصله
-- حداقل مبلغ سفارش ارسالی
-
-ردیابی نقشه زنده و اپلیکیشن پیک شامل نمی‌شود.
-
-### ۴.۶ انتشار منوی مستقل شعبه
-
-- هر شعبه Draft مستقل خود را دارد.
-- هر شعبه نسخه منتشر شده فعال مستقل خود را دارد.
-- انتشارات بین شعبه‌ها در MVP اول مشترک نیستند.
-- رستوران می‌تواند کاتالوگ محصولات اصلی (Master Product Catalog) را بین شعبه‌ها مشترک کند.
-- هر شعبه به‌طور مستقل قیمت، تخفیف، نمایش و موجودی محصولات را کنترل می‌کند.
-
-### ۴.۷ مجوز انتشار Manager
-
-- MANAGER به‌طور پیش‌فرض اجازه Publish یا Rollback ندارد.
-- OWNER می‌تواند به‌طور صریح به Manager مجوز `MENU_PUBLISH` را اعطا کند.
-- OWNER می‌تواند به‌طور صریح به Manager مجوز `MENU_ROLLBACK` را اعطا کند.
-- احراز هویت بر اساس **مجوزها** (permissions) است، نه نمای دکمه‌ها در فرانت‌اند.
-- OWNER همیشه این مجوزها را دارد.
-
-### ۴.۸ مدل موجودی
-
-- MVP اول حسابداری موجودی عددی پیاده‌سازی نمی‌کند.
-- موجودی شعبه از طریق وضعیت‌های عملیاتی استفاده می‌شود:
-  - `AVAILABLE`
-  - `UNAVAILABLE`
-- همچنین یک پرچم جداگانه `orderingEnabled` در صورت نیاز حفظ می‌شود.
-- تغییر موجودی باید **فوراً** اعمال شود و نیازی به انتشار نسخه جدید منو ندارد.
-
-### ۴.۹ امنیت توکن QR میزها
-
-توکن‌های QR میزها باید:
-
-- **یکتا** باشند.
-- **غیرتوالی** (non-sequential) باشند.
-- **غیرقابل حدس** باشند.
-- **قابل جایگزینی** باشند.
-- **قابل لغو** (revocable) باشند.
-
-جایگزینی توکن QR میز، توکن قبلی را **باطل** می‌کند.
-
-توکن عمومی QR نباید شناسه‌های داخلی دیتابیس را فاش کند.
-
-### ۴.۱۰ تایید ایمیل
-
-- تایید ایمیل **قبل از اولین سفارش** برای اکانت‌های Email + Password الزامی است.
-- تایید ایمیل **قبل از پذیرش دعوت‌نامه رستوران** یا **ایجاد رستوران** الزامی است.
-- ایمیل تایید شده **Google** به‌صورت خودکار تایید شده محسوب می‌شود.
-- احراز هویت Google فقط پس از **تایید Backend** توکن ID Google به ایمیل اعتماد می‌کند.
-- کاربر با ایمیل تایید نشده می‌تواند وارد شود اما از **اقدامات محافظت شده محصول** محدود می‌شود (ثبت سفارش، ایجاد رستوران، پذیرش دعوت).
+- Managing platform restaurants and users.
+- Support and service suspension.
 
 ---
 
-## ۵. حوزه‌های پلتفرم
+## 3. Confirmed Decisions
 
-### ۵.۱ وب‌سایت بازاریابی عمومی ویترین
+| # | Decision |
+|---|----------|
+| 1 | A user may be an OWNER or MANAGER of any number of restaurants. |
+| 2 | A restaurant may have any number of branches. |
+| 3 | Each table has a dedicated QR code that opens the read-only menu for that branch. |
+| 4 | Customers do not require authentication to browse the menu; authentication is only for restaurant administrators. |
+| 5 | Membership roles: OWNER, MANAGER. |
+| 6 | Each branch independently controls: product price, discount price, availability, visibility, and public menu toggle. |
+| 7 | Menu publication: Draft editing → Preview → Publish → Publication history → Full rollback. No field-by-field comparison in MVP. |
+| 8 | Authentication methods: Email + Password and Google Login. |
+| 9 | One email maps to one User. A user may use both methods. Google accounts with matching verified emails link to the existing User. Google-only users may have a null passwordHash. Email verification and password recovery are required. Access Token and Refresh Token architecture is required. Phone numbers are profile information, not login methods. |
+| 10 | A User may simultaneously be a regular customer, OWNER of one restaurant, and MANAGER of another. Roles belong to RestaurantMembership, not directly to User. |
+| 11 | Menu publication is independent per branch. Each branch has its own Draft and active published version. Publications are not shared between branches. The restaurant's master product catalog may be shared. |
+| 12 | MANAGER does not have Publish or Rollback access by default. OWNER may explicitly grant MENU_PUBLISH and MENU_ROLLBACK permissions to Manager. Authentication is based on permissions, not button visibility in the frontend. |
+| 13 | Availability MVP only includes AVAILABLE/UNAVAILABLE status. Numeric inventory accounting is not implemented in this MVP. Availability changes apply immediately and do not require publishing a new menu version. |
+| 14 | Table QR tokens must be unique, non-sequential, non-guessable, replaceable, and revocable. Token replacement revokes the previous token. The public QR token must not expose internal database identifiers. |
+| 15 | Email verification is required before creating a restaurant or accepting an invitation. Google-verified emails are automatically considered verified. |
 
-**هدف:**
-- صفحات فرود (Landing Pages)
-- معرفی قابلیت‌ها و امکانات
-- معرفی راهکارها
-- ثبت‌نام و ورود
-- درخواست دمو یا ارتباط
+---
 
-**وضعیت فعلی فرانت‌اند:** LandingPage، FeaturesPage، SolutionsPage موجود هستند. MarketingHeader و MarketingFooter نیز پیاده‌سازی شده‌اند.
+## 4. Finalized Product Decisions
 
-### ۵.۲ پلتفرم مدیریت رستوران (Admin Panel)
+### 4.1 Menu Publication per Branch
 
-**هدف:**
-- مدیریت رستوران و اطلاعات هویتی
-- مدیریت شعبه‌ها
-- مدیریت اعضا و نقش‌ها
-- مدیریت میزها و QR Code
-- دسته‌بندی‌ها
-- محصولات
-- Modifiers (افزودنی‌ها)
-- قیمت و موجودی اختصاصی هر شعبه
-- طراحی منو
-- پیش‌نمایش و انتشار
-- سفارشات
-- پرداخت‌ها
-- تحلیل و آمار اولیه
-- تنظیمات
+- Each branch has its own independent Draft.
+- Each branch has its own active published version.
+- Publications are not shared between branches in this MVP.
+- The restaurant's master product catalog may be shared across branches.
+- Each branch independently controls price, discount, visibility, and availability.
 
-**وضعیت فعلی فرانت‌اند:**
-- داشبورد (Dashboard) — با داده‌های Mock
-- طراحی منو (CanvasDesigner) — ویرایشگر بصری با کتابخانه کامپوننت
-- مدیریت محصولات (ProductManager) — CRUD محصولات با localStorage
-- مدیریت دسته‌بندی‌ها (CategoryManager) — CRUD با localStorage
-- برد سفارشات (OrderBoard) — ستون‌های ساده با داده Mock
-- تحلیل و آمار (Analytics) — نمودارها با Recharts و داده Mock
-- تنظیمات (Settings) — هویت بصری، رنگ، ساعات کاری با localStorage
-- جستجو (SearchResults) — جستجوی سراسری
-- اعلان‌ها (NotificationsView, NotificationArchive)
+### 4.2 Manager Publish Permission
 
-### ۵.۳ منوی مشتری (Customer-Facing Menu)
+- MANAGER does not have Publish or Rollback access by default.
+- OWNER may explicitly grant MENU_PUBLISH or MENU_ROLLBACK permissions to Manager.
+- Authentication is based on **permissions**, not button visibility in the frontend.
+- OWNER always has these permissions.
 
-**هدف:**
-- مرور منوی عمومی
-- تشخیص شعبه و میز
-- مرور دسته‌بندی‌ها و جزئیات محصول
+### 4.3 Availability Model
+
+- MVP does not implement numeric inventory accounting.
+- Branch availability uses operational statuses: AVAILABLE, UNAVAILABLE.
+- Availability changes apply **immediately** and do not require publishing a new menu version.
+
+### 4.4 Table QR Token Security
+
+Table QR tokens must be:
+- **Unique** across all tokens.
+- **Non-sequential** (non-guessable).
+- **Replaceable** — regenerating a token revokes the previous one.
+- **Revocable** — tokens can be explicitly revoked.
+
+The public QR token must not expose internal database IDs.
+
+---
+
+## 5. Platform Domains
+
+### 5.1 Public Marketing Website
+
+**Purpose:**
+- Landing pages
+- Feature and solution showcase
+- Registration and login
+- Demo requests
+
+### 5.2 Restaurant Management Platform (Admin Panel)
+
+**Purpose:**
+- Restaurant and identity management
+- Branch management
+- Team member and role management
+- Table and QR code management
+- Categories
+- Products
 - Modifiers
-- سبد خرید
-- احراز هویت هنگام checkout
-- ثبت سفارش
-- پرداخت
-- پیگیری سفارش
-- تاریخچه سفارشات
-- پروفایل و آدرس‌ها
+- Branch-specific pricing and availability
+- Menu design, preview, and publication
 
-**وضعیت فعلی فرانت‌اند:**
-- CustomerMenu — مرور منو، جزئیات محصول، سبد خرید
-- menu-blocks/ — HeroBlock, CategoryDisplayBlock, FeaturedBlock, FooterBlock, CategoryProductsScreen, ProductDetailSheet, CartBar, CartDrawer
-- ProfileModal — نمایش ساده پروفایل با localStorage
+### 5.3 Customer Menu (Read-Only)
 
-### ۵.۴ مدیریت داخلی پلتفرم (Internal Admin) — خارج از MVP اول
+**Purpose:**
+- Browse public menu
+- Branch and table detection via QR
+- Category and product browsing
+- Product details with modifiers
 
-**هدف:**
-- مدیریت رستوران‌های پلتفرم
-- مدیریت کاربران پلتفرم
-- پشتیبانی
-- تعلیق سرویس
-- قابلیت مشاهده سرویس
-- مدیریت اشتراک و پلن‌ها (آینده)
+**Authentication is not required.** Customers simply browse the published menu.
 
-**توضیح:** این حوزه خارج از MVP اول است اما معماری باید قابل توسعه باشد.
+### 5.4 Internal Platform Admin — Out of Scope
+
+- Restaurant management
+- User management
+- Support and suspension
+- Subscription and plan management (future)
 
 ---
 
-## ۶. سفرهای کاربری اصلی
+## 6. Core User Journeys
 
-### ۶.۱ جریان مدیریت رستوران (Admin Flow)
-
-```
-۱. کاربر ثبت‌نام یا ورود می‌کند.
-۲. کاربر ایمیل خود را تایید می‌کند (الزامی قبل از ایجاد رستوران).
-۳. کاربر رستوران ایجاد می‌کند یا دعوت‌نامه عضویت را می‌پذیرد.
-۴. کاربر یک یا چند شعبه ایجاد می‌کند.
-۵. کاربر تنظیمات مالی و سفارش‌پذیری شعبه را پیکربندی می‌کند.
-۶. کاربر میزها و QR Code ایجاد می‌کند.
-۷. کاربر دسته‌بندی‌ها ایجاد می‌کند.
-۸. کاربر کاتالوگ محصولات اصلی رستوران را ایجاد می‌کند.
-۹. کاربر قیمت و موجودی اختصاصی هر شعبه را پیکربندی می‌کند.
-۱۰. کاربر گروه‌ها و گزینه‌های Modifier را ایجاد می‌کند.
-۱۱. کاربر Draft منو را ویرایش می‌کند.
-۱۲. کاربر Preview را مشاهده می‌کند.
-۱۳. کاربر منو را Publish می‌کند.
-۱۴. مشتریان به منوی شعبه دسترسی پیدا می‌کنند.
-۱۵. سفارشات وارد صف انتظار تایید می‌شوند.
-۱۶. رستوران سفارشات را می‌پذیرد یا رد می‌کند.
-۱۷. سفارشات تایید شده از طریق پرداخت و انجام ادامه می‌یابند.
-۱۸. کارکنان وضعیت سفارش را به‌روزرسانی می‌کنند.
-۱۹. مشتری آخرین وضعیت را مشاهده می‌کند.
-```
-
-### ۶.۲ جریان مشتری — سفارش در رستوران (Dine-In)
+### 6.1 Restaurant Management Flow (Admin)
 
 ```
-اسکن QR Code روی میز
-→ تشخیص شعبه و شماره میز
-→ مرور منوی عمومی (بدون احراز هویت)
-→ انتخاب محصولات و افزودن به سبد
-→ رفتن به checkout
-→ احراز هویت (ورود یا ثبت‌نام)
-→ تایید ایمیل (اگر قبلاً تایید نشده)
-→ ثبت سفارش
-→ انتظار تایید رستوران
-→ مشتری می‌تواند لغو کند (فقط قبل از تایید)
-→ پرداخت (در صورت پرداخت آنلاین)
-→ پیگیری وضعیت
+1. User registers or logs in.
+2. User verifies email (required before creating a restaurant).
+3. User creates a restaurant or accepts a membership invitation.
+4. User creates one or more branches.
+5. User configures branch settings (timezone, currency).
+6. User creates tables and QR codes.
+7. User creates categories.
+8. User creates the restaurant's master product catalog.
+9. User configures branch-specific pricing and availability.
+10. User creates modifier groups and options.
+11. User edits the menu Draft.
+12. User previews the menu.
+13. User publishes the menu.
+14. Customers access the published menu via QR or direct link.
 ```
 
-### ۶.۳ جریان مشتری — سفارش بیرون‌بر (Takeaway)
+### 6.2 Customer Menu Browsing Flow
 
 ```
-باز کردن منوی رستوران
-→ انتخاب نوع Takeaway
-→ انتخاب محصولات
-→ احراز هویت
-→ انتخاب جزئیات تحویل
-→ ثبت سفارش
-→ تایید رستوران
-→ پرداخت (آنلاین یا حضوری)
-→ آماده‌سازی
-→ آماده برای تحویل
-```
-
-### ۶.۴ جریان مشتری — سفارش ارسالی (Delivery)
-
-```
-باز کردن منوی رستوران
-→ انتخاب نوع Delivery
-→ انتخاب آدرس
-→ اعتبارسنجی پوشش ارسال (شعاع جغرافیایی)
-→ محاسبه هزینه ارسال
-→ ثبت سفارش
-→ تایید رستوران
-→ پرداخت
-→ آماده‌سازی
-→ وضعیت پیگیری ارسال (متنی، بدون نقشه زنده)
+Scan QR code on table
+→ Detect branch and table
+→ Load published menu (no authentication required)
+→ Browse categories and products
+→ View product details with modifiers
+→ No cart, no order, no payment
 ```
 
 ---
 
-## ۷. چرخه حیات سفارش و پرداخت
+## 7. Menu Publishing Lifecycle
 
-> **تغییر مهم:** وضعیت سفارش و وضعیت پرداخت اکنون به‌صورت **دو ماشین حالت مستقل** مدل‌سازی می‌شوند. وضعیت‌های پرداخت از وضعیت سفارش جدا شده‌اند.
-
-### ۷.۱ وضعیت‌های سفارش (OrderStatus)
-
-| وضعیت | توضیح |
-|-------|-------|
-| `PENDING_APPROVAL` | سفارش ثبت شده، در انتظار تایید رستوران |
-| `REJECTED` | سفارش توسط رستوران رد شده |
-| `ACCEPTED` | سفارش توسط رستوران تایید شده |
-| `PREPARING` | در حال آماده‌سازی |
-| `READY` | آماده تحویل |
-| `OUT_FOR_DELIVERY` | در حال ارسال (فقط DELIVERY) |
-| `COMPLETED` | تکمیل شده |
-| `CANCELLED` | لغو شده |
-
-### ۷.۲ وضعیت‌های پرداخت (PaymentStatus)
-
-| وضعیت | توضیح |
-|-------|-------|
-| `UNPAID` | پرداخت انجام نشده |
-| `PENDING` | در انتظار پرداخت آنلاین |
-| `PAID` | پرداخت با موفقیت انجام شده |
-| `FAILED` | تلاش پرداخت ناموفق |
-| `EXPIRED` | پرداخت آنلاین منقضی شده (۱۵ دقیقه) |
-| `REFUNDED` | بازپرداخت انجام شده |
-
-### ۷.۳ اعمال وضعیت بر اساس نوع سفارش
-
-| OrderStatus | DINE_IN | TAKEAWAY | DELIVERY |
-|-------------|---------|----------|----------|
-| PENDING_APPROVAL | ✓ | ✓ | ✓ |
-| REJECTED | ✓ | ✓ | ✓ |
-| ACCEPTED | ✓ | ✓ | ✓ |
-| PREPARING | ✓ | ✓ | ✓ |
-| READY | ✓ | ✓ | ✓ |
-| OUT_FOR_DELIVERY | ✗ | ✗ | ✓ |
-| COMPLETED | ✓ | ✓ | ✓ |
-| CANCELLED | ✓ | ✓ | ✓ |
-
-| PaymentStatus | DINE_IN | TAKEAWAY | DELIVERY |
-|---------------|---------|----------|----------|
-| UNPAID | ✓ (IN_PERSON) | ✓ (IN_PERSON) | ✓ (IN_PERSON) |
-| PENDING | ✓ (ONLINE) | ✓ (ONLINE) | ✓ (ONLINE) |
-| PAID | ✓ | ✓ | ✓ |
-| FAILED | ✓ (ONLINE) | ✓ (ONLINE) | ✓ (ONLINE) |
-| EXPIRED | ✓ (ONLINE) | ✓ (ONLINE) | ✓ (ONLINE) |
-| REFUNDED | ✓ | ✓ | ✓ |
-
-### ۷.۴ ترکیب‌های همزمان ممکن
-
-یک سفارش می‌تواند همزمان دارای ترکیب‌های زیر باشد:
-
-| OrderStatus | PaymentStatus | توضیح |
-|-------------|---------------|-------|
-| PENDING_APPROVAL | UNPAID | سفارش جدید ثبت شده |
-| ACCEPTED | PENDING | سفارش تایید شده، منتظر پرداخت آنلاین |
-| ACCEPTED | UNPAID | سفارش تایید شده، پرداخت حضوری |
-| PREPARING | UNPAID | در حال آماده‌سازی، پرداخت حضوری در پایان |
-| PREPARING | PAID | در حال آماده‌سازی، پرداخت آنلاین انجام شده |
-| READY | UNPAID | آماده تحویل، منتظر پرداخت حضوری |
-| READY | PAID | آماده تحویل، پرداخت انجام شده |
-| COMPLETED | PAID | تکمیل شده |
-| CANCELLED | EXPIRED | لغو شده به دلیل انقضا پرداخت |
-| CANCELLED | UNPAID | لغو شده قبل از پرداخت |
-
-### ۷.۵ جریان‌های تایید شده انتقال
-
-#### جریان آنلاین (ONLINE)
-
-```
-PENDING_APPROVAL + UNPAID
-→ رستوران تایید می‌کند
-→ ACCEPTED + PENDING
-→ مشتری ظرف ۱۵ دقیقه پرداخت می‌کند
-→ ACCEPTED + PAID
-→ PREPARING + PAID
-→ READY + PAID
-→ COMPLETED + PAID
-```
-
-**شکست پرداخت:**
-
-```
-ACCEPTED + PENDING
-→ تلاش پرداخت ناموفق
-→ ACCEPTED + FAILED
-→ سیستم ممکن است اجازه تلاش مجدد دهد (در پنجره ۱۵ دقیقه)
-```
-
-**انقضای پرداخت:**
-
-```
-ACCEPTED + PENDING/FAILED
-→ پنجره ۱۵ دقیقه منقضی می‌شود
-→ CANCELLED + EXPIRED
-→ cancellationReason = PAYMENT_EXPIRED
-→ OrderStatusHistory ثبت می‌کند
-```
-
-#### جریان حضوری (IN_PERSON)
-
-```
-PENDING_APPROVAL + UNPAID
-→ رستوران تایید می‌کند
-→ ACCEPTED + UNPAID
-→ PREPARING + UNPAID
-→ READY + UNPAID
-→ صندوقدار پرداخت را ثبت می‌کند
-→ READY + PAID
-→ COMPLETED + PAID
-```
-
-### ۷.۶ قاعده تاریخچه وضعیت سفارش
-
-هر تغییر `OrderStatus` باید یک رکورد **غیرقابل تغییر (immutable)** `OrderStatusHistory` ایجاد کند:
-
-- `orderId`
-- `status` (وضعیت جدید)
-- `previousStatus` (وضعیت قبلی)
-- `changedBy` (کاربری که تغییر داده)
-- `changedAt` (زمان تغییر)
-- `note` (توضیح اختیاری، مثلاً دلیل رد)
-
-### ۷.۷ قاعده تاریخچه وضعیت پرداخت
-
-هر تغییر `PaymentStatus` باید یک رکورد **غیرقابل تغییر (immutable)** `PaymentStatusHistory` ایجاد کند:
-
-- `orderId`
-- `paymentStatus` (وضعیت جدید)
-- `previousPaymentStatus` (وضعیت قبلی)
-- `changedBy` (کاربر یا سیستم)
-- `changedAt` (زمان تغییر)
-- `note` (توضیح اختیاری)
-- `transactionId` (در صورت وجود)
-
-### ۷.۸ اطلاعات پرداخت سفارش
-
-هر سفارش شامل اطلاعات زیر است:
-
-- `paymentMethod`: ONLINE | IN_PERSON
-- `paymentStatus`: UNPAID | PENDING | PAID | FAILED | EXPIRED | REFUNDED
-- `paidAt`: زمان پرداخت
-- `transactionId`: شناسه تراکنش (برای پرداخت آنلاین)
-- `subtotal`: مجموع قبل از مالیات و هزینه‌ها
-- `tax`: مالیات (از پیکربندی شعبه)
-- `serviceFee`: حق سرویس (از پیکربندی شعبه)
-- `packagingFee`: هزینه بسته‌بندی (از پیکربندی شعبه)
-- `deliveryFee`: هزینه ارسال (فقط DELIVERY)
-- `discount`: تخفیف
-- `total`: مبلغ نهایی
-- `cancellationReason`: دلیل لغو (در صورت لغو)
-- `cancelledBy`: کاربر لغوکننده (در صورت لغو)
-- `cancelledAt`: زمان لغو (در صورت لغو)
-
-### ۷.۹ قاعده اسنپ‌شات سفارش (Order Item Snapshot)
-
-هر `OrderItem` باید اسنپ‌شات غیرقابل تغییر از اطلاعات زیر را حفظ کند:
-
-- نام محصول
-- قیمت پایه محصول
-- قیمت اختصاصی شعبه
-- قیمت تخفیف شعبه
-- تعداد
-- Modifiers انتخاب شده
-- قیمت Modifiers
-- یادداشت مشتری
-- مالیات
-- حق سرویس
-- هزینه بسته‌بندی
-- جمع خط نهایی
-
-تغییر محصول در آینده نباید هیچ سفارش موجود را تغییر دهد.
-
----
-
-## ۸. چرخه انتشار منو
-
-### ۸.۱ مدل انتشار
+### 7.1 Publishing Model
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌──────────────┐
 │    Draft     │ ──→ │   Preview   │ ──→ │   Publish    │
-│  (قابل       │     │  (خواندن    │     │  (snapshot   │
-│   ویرایش)    │     │   Draft)    │     │   غیرقابل    │
-└─────────────┘     └─────────────┘     │   تغییر)    │
-      ↑                                  └──────────────┘
-      │                                       │
+│  (editable)  │     │  (reads     │     │  (immutable  │
+│              │     │   Draft)    │     │   snapshot)  │
+└─────────────┘     └─────────────┘     └──────────────┘
+      ↑                                       │
       │           ┌──────────────┐            │
       └───────────│   Rollback   │ ←──────────┘
-                  │  (ایجاد       │
-                  │   نسخه جدید   │
-                  │   بر اساس     │
-                  │   snapshot    │
-                  │   قبلی)       │
+                  │  (creates new│
+                  │   version    │
+                  │   from       │
+                  │   snapshot)  │
                   └──────────────┘
 ```
 
-- **یک Draft ویرایشی** برای هر شعبه وجود دارد.
-- **Preview** Draft را می‌خواند و بدون تغییر نمایش می‌دهد.
-- **هر Publish** یک snapshot غیرقابل تغییر ایجاد می‌کند.
-- **یک نسخه منتشر شده فعال** در هر لحظه وجود دارد (پس از اولین انتشار).
-- **منوی مشتری فقط نسخه فعال منتشر شده** را می‌خواند.
-- **ویرایش Draft** بر مشتریان تأثیری ندارد.
-- **Rollback** یک **نسخه جدید** بر اساس snapshot نسخه قبلی ایجاد می‌کند (داده‌های تاریخی را تغییر نمی‌دهد).
-- **نسخه‌های منتشر شده هرگز در جا ویرایش نمی‌شوند.**
+- **One editable Draft** exists per branch.
+- **Preview** reads the Draft and displays it without changes.
+- **Each Publish** creates an immutable snapshot.
+- **One active published version** exists at any time (after first publish).
+- **Customer menu reads only the active published version.**
+- **Editing the Draft has no effect on customers.**
+- **Rollback** creates a **new version** based on a previous snapshot (historical data is never mutated).
+- **Published versions are never modified in place.**
 
-### ۸.۲ جزئیات Rollback
+### 7.2 Rollback Details
 
 ```
-Version 5 فعال
-→ rollback با استفاده از Version 3
-→ ایجاد Version 6 که snapshot آن با Version 3 مطابقت دارد
-→ Version 6 فعال می‌شود
+Version 5 is active
+→ rollback to Version 3
+→ create Version 6 with snapshot matching Version 3
+→ Version 6 becomes active
+→ Version 5 record is never modified
 ```
 
-### ۸.۳ قیمت در انتشار
+### 7.3 Pricing in Publications
 
-- تغییر قیمت شعبه یا قیمت تخفیف **فوراً** بر مشتریان تأثیر نمی‌گذارد.
-- تغییرات قیمت فقط پس از **Publish** برای مشتریان قابل مشاهده می‌شوند.
-- قیمت‌های منوی مشتری از **snapshot نسخه فعال منتشر شده** خوانده می‌شوند.
-- سفارشات موجود همیشه اسنپ‌شات قیمت غیرقابل تغییر خود را حفظ می‌کنند.
+- Changes to branch price or discount price do **not** affect customers immediately.
+- Price changes become customer-visible only after **Publish**.
+- Customer menu prices are read from the **active published snapshot**.
 
-### ۸.۴ موجودی در برابر انتشار
+### 7.4 Availability vs Publishing
 
-- `AVAILABLE / UNAVAILABLE` داده‌های عملیاتی **زنده** هستند.
-- تغییرات موجودی **فوراً** اعمال می‌شوند.
-- تغییرات موجودی نیاز به Publish ندارند.
-- یک محصول ممکن است در نسخه منتشر شده فعال وجود داشته باشد اما به دلیل موجودی `UNAVAILABLE` فوراً مخفی یا غیرفعال شود.
+- `AVAILABLE / UNAVAILABLE` are **live operational** data.
+- Availability changes apply **immediately**.
+- Availability changes do not require a new Publish.
+- A product may exist in the published snapshot but be instantly hidden because its live availability is UNAVAILABLE.
 
-### ۸.۵ محتوای Snapshot انتشار
+### 7.5 Publication Snapshot Content
 
-هر Snapshot انتشار باید شامل موارد زیر باشد:
+Each publication snapshot must include:
 
-- Layout منو (چیدمان)
-- تنظیمات Theme
-- نمایش دسته‌بندی‌ها (فعال/غیرفعال)
-- ترتیب دسته‌بندی‌ها
-- نمایش محصولات (فعال/غیرفعال)
-- ترتیب محصولات
-- نام نمایشی محصول
-- توضیحات محصول
-- تصویر محصول
-- قیمت مؤثر اختصاصی شعبه در زمان انتشار
-- قیمت تخفیف مؤثر اختصاصی شعبه در زمان انتشار
-- ارائه Modifiers قابل مشاهده برای مشتری
-- سایر تنظیمات نمایشی
+- Menu layout
+- Theme settings
+- Category visibility and ordering
+- Product visibility and ordering
+- Product display name and description
+- Product image
+- Branch-specific prices at publication time
+- Branch-specific discount prices at publication time
+- Modifier options visible to customers
+- Other display settings
 
-**توضیح:** موجودی و وضعیت انبار شعبه داده‌های عملیاتی هستند و خارج از snapshot بصری غیرقابل تغییر باقی می‌مانند.
+### 7.6 Publication History
 
-### ۸.۶ تاریخچه انتشار
+Each publication creates a record with:
+- `publishedAt`: publication timestamp
+- `publishedBy`: user who published (must have MENU_PUBLISH permission)
+- `version`: version number
+- `snapshot`: complete Draft state at publication time
 
-هر انتشار رکوردی شامل موارد زیر ایجاد می‌کند:
+### 7.7 Independent Branch Publication
 
-- `publishedAt`: زمان انتشار
-- `publishedBy`: کاربر منتشرکننده (باید مجوز MENU_PUBLISH داشته باشد)
-- `version`: شماره نسخه
-- `snapshot`: کپی کامل وضعیت Draft در زمان انتشار
-
-### ۸.۷ انتشار مستقل شعبه
-
-- هر شعبه Draft، Preview و انتشارات مستقل خود را دارد.
-- انتشارات بین شعبه‌ها در MVP اول **مشترک نیستند.**
-- کاتالوگ محصولات اصلی رستوران (Master Product Catalog) می‌تواند بین شعبه‌ها مشترک باشد.
-- هر شعبه به‌طور مستقل قیمت، تخفیف، نمایش و موجودی محصولات را کنترل می‌کند.
+- Each branch has its own Draft, Preview, and publications.
+- Publications are not shared between branches in this MVP.
+- The restaurant's master product catalog may be shared.
+- Each branch independently controls price, discount, visibility, and availability.
 
 ---
 
-## ۹. ماتریس نقش و دسترسی
+## 8. Role and Permission Matrix
 
-> **توجه:** این ماتریس **نهایی شده** است. احراز هویت Backend معتبر و مرجع است.
+### 8.1 OWNER
 
-### ۹.۱ OWNER
-
-| حوزه | دسترسی |
+| Area | Access |
 |------|--------|
-| رستوران | کامل |
-| شعبه‌ها | ایجاد، ویرایش، حذف |
-| اعضا و نقش‌ها | ایجاد، ویرایش، حذف، تغییر نقش |
-| مجوزها | اعطای MENU_PUBLISH و MENU_ROLLBACK |
-| صورتحساب | در آینده |
-| `MENU_PUBLISH` | ✓ (همیشه) |
-| `MENU_ROLLBACK` | ✓ (همیشه) |
-| سفارشات | مشاهده، تغییر وضعیت |
-| پرداخت‌ها | مشاهده |
-| گزارش‌ها | کامل |
-| تنظیمات | کامل |
-
-### ۹.۲ MANAGER
-
-| حوزه | دسترسی |
-|------|--------|
-| محصولات | ایجاد، ویرایش، حذف |
-| دسته‌بندی‌ها | ایجاد، ویرایش، حذف |
-| Modifiers | ایجاد، ویرایش، حذف |
-| پیکربندی عملیاتی شعبه | ویرایش |
-| طراحی منو | ویرایش Draft |
+| Restaurant | Full |
+| Branches | Create, edit, delete |
+| Team members and roles | Create, edit, delete, change role |
+| Permissions | Grant MENU_PUBLISH and MENU_ROLLBACK |
+| MENU_PUBLISH | ✓ (always) |
+| MENU_ROLLBACK | ✓ (always) |
+| Categories | Create, edit, delete |
+| Products | Create, edit, delete |
+| Modifiers | Create, edit, delete |
+| Menu design | Edit Draft |
 | Preview | ✓ |
-| `MENU_PUBLISH` | ✗ (فقط با اعصار صریح OWNER) |
-| `MENU_ROLLBACK` | ✗ (فقط با اعصار صریح OWNER) |
-| سفارشات | مشاهده، تغییر وضعیت |
-| گزارش‌ها | کامل |
-| انتقال مالکیت | ✗ |
+| Settings | Full |
 
-### ۹.۳ ORDER_OPERATOR
+### 8.2 MANAGER
 
-| حوزه | دسترسی |
+| Area | Access |
 |------|--------|
-| مشاهده سفارشات | ✓ |
-| تایید کامل سفارش | ✓ |
-| رد کامل سفارش | ✓ |
-| ارائه دلیل رد | ✓ |
-| تغییر وضعیت انجام | ✓ |
-| ثبت پرداخت | ✗ (مگر با مجوز جداگانه) |
-| پیکربندی محصول یا منو | ✗ |
-| تنظیمات رستوران | ✗ |
-
-### ۹.۴ CASHIER
-
-| حوزه | دسترسی |
-|------|--------|
-| مشاهده سفارشات قابل پرداخت | ✓ |
-| ثبت پرداخت IN_PERSON | ✓ |
-| مشاهده وضعیت پرداخت | ✓ |
-| تکمیل checkout | ✓ |
-| رد سفارش | ✗ (به‌طور پیش‌فرض) |
-| ویرایش منو | ✗ |
+| Products | Create, edit, delete |
+| Categories | Create, edit, delete |
+| Modifiers | Create, edit, delete |
+| Branch operational config | Edit |
+| Menu design | Edit Draft |
+| Preview | ✓ |
+| MENU_PUBLISH | ✗ (only with explicit OWNER grant) |
+| MENU_ROLLBACK | ✗ (only with explicit OWNER grant) |
+| Ownership transfer | ✗ |
 
 ---
 
-## ۱۰. واژه‌نامه حوزه تخصصی
+## 9. Glossary
 
-| اصطلاح | تعریف |
-|--------|-------|
-| **Branch** | شعبه فیزیکی یا آنلاین یک رستوران |
-| **QR Code** | کد اختصاصی هر میز که مشتری را به منوی شعبه متصل می‌کند |
-| **QR Token** | توکن امن و غیرقابل حدس مرتبط با هر میز |
-| **Draft** | نسخه قابل ویرایش منو که بر مشتریان تأثیری ندارد |
-| **Preview** | نمای مشتری‌نما از Draft بدون تغییر در سرور |
-| **Publish** | ایجاد snapshot غیرقابل تغییر از Draft |
-| **Rollback** | ایجاد نسخه جدید بر اساس snapshot نسخه قبلی (بدون تغییر داده‌های تاریخی) |
-| **Snapshot** | کپی کامل و غیرقابل تغییر از وضعیت منو در یک لحظه |
-| **Modifier** | گزینه اضافی قابل انتخاب برای محصول (مثل سایز، ادویه، ...) |
-| **ModifierGroup** | گروهی از Modifiers (مثل "سایز" شامل متوسط، بزرگ، خانوادگی) |
-| **DINE_IN** | سفارش مصرف در رستوران |
-| **TAKEAWAY** | سفارش بیرون‌بر |
-| **DELIVERY** | سفارش ارسالی |
-| **ONLINE** | پرداخت از طریق درگاه آنلاین |
-| **IN_PERSON** | پرداخت حضوری (نقدی یا کارتخوان) |
-| **OrderStatus** | وضعیت چرخه حیات سفارش (مستقل از وضعیت پرداخت) |
-| **PaymentStatus** | وضعیت چرخه حیات پرداخت (مستقل از وضعیت سفارش) |
-| **OrderStatusHistory** | رکورد غیرقابل تغییر هر تغییر وضعیت سفارش |
-| **PaymentStatusHistory** | رکورد غیرقابل تغییر هر تغییر وضعیت پرداخت |
-| **RestaurantMembership** | عضویت یک کاربر در یک رستوران با یک نقش مشخص |
-| **Master Product Catalog** | کاتالوگ محصولات اصلی رستوران (مشترک بین شعبه‌ها) |
-| **MENU_PUBLISH** | مجوز انتشار منو |
-| **MENU_ROLLBACK** | مجوز بازگشت به نسخه قبلی منو |
-| **OrderItem Snapshot** | اسنپ‌شات غیرقابل تغییر اطلاعات هر آیتم سفارش |
+| Term | Definition |
+|------|------------|
+| **Branch** | A physical or online location of a restaurant |
+| **QR Code** | A code unique to each table linking to the branch menu |
+| **QR Token** | A secure, non-guessable token associated with each table |
+| **Draft** | The editable menu version with no customer impact |
+| **Preview** | Customer-facing view of the Draft without server changes |
+| **Publish** | Creation of an immutable snapshot from the Draft |
+| **Rollback** | Creation of a new version from a previous snapshot (no data mutation) |
+| **Snapshot** | A complete, immutable copy of menu state at a point in time |
+| **Modifier** | An additional selectable option for a product (e.g. size, spice level) |
+| **ModifierGroup** | A group of modifiers (e.g. "Size" including medium, large, family) |
+| **RestaurantMembership** | A user's membership in a restaurant with a specific role |
+| **Master Product Catalog** | The restaurant's shared product catalog (shared across branches) |
+| **MENU_PUBLISH** | Permission to publish menu |
+| **MENU_ROLLBACK** | Permission to rollback to a previous menu version |
 
 ---
 
-## ۱۱. موجودی فرانت‌اند
+## 10. Frontend Inventory
 
-### ۱۱.۱ صفحات موجود (Existing)
+### 10.1 Existing Pages
 
-| صفحه | فایل | وضعیت |
-|------|------|-------|
-| صفحه فرود اصلی | `LandingPage.tsx` | ✅ موجود |
-| صفحه قابلیت‌ها | `FeaturesPage.tsx` | ✅ موجود |
-| صفحه راهکارها | `SolutionsPage.tsx` | ✅ موجود |
-| هدر بازاریابی | `MarketingHeader.tsx` | ✅ موجود |
-| فوتر بازاریابی | `MarketingHeader.tsx` (داخلی) | ✅ موجود |
-| فرم ورود/ثبت‌نام | `AuthForm.tsx` | ⚠️ موجود — بدون اتصال به API واقعی |
-| صفحه ورود | `LoginPage.tsx` | ⚠️ موجود — بدون احراز هویت واقعی |
-| داشبورد مدیریت | `Dashboard.tsx` | ⚠️ موجود — داده‌های Mock |
-| طراحی منو (Canvas) | `CanvasDesigner.tsx` | ⚠️ موجود — با localStorage |
-| مدیریت محصولات | `ProductManager.tsx` | ⚠️ موجود — CRUD با localStorage |
-| مدیریت دسته‌بندی‌ها | `CategoryManager.tsx` | ⚠️ موجود — CRUD با localStorage |
-| برد سفارشات | `OrderBoard.tsx` | ⚠️ موجود — داده Mock، وضعیت‌های ساده |
-| تحلیل و آمار | `Analytics.tsx` | ⚠️ موجود — داده Mock، نمودارهای Recharts |
-| تنظیمات | `Settings.tsx` | ⚠️ موجود — با localStorage |
-| منوی مشتری | `CustomerMenu.tsx` | ⚠️ موجود — با داده Mock |
-| بلوک‌های منو | `menu-blocks/` (۹ فایل) | ✅ موجود — HeroBlock, CategoryDisplayBlock, FeaturedBlock, FooterBlock, CategoryProductsScreen, ProductDetailSheet, CartBar, CartDrawer |
-| جستجوی سراسری | `SearchResults.tsx` | ✅ موجود |
-| اعلان‌ها | `NotificationsView.tsx`, `NotificationArchive.tsx` | ✅ موجود |
-| هدر ادمین | `Header.tsx` | ✅ موجود |
-| سایدبار ادمین | `Sidebar.tsx` | ✅ موجود |
-| تامپرچر تم | `ThemeProvider.tsx` | ✅ موجود |
-| انیمیشن‌ها و Motion | `MotionSystem.tsx` | ✅ موجود |
-| پس‌زمینه واکنشی | `ReactiveGridBackground.tsx` | ✅ موجود |
-
-### ۱۱.۲ صفحات جزئی (Partial)
-
-| صفحه | توضیح |
-|------|-------|
-| AuthForm | فرم ورود/ثبت‌نام ظاهری دارد ولی بدون اتصال به backend واقعی. اطلاعات فقط در localStorage ذخیره می‌شود. |
-| OrderBoard | وضعیت‌های سفارش بسیار ساده هستند (new/preparing/ready/delivered). وضعیت‌های واقعی PENDING_APPROVAL، REJECTED، PaymentStatus و غیره وجود ندارند. |
-| Settings | فقط هویت بصری، رنگ و ساعات کاری. بخش‌هایی مانند مدیریت شعبه، اعضا، میزها، پیکربندی مالی شعبه ندارد. |
-| ProfileModal (در CustomerMenu) | نمایش ساده پروفایل با localStorage. بدون آدرس‌ها، بدون تاریخچه سفارشات. |
-
-### ۱۱.۳ صفحات گمشده یا نیازمند بازطراحی (Missing / Needs Redesign)
-
-| صفحه | وضعیت |
-|------|-------|
-| رستوران‌سوئیچر (Restaurant Switcher) | ❌ گمشده |
-| شعبه‌سوئیچر (Branch Switcher) | ❌ گمشده |
-| ویزار ایجاد رستوران (Restaurant Onboarding) | ❌ گمشده |
-| ایجاد شعبه (Branch Creation) | ❌ گمشده |
-| مدیریت اعضا (Team Members) | ❌ گمشده |
-| دعوت‌نامه و مدیریت نقش‌ها | ❌ گمشده |
-| مدیریت میزها و QR Code | ❌ گمشده |
-| تولید/دانلود/لغو/جایگزینی QR Code | ❌ گمشده |
-| ثبت‌نام مشتری (Email/Password) | ❌ گمشده — AuthForm فعلی فقط ورود دارد |
-| Google Login | ❌ گمشده |
-| تایید ایمیل (Email Verification) | ❌ گمشده |
-| فراموشی رمز (Forgot Password) | ❌ گمشده |
-| بازیابی رمز (Reset Password) | ❌ گمشده |
-| احراز هویت checkout مشتری | ❌ گمشده |
-| آدرس‌های مشتری | ❌ گمشده |
-| انتخاب نوع سفارش (Dine-In/Takeaway/Delivery) | ❌ گمشده |
-| تنظیمات ارسال و شعاع جغرافیایی | ❌ گمشده |
-| محاسبه هزینه ارسال | ❌ گمشده |
-| تایید/رد سفارش توسط رستوران (وضعیت‌های واقعی) | ❌ گمشده |
-| دلیل رد سفارش | ❌ گمشده |
-| لغو سفارش توسط مشتری (قبل از تایید) | ❌ گمشده |
-| لغو سفارش توسط کارکنان (با دلیل) | ❌ گمشده |
-| وضعیت پرداخت آنلاین و شمارش معکوس انقضا | ❌ گمشده |
-| وضعیت انقضای پرداخت | ❌ گمشده |
-| رابط پرداخت صندوقدار (IN_PERSON) | ❌ گمشده |
-| قیمت اختصاصی شعبه | ❌ گمشده |
-| موجودی اختصاصی شعبه (AVAILABLE/UNAVAILABLE toggle) | ❌ گمشده |
-| نشانگر نیاز به Publish برای تغییرات قیمت | ❌ گمشده |
-| تاریخچه انتشار منو | ❌ گمشده |
-| رابط Rollback | ❌ گمشده |
-| شاگر Draft/Published | ❌ گمشده |
-| نشانگر تغییرات ذخیره/منتشر نشده | ❌ گمشده |
-| مجوز انتشار Manager (UI) | ❌ گمشده |
-| پیکربندی مالی شعبه (tax, serviceFee, packagingFee, deliveryFee) | ❌ گمشده |
-| رفتار Google email تایید شده | ❌ گمشده |
-| حالت محدود اکانت تایید نشده | ❌ گمشده |
-| جداسازی وضعیت OrderStatus و PaymentStatus | ❌ گمشده |
-| پیگیری سفارش مشتری | ❌ گمشده |
-| تاریخچه سفارشات مشتری | ❌ گمشده |
-
-### ۱۱.۴ وضعیت ذخیره‌سازی فعلی
-
-| داده | محل ذخیره | مشکل |
-|------|----------|-------|
-| اطلاعات رستوران | localStorage (`vitrin_restaurant_name`, `vitrin_restaurant_logo`, ...) | بدون backend |
-| محصولات | localStorage + constants (INITIAL_PRODUCTS) | داده Mock |
-| دسته‌بندی‌ها | localStorage + constants (INITIAL_CATEGORIES) | داده Mock |
-| سفارشات | hardcoded در OrderBoard | داده Mock |
-| Design Draft | localStorage (`vitrin_designer_draft`) | بدون versioning |
-| Design Published | localStorage (`vitrin_published_design`) | بدون snapshot |
-| وضعیت احراز هویت | localStorage (`vitrin_auth` = "true"/"false") | بدون backend |
-| رنگ برند | localStorage (`vitrin_brand_color`) | — |
-| تنظیمات | localStorage | بدون backend |
+| Page | File | Status |
+|------|------|--------|
+| Landing page | `LandingPage.tsx` | ✅ Exists |
+| Features page | `FeaturesPage.tsx` | ✅ Exists |
+| Solutions page | `SolutionsPage.tsx` | ✅ Exists |
+| Marketing header | `MarketingHeader.tsx` | ✅ Exists |
+| Login page | `LoginPage.tsx` | ⚠️ Exists — no real auth |
+| Dashboard | `Dashboard.tsx` | ⚠️ Exists — mock data |
+| Canvas designer | `CanvasDesigner.tsx` | ⚠️ Exists — localStorage |
+| Product manager | `ProductManager.tsx` | ⚠️ Exists — localStorage CRUD |
+| Category manager | `CategoryManager.tsx` | ⚠️ Exists — localStorage CRUD |
+| Settings | `Settings.tsx` | ⚠️ Exists — localStorage |
+| Customer menu | `CustomerMenu.tsx` | ⚠️ Exists — mock data |
+| Menu blocks | `menu-blocks/` (9 files) | ✅ Exists |
 
 ---
 
-## ۱۲. دامنه MVP
+## 11. MVP Scope
 
-> **تغییر مهم:** MVP به دو مرحله کنترل‌شده تقسیم شده است. هر دو مرحله بخشی از MVP تایید شده هستند.
+### 11.1 Menu-Only MVP
 
-### ۱۲.۱ MVP Core
+> This is a **read-only digital restaurant menu** for customers.
 
-> مرحله اول که ابتدا پیاده‌سازی و اعتبارسنجی می‌شود.
+**Included:**
+- Authentication (Email + Password, Google Login)
+- Email verification
+- Password recovery
+- Unified User model
+- Restaurant creation
+- Multiple branches
+- Membership and roles (OWNER, MANAGER)
+- Permission system (MENU_PUBLISH, MENU_ROLLBACK)
+- Categories
+- Master product catalog
+- Branch-specific pricing
+- Branch-specific discount pricing
+- Branch-specific availability (AVAILABLE/UNAVAILABLE)
+- Modifiers
+- Branch Draft (single editable draft)
+- Preview
+- Publish (snapshot)
+- Public customer menu
+- Tables and secure QR tokens
+- Branch-specific public menu toggle
+- Image upload
 
-- [ ] احراز هویت Email + Password
-- [ ] Google Login
-- [ ] تایید ایمیل
-- [ ] بازیابی رمز
-- [ ] مدل یکپارچه User
-- [ ] ایجاد رستوران
-- [ ] شعبه‌های متعدد
-- [ ] عضویت و نقش‌ها
-- [ ] سیستم مجوزها (permissions)
-- [ ] دسته‌بندی‌ها
-- [ ] کاتالوگ محصولات اصلی (Master Product Catalog)
-- [ ] قیمت اختصاصی شعبه
-- [ ] قیمت تخفیف اختصاصی شعبه
-- [ ] موجودی اختصاصی شعبه (AVAILABLE/UNAVAILABLE)
-- [ ] Modifiers (افزودنی‌ها)
-- [ ] Draft شعبه (یک شاخه Draft)
-- [ ] Preview
-- [ ] Publish (snapshot)
-- [ ] منوی عمومی مشتری
-- [ ] میزها و توکن‌های امن QR
-- [ ] DINE_IN
-- [ ] TAKEAWAY
-- [ ] پرداخت IN_PERSON
-- [ ] جریان تایید سفارش
-- [ ] مدیریت وضعیت سفارش
-- [ ] اسنپ‌شات‌های غیرقابل تغییر سفارش (OrderItem snapshots)
-- [ ] بارگذاری تصویر اولیه (Image Upload)
+**Not included (by design):**
+- Cart
+- Checkout
+- Order creation
+- Order management
+- Payment (online or in-person)
+- Payment gateway
+- Delivery
+- Customer addresses
+- Tax, service fees, or packaging fees
+- Cashier workflows
+- Sales or transaction reporting
 
-### ۱۲.۲ MVP Extended
+### 11.2 Explicitly Excluded from MVP
 
-> مرحله دوم که فقط پس از پایداری جریان‌های Core آغاز می‌شود.
+These features are **not planned** for the Vitrin MVP and have been completely removed from scope:
 
-- [ ] DELIVERY
-- [ ] آدرس‌های مشتری
-- [ ] پوشش ارسال مبتنی بر شعاع جغرافیایی
-- [ ] محاسبه هزینه ارسال
-- [ ] پرداخت ONLINE
-- [ ] انقضای پرداخت (۱۵ دقیقه)
-- [ ] تاریخچه پرداخت
-- [ ] رابط کاربری تاریخچه انتشار
-- [ ] رابط کاربری Rollback
-- [ ] دعوت‌نامه تیم
-- [ ] تحلیل و آمار واقعی
-- [ ] تجربه پیشرفته تاریخچه سفارشات مشتری
-
-### ۱۲.۳ توضیح تقسیم
-
-- هر دو مرحله بخشی از **MVP تایید شده** هستند.
-- **MVP Core** ابتدا پیاده‌سازی و اعتبارسنجی می‌شود.
-- **MVP Extended** فقط پس از پایداری جریان‌های Core آغاز می‌شود.
-- معماری دیتابیس نباید ویژگی‌های Extended را مسدود کند.
-- رفتارهای پیچیده Extended نباید در فاز Core زودتر از موعد پیاده‌سازی شوند.
-
-### ۱۲.۴ خارج از MVP اول
-
-- حسابداری پیشرفته انبار (موجودی عددی)
-- اپلیکیشن موبایل پیک
-- ردیابی نقشه زنده
-- سیستم وفاداری (Loyalty)
-- کیف پول (Wallet)
-- مارکت‌پلیس
-- حسابداری پیشرفته
-- بازپرداخت خودکار
-- صورتحساب اشتراکی پیچیده
-- هوش مصنوعی و پیشنهادات AI
-- مقایسه فیلد-به-فیلد نسخه منو
+| Feature | Status |
+|---------|--------|
+| Cart and checkout | **Not in MVP** |
+| Order creation and management | **Not in MVP** |
+| Online and in-person payment | **Not in MVP** |
+| Delivery and delivery fees | **Not in MVP** |
+| Customer addresses | **Not in MVP** |
+| Tax, service fees, packaging fees | **Not in MVP** |
+| Cashier and order operator roles | **Not in MVP** |
+| Sales and transaction reporting | **Not in MVP** |
 
 ---
 
-## ۱۳. خارج از MVP اول
+## 12. Implementation Order
 
-این موارد خارج از MVP اول هستند اما معماری باید قابلیت افزودن آن‌ها را در آینده فراهم کند:
-
-| حوزه | توضیح |
-|------|-------|
-| مدیریت داخلی پلتفرم | پنل ادمین ویترین برای مدیریت رستوران‌ها و کاربران |
-| اشتراک و پلن | سیستم صورتحساب و مدیریت اشتراک رستوران‌ها |
-| اپلیکیشن پیک | اپلیکیشن موبایل اختصاصی پیک‌ها |
-| نقشه زنده | ردیابی لحظه‌ای سفارش ارسالی روی نقشه |
-| سیستم وفاداری | امتیازدهی و پاداش به مشتریان وفادار |
-| کیف پول | پرداخت از کیف پول داخلی |
-| مارکت‌پلیس | بازارچه رستوران‌ها |
-| بازپرداخت خودکار | سیستم بازپرداخت خودکار پرداخت‌های ناموفق |
-| AI | پیشنهادات هوشمند و تحلیل پیشرفته |
+| # | Title | Status |
+|---|-------|--------|
+| 1 | Backend infrastructure (NestJS, Health, Swagger, Config) | ✅ Complete |
+| 2 | Product blueprint (approved) | ✅ Complete |
+| 3 | Domain model and ERD | ✅ Complete |
+| 4 | Prisma schema and migration | ✅ Complete |
+| 5 | Authentication infrastructure | ✅ Complete |
+| 6 | Restaurant onboarding | ✅ Complete |
+| 7 | Catalog foundation (categories, products) | ✅ Complete |
+| 8 | Menu-only MVP backend cleanup | ✅ Complete |
 
 ---
 
-## ۱۴. ترتیب پیاده‌سازی
+## 13. Future Decisions (Non-blocking)
 
-> **ترتیب نهایی و تایید شده.**
+> These decisions do not block database design and will be evaluated in the future.
 
-| مرحله | عنوان | وضعیت |
-|-------|-------|-------|
-| ۱ | زیرساخت Backend (NestJS, Health, Swagger, Config) | ✅ تکمیل شده |
-| ۲ | نقشه راه محصول مصوب (Product Blueprint) | ✅ تکمیل شده |
-| ۳ | مدل دامنه و ERD | ⬜ بعدی |
-| ۴ | راه‌اندازی PostgreSQL محلی | ⬜ |
-| ۵ | راه‌اندازی Prisma و اسکمای اولیه | ⬜ |
-| ۶ | زیرساخت احراز هویت | ⬜ |
-| ۷ | مدل‌های رستوران، شعبه، عضویت و مجوز | ⬜ |
-| ۸ | کاتالوگ و پیکربندی محصول شعبه | ⬜ |
-| ۹ | مدل‌های Draft و انتشار منو | ⬜ |
-| ۱۰ | مدل‌های میز و QR | ⬜ |
-| ۱۱ | مدل‌های سفارش اصلی و ماشین حالت | ⬜ |
-| ۱۲ | پرداخت IN_PERSON | ⬜ |
-| ۱۳ | یکپارچه‌سازی فرانت‌اند Core | ⬜ |
-| ۱۴ | ارسال گسترش‌یافته و پرداخت آنلاین (Extended) | ⬜ |
-| ۱۵ | یکپارچه‌سازی فرانت‌اند Extended | ⬜ |
-| ۱۶ | تقویت، تست و آماده‌سازی استقرار | ⬜ |
+| # | Topic | Notes |
+|---|-------|-------|
+| 1 | Advanced inventory (numeric) | Should numeric inventory be supported? |
+| 2 | Team invitations | Detailed team invitation workflow |
+| 3 | Advanced analytics | Real analytics and reporting |
 
 ---
 
-## ۱۵. تصمیمات آینده (غیرblocking)
+## 14. Roadmap Acceptance Criteria
 
-> **توضیح:** تصمیمات زیر **هیچ تصمیمی برای طراحی دیتابیس مسدود نمی‌کنند** و در آینده بررسی خواهند شد.
+This product blueprint is considered **approved** when:
 
-| ردیف | موضوع | توضیح |
-|------|-------|-------|
-| ۱ | بازپرداخت خودکار | آیا بازپرداخت پرداخت‌های ناموفق به‌صورت خودکار انجام شود؟ |
-| ۲ | ویرایش جزئی سفارش | آیا مشتری یا رستوران بتواند اقلام سفارش را ویرایش کند (نه فقط تایید/رد کل)؟ |
-| ۳ | موجودی عددی | آیا موجودی عددی (تعداد دقیق) در آینده پشتیبانی شود؟ |
-| ۴ | اشتراک‌گذاری انتشار بین شعبه‌ها | آیا انتشارات بین شعبه‌ها مشترک شوند؟ |
-| ۵ | جریان‌های کار پیک | جزئیات اپلیکیشن پیک و مدیریت سفارش پیک |
-| ۶ | بازگشایی جلسه پرداخت منقضی شده | آیا مشتری بتواند پس از انقضا، جلسه پرداخت جدیدی ایجاد کند؟ |
-| ۷ | سیستم امتیازدهی و وفاداری | جزئیات طراحی سیستم وفاداری |
+- [x] The MVP is defined as a read-only digital menu.
+- [x] No cart, order, or payment capability exists.
+- [x] Customer authentication is not required for browsing.
+- [x] Authentication is for restaurant administrators only.
+- [x] Branch-specific pricing, discounts, visibility, and availability are supported.
+- [x] Menu draft, preview, publication history, and rollback are supported.
+- [x] Role and permission matrix is explicit and final.
 
 ---
 
-## ۱۶. معیارهای پذیرش نقشه راه
+## Summary
 
-نقشه راه حاضر زمانی **تایید شده** محسوب می‌شود که:
+**File:** `docs/product-blueprint.md`
 
-- [x] تمام ۱۰ تصمیم محصول (بخش ۴) به‌عنوان نهایی شده ثبت شده باشند.
-- [x] OrderStatus و PaymentStatus از یکدیگر جدا شده باشند (بخش ۷).
-- [x] قوانین انتشار قیمت و موجودی زنده صریح باشند (بخش ۸).
-- [x] MVP Core و MVP Extended از یکدیگر جدا شده باشند (بخش ۱۲).
-- [x] دسترسی‌های نقش صریح و نهایی باشند (بخش ۹).
-- [x] موجودی فرانت‌اند به‌روز شده باشد (بخش ۱۱).
-- [x] هیچ تصمیم محصولی که طراحی دیتابیس را مسدود کند حل‌نشده باقی نمانده باشد.
+**Version:** 2.0 — Menu-Only MVP Product Blueprint
 
----
-
-## خلاصه نهایی
-
-**فایل اصلاح شده:** `docs/product-blueprint.md`
-
-**نسخه:** 1.1 — Approved Product Blueprint
-
-**خلاصه تغییرات:**
-
-1. **metadata** به‌روزرسانی شده: نسخه 1.1، وضعیت Approved.
-2. **۱۰ تصمیم حل‌نشده** به‌عنوان تصمیمات نهایی شده ثبت شدند (بخش ۴).
-3. **OrderStatus و PaymentStatus** به‌صورت دو ماشین حالت مستقل جدا شدند. مقادیر AWAITING_PAYMENT، PAID و PAYMENT_FAILED از OrderStatus حذف شدند.
-4. **ترکیب‌های همزمان** OrderStatus + PaymentStatus مستند شدند.
-5. **جریان‌های تایید شده انتقال** آنلاین و حضوری با جزئیات کامل ثبت شدند.
-6. **PaymentStatusHistory** به‌عنوان رکورد غیرقابل تغییر اضافه شد.
-7. **Snapshots قیمت سفارش (OrderItem)** مستند شد.
-8. **قوانین انتشار قیمت** صریح شد: تغییر قیمت فقط پس از Publish.
-9. **قوانین موجودی** صریح شد: AVAILABLE/UNAVAILABLE فوری، بدون نیاز به Publish.
-10. **Rollback** به‌عنوان ایجاد نسخه جدید (نه تغییر داده‌های تاریخی) مستند شد.
-11. **MVP Core و MVP Extended** از یکدیگر جدا شدند با جزئیات کامل.
-12. **ماتریس نقش** به‌روزرسانی شده با مجوزهای MENU_PUBLISH و MENU_ROLLBACK صریح.
-13. **موجودی فرانت‌اند** با آیتم‌های جدید (انقضا پرداخت، لغو مشتری، مجوز Manager، پیکربندی مالی شعبه، ...) به‌روزرسانی شد.
-14. **ترتیب پیاده‌سازی** به ۱۶ مرحله عددی با وضعیت به‌روزرسانی شد.
-15. **بخش تصمیمات آینده** جایگزین بخش تصمیمات حل‌نشده شد — فقط تصمیمات غیرblocking.
-16. **هیچ کد منبعی تغییر نکرده است.**
-
-**وضعیت:** تمام تصمیمات محصول نهایی شده‌اند. هیچ تصمیمی که طراحی دیتابیس را مسدود کند حل‌نشده باقی نمانده است. نقشه راه آماده مرحله بعدی (مدل دامنه و ERD) است.
+**Key changes from previous version:**
+1. All ordering, checkout, payment, and delivery features removed from scope.
+2. Customer role redefined — no ordering capability.
+3. ORDER_OPERATOR and CASHIER roles removed.
+4. Transactional concepts (orders, payments, fees, delivery) removed from all sections.
+5. MVP explicitly defined as a read-only digital restaurant menu.
+6. Documentation clearly states excluded features are **not planned**, not "Coming Soon".
