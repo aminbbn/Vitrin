@@ -5,6 +5,7 @@ import { BranchConfigModule } from './branch-config/branch-config.module.js';
 import { BranchProductsModule } from './branch-products/branch-products.module.js';
 import { CatalogModule } from './catalog/catalog.module';
 import { HealthModule } from './health/health.module';
+import { MenuModule } from './menu/menu.module.js';
 import { PrismaModule } from './prisma/prisma.module';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 
@@ -20,6 +21,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     CatalogModule,
     BranchProductsModule,
     BranchConfigModule,
+    MenuModule,
   ],
 })
 export class AppModule {}
