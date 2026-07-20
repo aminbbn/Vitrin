@@ -7,6 +7,7 @@ import { CatalogModule } from './catalog/catalog.module';
 import { HealthModule } from './health/health.module';
 import { MenuModule } from './menu/menu.module.js';
 import { PrismaModule } from './prisma/prisma.module';
+import { PublicModule } from './public/public.module.js';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
@@ -22,6 +23,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
     BranchProductsModule,
     BranchConfigModule,
     MenuModule,
+    PublicModule,
   ],
 })
 export class AppModule {}
