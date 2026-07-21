@@ -129,6 +129,19 @@ export class ApiAuthRepository implements AuthRepository {
     });
   }
 
+  async loginWithGoogle(idToken: string): Promise<AppSession> {
+    const res = await api.post<AuthResponse>('/auth/google', { idToken });
+    setTokens(res.tokens.accessToken, res.tokens.refreshToken);
+    const user = mapUser(res.user);
+    return {
+      id: `session_${res.user.id}`,
+      userId: res.user.id,
+      user,
+      token: res.tokens.accessToken,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    };
+  }
+
   async logout(): Promise<void> {
     // Revoke refresh token on server
     const refreshKey = 'vitrin_refresh_token';

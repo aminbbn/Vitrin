@@ -228,4 +228,104 @@ export class AuthService {
 
     return this.sanitizeUser(user);
   }
+
+  async googleLogin(idToken: string): Promise<{ user: AuthenticatedUser; tokens: TokenPair }> {
+    const clientId = this.configService.get<string>('GOOGLE_CLIENT_ID', '');
+    if (!clientId) {
+      throw new InternalServerErrorException('Google login is not configured');
+    }
+
+    // Verify the ID token via Google's tokeninfo endpoint
+    const googleUser = await this.verifyGoogleToken(idToken, clientId);
+
+    const normalizedEmail = googleUser.email.trim().toLowerCase();
+
+    // Find existing user by email
+    let user = await this.prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!user) {
+      // Create new user (no password hash for Google-only accounts)
+      user = await this.prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          fullName: googleUser.name,
+          emailVerifiedAt: new Date(),
+        },
+      });
+    }
+
+    // Link Google AuthAccount if not already linked
+    const existingAccount = await this.prisma.authAccount.findUnique({
+      where: {
+        provider_providerAccountId: {
+          provider: 'GOOGLE',
+          providerAccountId: googleUser.sub,
+        },
+      },
+    });
+
+    if (!existingAccount) {
+      await this.prisma.authAccount.create({
+        data: {
+          userId: user.id,
+          provider: 'GOOGLE',
+          providerAccountId: googleUser.sub,
+          providerEmail: googleUser.email,
+        },
+      });
+    }
+
+    // Issue token pair
+    const tokens = await this.issueTokenPair(user.id, user.email);
+
+    return {
+      user: this.sanitizeUser(user),
+      tokens,
+    };
+  }
+
+  private async verifyGoogleToken(
+    idToken: string,
+    expectedClientId: string,
+  ): Promise<{ sub: string; email: string; name: string }> {
+    try {
+      const response = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`,
+      );
+
+      if (!response.ok) {
+        throw new Error('Invalid Google token');
+      }
+
+      const payload = await response.json() as {
+        sub: string;
+        email: string;
+        name?: string;
+        aud: string;
+        exp: string;
+      };
+
+      // Validate audience matches our client ID
+      if (payload.aud !== expectedClientId) {
+        throw new Error('Token audience mismatch');
+      }
+
+      // Validate expiry
+      const expiresAt = parseInt(payload.exp, 10) * 1000;
+      if (Date.now() >= expiresAt) {
+        throw new Error('Token expired');
+      }
+
+      return {
+        sub: payload.sub,
+        email: payload.email,
+        name: payload.name || payload.email.split('@')[0],
+      };
+    } catch (error: any) {
+      if (error instanceof UnauthorizedException) throw error;
+      throw new UnauthorizedException('Invalid Google authentication token');
+    }
+  }
 }

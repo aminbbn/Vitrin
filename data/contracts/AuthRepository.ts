@@ -5,6 +5,7 @@ export interface AuthRepository {
   getCurrentSession(): Promise<AppSession | null>;
   login(password: string, customRestaurantName?: string): Promise<AppSession>;
   loginWithEmail(email: string, password: string): Promise<AppSession>;
+  loginWithGoogle(idToken: string): Promise<AppSession>;
   register(email: string, password: string, firstName: string, lastName: string): Promise<User>;
   verifyEmail(userId: string, code: string): Promise<User>;
   forgotPassword(email: string): Promise<void>;
