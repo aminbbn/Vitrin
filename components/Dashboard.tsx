@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { 
   TrendingUp, 
-  Users, 
   ShoppingBag, 
   Clock, 
   ArrowUpRight, 
@@ -13,12 +11,23 @@ import {
   Calendar as CalendarIcon,
   Download,
   Loader2,
-  Filter,
-  Search,
-  ChevronDown
+  ChevronDown,
+  Layers,
+  Sparkles,
+  QrCode,
+  Link as LinkIcon,
+  Plus,
+  Compass,
+  CheckCircle2,
+  Info,
+  MapPin,
+  Phone
 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAppSession, useCatalog, useMenuDraft } from '../data/useRepositories';
+import { useRepositories } from '../data/RepositoryProvider';
+import { toProductViewModel } from '../types';
 
 const WEEKLY_DATA = [
   { name: 'شنبه', revenue: 120 },
@@ -40,121 +49,16 @@ const DAILY_DATA = [
   { name: '22:00', revenue: 135 },
 ];
 
-const MOCK_POPULAR_PRODUCTS = [
-  { name: 'پیتزا پپرونی', category: 'پیتزا', price: '245,000', count: 128, color: 'emerald' },
-  { name: 'چیزبرگر مخصوص', category: 'همبرگر', price: '165,000', count: 95, color: 'blue' },
-  { name: 'سالاد سزار', category: 'سالاد', price: '120,000', count: 84, color: 'purple' },
-  { name: 'سیب‌زمینی ویژه', category: 'پیش‌غذا', price: '85,000', count: 76, color: 'orange' },
-  { name: 'پاستا آلفردو', category: 'پاستا', price: '190,000', count: 65, color: 'emerald' },
-  { name: 'نوشابه کوکا', category: 'نوشیدنی', price: '25,000', count: 210, color: 'red' },
-  { name: 'نان سیر', category: 'پیش‌غذا', price: '65,000', count: 45, color: 'orange' },
-];
-
-// Helper to generate mock stats based on range
-const getMockStats = (range: string, brandColor: string) => {
-  const baseStats = [
-    { 
-      id: 'views', 
-      label: 'بازدید منوی دیجیتال', 
-      value: '2,490', 
-      unit: 'بار بازدید', 
-      trend: '+12%', 
-      up: true, 
-      icon: TrendingUp, 
-      color: brandColor,
-      insights: [
-        { label: 'بازدیدکننده یکتا', value: '820 نفر' },
-        { label: 'نرخ کلیک محصولات', value: '45%' },
-        { label: 'اشتراک‌گذاری منو', value: '32 بار' }
-      ]
-    },
-    { 
-      id: 'products', 
-      label: 'محصولات فعال', 
-      value: '24', 
-      unit: 'غذا و نوشیدنی', 
-      trend: '+2', 
-      up: true, 
-      icon: ShoppingBag, 
-      color: 'blue',
-      insights: [
-         { label: 'غذاهای اصلی', value: '18' },
-         { label: 'نوشیدنی‌ها', value: '4' },
-         { label: 'پیش‌غذا و دسر', value: '2' }
-      ]
-    },
-    { 
-      id: 'categories', 
-      label: 'دسته‌بندی‌ها', 
-      value: '6', 
-      unit: 'دسته اصلی', 
-      trend: 'ثابت', 
-      up: true, 
-      icon: BarChart2, 
-      color: 'purple',
-      insights: [
-         { label: 'دسته‌های فعال', value: '6' },
-         { label: 'دسته‌های پنهان', value: '0' }
-      ]
-    },
-    { 
-      id: 'status', 
-      label: 'وضعیت منوی لایو', 
-      value: 'منتشر شده', 
-      unit: 'آماده نمایش', 
-      trend: 'عالی', 
-      up: true, 
-      icon: Clock, 
-      color: 'orange',
-      insights: [
-         { label: 'آخرین ویرایش', value: '۱۰ دقیقه پیش' },
-         { label: 'نسخه فعال منو', value: 'v2.4' }
-      ]
-    },
-  ];
-
-  if (range === '24h' || range === '24 ساعت گذشته') {
-    return baseStats.map(s => {
-      if (s.id === 'views') return { ...s, value: '380', trend: '+2%' };
-      return s;
-    });
-  }
-  if (range === '30days' || range === '30 روز گذشته') {
-    return baseStats.map(s => {
-      if (s.id === 'views') return { ...s, value: '12,400', trend: '+15%' };
-      return s;
-    });
-  }
-  
-  // Default 7 days
-  return baseStats;
-};
-
-const CustomTooltip = ({ active, payload, label, brandColor }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-4 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-200 dark:border-slate-800 text-xs z-[100] relative">
-        <p className="font-bold mb-2 text-slate-500 dark:text-slate-400">{label}</p>
-        <div className="flex items-center gap-2 mb-1">
-          <div className={`w-2 h-2 rounded-full bg-${brandColor}-500`} />
-          <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-black text-sm`}>{payload[0].value.toLocaleString()} بازدید</span>
-        </div>
-      </div>
-    );
-  }
-  return null;
-};
-
 interface DashboardProps {
-  restaurantName: string;
-  searchQuery?: string;
+  onNavigateDesigner?: () => void;
+  onNavigateCatalog?: () => void;
+  onNavigateSettings?: () => void;
   brandColor: string;
   theme?: 'light' | 'dark';
 }
 
 // --- SUMMARY CARD COMPONENT ---
 const SummaryCard = ({ 
-  id, 
   label, 
   value, 
   unit, 
@@ -162,410 +66,332 @@ const SummaryCard = ({
   up, 
   icon: Icon, 
   color, 
-  onClick, 
   index 
 }: any) => {
-  
-  // Basic theme construction for standard colors
   const theme = { 
     bg: `bg-${color}-50 dark:bg-${color}-950/30`, 
     text: `text-${color}-600 dark:text-${color}-400`, 
-    border: `border-${color}-200 dark:border-${color}-850` 
   };
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, type: "spring", stiffness: 200, damping: 20 }}
-      onClick={onClick}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-100 dark:border-slate-800 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all cursor-pointer group h-[180px] flex flex-col justify-between relative overflow-hidden"
+      transition={{ delay: index * 0.08, type: "spring", stiffness: 200, damping: 22 }}
+      whileHover={{ y: -2 }}
+      className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all h-[170px] flex flex-col justify-between relative overflow-hidden"
     >
-      {/* Header */}
       <div className="flex items-start justify-between">
-         <div className={`p-2.5 rounded-2xl ${theme.bg} ${theme.text} transition-transform group-hover:scale-110 shadow-sm`}>
-            <Icon className="w-6 h-6" />
+         <div className={`p-2.5 rounded-2xl ${theme.bg} ${theme.text} shadow-sm`}>
+            <Icon className="w-5 h-5" />
          </div>
-         <span className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1.5">{label}</span>
+         <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-1">{label}</span>
       </div>
 
-      {/* Main Metric */}
-      <div className="flex flex-col items-center justify-center flex-1 py-2">
-         <h3 className="text-4xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+      <div className="flex flex-col items-center justify-center flex-1 py-1">
+         <h3 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight font-mono">
             {value}
          </h3>
       </div>
 
-      {/* Footer */}
       <div className="flex items-center justify-between gap-4">
-         <div className={`flex items-center gap-1.5 text-[10px] font-black px-3 py-1.5 rounded-full border ${up ? `text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40` : 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/40'}`}>
+         <div className={`flex items-center gap-1 text-[10px] font-black px-2.5 py-1 rounded-full border ${up ? `text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40` : 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/40'}`}>
             {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
             {trend}
          </div>
-         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 px-3 py-1.5 rounded-full">
+         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 px-2.5 py-1 rounded-full">
             {unit}
          </span>
       </div>
 
-      {/* Ambient Glow */}
-      <div className={`absolute -right-12 -bottom-12 w-32 h-32 bg-${color}-500/5 blur-[60px] rounded-full group-hover:bg-${color}-500/10 transition-colors pointer-events-none`} />
+      <div className={`absolute -right-12 -bottom-12 w-32 h-32 bg-${color}-500/5 blur-[60px] rounded-full pointer-events-none`} />
     </motion.div>
   );
 };
 
-// --- EXPANDED CARD (MODAL) ---
-const ExpandedCard = ({ stat, onClose }: { stat: any, onClose: () => void }) => {
-  const Icon = stat.icon;
-  const color = stat.color;
+const Dashboard: React.FC<DashboardProps> = ({ 
+  onNavigateDesigner, 
+  onNavigateCatalog, 
+  onNavigateSettings, 
+  brandColor, 
+  theme 
+}) => {
+  const { tenantRepository, catalogRepository } = useRepositories();
+  const { 
+    activeRestaurant, 
+    activeBranch, 
+    accessibleRestaurants, 
+    accessibleBranches, 
+    refetchSession 
+  } = useAppSession();
 
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 overflow-y-auto"
-    >
-      <motion.div 
-        initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-        animate={{ opacity: 1, backdropFilter: "blur(24px)" }}
-        exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-        transition={{ duration: 0.3 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
-      />
-      
-      <motion.div 
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[1.5rem] shadow-2xl relative overflow-hidden border border-slate-100 dark:border-slate-800 flex flex-col z-10 transition-colors"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-6 relative">
-           <div className="flex items-center justify-between mb-8">
-               <div className="flex items-center gap-3">
-                  <div className={`p-3.5 rounded-2xl bg-${color}-50 dark:bg-${color}-950/30 text-${color}-600 dark:text-${color}-400 shadow-sm`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <span className="text-lg font-black text-slate-700 dark:text-slate-200">{stat.label}</span>
-               </div>
-               <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
-                  <X className="w-5 h-5" />
-               </button>
-           </div>
+  const { categories = [], products = [], loading: catalogLoading } = useCatalog();
+  const { activePublication, loading: menuLoading } = useMenuDraft();
 
-           <div className="flex flex-col items-start mb-8">
-               <motion.h2 
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.1 }}
-                 className="text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight"
-               >
-                 {stat.value}
-               </motion.h2>
-               <div className="flex items-center gap-3 mt-3">
-                  <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-850' : 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-850'}`}>
-                      {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                      {stat.trend}
-                  </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-bold bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-100 dark:border-slate-800">{stat.unit}</span>
-               </div>
-           </div>
+  const [popularProducts, setPopularProducts] = useState<any[]>([]);
 
-           <div className="space-y-4">
-              <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                 <BarChart2 className="w-3 h-3" />
-                 جزئیات سریع
-              </h4>
-              <div className="space-y-3">
-                 {stat.insights.map((detail: any, i: number) => (
-                    <motion.div 
-                      key={i} 
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + (i * 0.1) }}
-                      className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800/60 hover:border-slate-200 dark:hover:border-slate-700 transition-colors"
-                    >
-                       <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{detail.label}</span>
-                       <span className="text-sm font-black text-slate-800 dark:text-slate-200">{detail.value}</span>
-                    </motion.div>
-                 ))}
-              </div>
-           </div>
-           
-           <div className="h-6" />
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
+  React.useEffect(() => {
+    const loadPopularProducts = async () => {
+      if (!products || products.length === 0 || !activeBranch) {
+        setPopularProducts([]);
+        return;
+      }
+      try {
+        const sliced = products.slice(0, 4);
+        const mapped = [];
+        for (const prod of sliced) {
+          const bp = await catalogRepository.getBranchProduct(prod.id, activeBranch.id);
+          const cat = categories.find(c => c.id === prod.categoryId);
+          const mappedProd = toProductViewModel(prod, bp || undefined, cat?.name);
+          mapped.push(mappedProd);
+        }
+        setPopularProducts(mapped);
+      } catch (err) {
+        console.error('Error loading popular products branch prices:', err);
+      }
+    };
+    loadPopularProducts();
+  }, [products, categories, activeBranch, catalogRepository]);
 
-// --- ALL PRODUCTS MODAL ---
-const AllProductsModal = ({ isOpen, onClose, brandColor }: any) => {
-  const [localSearch, setLocalSearch] = useState('');
-  
-  const query = localSearch;
-
-  const filteredProducts = MOCK_POPULAR_PRODUCTS.filter(p => 
-    p.name.includes(query) || p.category.includes(query)
-  );
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
-        >
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
-          />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden flex flex-col max-h-[85vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white sticky top-0 z-20">
-               <h3 className="font-black text-lg text-slate-800 flex items-center gap-2">
-                <ShoppingBag className={`w-5 h-5 text-${brandColor}-600`} />
-                لیست کامل محصولات
-              </h3>
-              <button 
-                onClick={onClose}
-                className="p-2 bg-slate-50 rounded-full border border-slate-200 hover:bg-slate-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-slate-500" />
-              </button>
-            </div>
-            
-            <div className="p-6 overflow-y-auto">
-               <div className="flex gap-4 mb-6">
-                  <div className="relative flex-1">
-                     <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                     <input 
-                        type="text" 
-                        value={localSearch}
-                        onChange={(e) => setLocalSearch(e.target.value)}
-                        placeholder="جستجو در محصولات..." 
-                        className={`w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:border-${brandColor}-500 outline-none`}
-                     />
-                  </div>
-               </div>
-
-               <div className="border border-slate-100 rounded-2xl overflow-hidden">
-                  <table className="w-full text-right">
-                     <thead className="bg-slate-50 border-b border-slate-100">
-                        <tr>
-                           <th className="px-6 py-4 text-xs font-black text-slate-500">نام محصول</th>
-                           <th className="px-6 py-4 text-xs font-black text-slate-500">دسته‌بندی</th>
-                           <th className="px-6 py-4 text-xs font-black text-slate-500">قیمت</th>
-                           <th className="px-6 py-4 text-xs font-black text-slate-500">تعداد بازدید</th>
-                           <th className="px-6 py-4 text-xs font-black text-slate-500">وضعیت</th>
-                        </tr>
-                     </thead>
-                     <tbody className="divide-y divide-slate-100">
-                        {filteredProducts.length > 0 ? filteredProducts.map((prod, idx) => (
-                           <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="px-6 py-4">
-                                 <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-lg bg-${prod.color}-100 flex items-center justify-center text-${prod.color}-600 font-bold text-xs`}>
-                                       {prod.name.charAt(0)}
-                                    </div>
-                                    <span className="text-sm font-bold text-slate-800">{prod.name}</span>
-                                 </div>
-                              </td>
-                              <td className="px-6 py-4 text-xs font-medium text-slate-500">
-                                 <span className="bg-slate-100 px-2 py-1 rounded-md">{prod.category}</span>
-                              </td>
-                              <td className={`px-6 py-4 text-sm font-black text-${brandColor}-600`}>{prod.price}</td>
-                              <td className="px-6 py-4 text-sm font-bold text-slate-700">{prod.count}</td>
-                              <td className="px-6 py-4">
-                                 <span className={`text-[10px] font-bold text-${brandColor}-600 bg-${brandColor}-50 px-2 py-1 rounded-full border border-${brandColor}-100`}>موجود</span>
-                              </td>
-                           </tr>
-                        )) : (
-                          <tr>
-                             <td colSpan={5} className="px-6 py-10 text-center text-slate-400 text-sm">
-                                موردی یافت نشد
-                             </td>
-                          </tr>
-                        )}
-                     </tbody>
-                  </table>
-               </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
-
-const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '', brandColor, theme }) => {
   const [isDark, setIsDark] = useState(() => theme === 'dark' || document.documentElement.classList.contains('dark'));
+  const [dateRange, setDateRange] = useState<'24h' | '7days' | '30days'>('7days');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [chartView, setChartView] = useState<'weekly' | 'daily'>('weekly');
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  // Branch Onboarding form state
+  const [newBranchName, setNewBranchName] = useState('');
+  const [newBranchAddress, setNewBranchAddress] = useState('');
+  const [newBranchPhone, setNewBranchPhone] = useState('');
+  const [isCreatingBranch, setIsCreatingBranch] = useState(false);
+  const [branchError, setBranchError] = useState<string | null>(null);
 
   React.useEffect(() => {
     setIsDark(theme === 'dark' || document.documentElement.classList.contains('dark'));
   }, [theme]);
 
-  React.useEffect(() => {
-    const checkDark = () => {
-      setIsDark(document.documentElement.classList.contains('dark') || localStorage.getItem('vitrin_theme') === 'dark');
-    };
-    checkDark();
-    const observer = new MutationObserver(checkDark);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
+  const handleCreateBranch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeRestaurant) return;
+    if (!newBranchName.trim()) {
+      setBranchError('نام شعبه الزامی است');
+      return;
+    }
+    if (!newBranchAddress.trim()) {
+      setBranchError('آدرس شعبه الزامی است');
+      return;
+    }
 
-  const [dateRange, setDateRange] = useState<'24h' | '7days' | '30days'>('7days');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [statsData, setStatsData] = useState(getMockStats('7days', brandColor));
-  const [selectedStatId, setSelectedStatId] = useState<string | null>(null);
-  const [showAllProductsModal, setShowAllProductsModal] = useState(false);
-  const [chartView, setChartView] = useState<'weekly' | 'daily'>('weekly');
-  
-  // Report State
-  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
-
-  // Update stats data when brandColor changes
-  React.useEffect(() => {
-     setStatsData(getMockStats(dateRange, brandColor));
-  }, [brandColor, dateRange]);
-
-  const selectedStat = statsData.find(s => s.id === selectedStatId);
-  
-  // Filter popular products (dashboard popular products should show all by default, not filter by header search)
-  const filteredPopularProducts = MOCK_POPULAR_PRODUCTS;
-
-  const getDateRangeLabel = () => {
-    switch(dateRange) {
-      case '24h': return '24 ساعت گذشته';
-      case '7days': return '7 روز گذشته';
-      case '30days': return '30 روز گذشته';
+    try {
+      setIsCreatingBranch(true);
+      setBranchError(null);
+      await tenantRepository.createBranch!(activeRestaurant.id, newBranchName, newBranchAddress, newBranchPhone);
+      await refetchSession();
+    } catch (err: any) {
+      setBranchError(err?.message || 'خطا در ثبت اطلاعات شعبه');
+    } finally {
+      setIsCreatingBranch(false);
     }
   };
 
-  // Sync Logic
-  const handleDateConfirm = (range: '24h' | '7days' | '30days') => {
-    setDateRange(range);
-    setIsDropdownOpen(false);
-    
-    // Update Stats Data with simulated visual changes
-    setStatsData(getMockStats(range, brandColor));
-
-    // Update Chart View Logic
-    if (range === '24h') {
-      setChartView('daily');
-    } else {
-      setChartView('weekly');
-    }
+  const handleCopyLink = () => {
+    const link = `https://vitrin.ir/menu/${activeRestaurant?.slug || 'menu'}`;
+    navigator.clipboard.writeText(link);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
+
+  const activeProductsCount = products.filter(p => p.isActive).length;
+  const unavailableProductsCount = products.filter(p => !p.isActive).length;
+  const categoriesCount = categories.length;
+
+  const isMenuLive = activePublication !== null;
+  const lastPublishedAt = activePublication 
+    ? new Date(activePublication.publishedAt).toLocaleDateString('fa-IR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    : 'هرگز منتشر نشده';
+
+  const statsData = [
+    {
+      id: 'active_products',
+      label: 'محصولات فعال منو',
+      value: activeProductsCount,
+      unit: 'آیتم لایو',
+      trend: `${unavailableProductsCount} غیرفعال`,
+      up: unavailableProductsCount === 0,
+      icon: ShoppingBag,
+      color: brandColor,
+    },
+    {
+      id: 'categories_count',
+      label: 'دسته‌بندی‌های فعال',
+      value: categoriesCount,
+      unit: 'دسته اصلی',
+      trend: 'سازمان‌دهی شده',
+      up: true,
+      icon: Layers,
+      color: 'blue',
+    },
+    {
+      id: 'menu_status',
+      label: 'وضعیت انتشار منو',
+      value: isMenuLive ? 'منتشر شده' : 'پیش‌نویس',
+      unit: isMenuLive ? (activePublication?.version || 'v1.0') : 'نیاز به انتشار',
+      trend: isMenuLive ? 'فعال در آدرس عمومی' : 'تغییرات محلی',
+      up: isMenuLive,
+      icon: Clock,
+      color: isMenuLive ? 'emerald' : 'orange',
+    },
+    {
+      id: 'last_published',
+      label: 'آخرین انتشار سراسری',
+      value: isMenuLive ? 'لایو' : 'نامشخص',
+      unit: 'تاریخ نهایی',
+      trend: lastPublishedAt,
+      up: isMenuLive,
+      icon: TrendingUp,
+      color: 'purple',
+    }
+  ];
 
   const handleDownloadReport = () => {
     setIsGeneratingReport(true);
     setTimeout(() => {
-      // 1. Prepare CSV Content
       const headers = ['Metric', 'Value', 'Unit', 'Trend'];
       const rows = statsData.map(s => [s.label, s.value, s.unit, s.trend]);
-      
-      const chartHeaders = ['Day/Time', 'Views'];
-      const chartRows = (chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA).map(d => [d.name, d.revenue]);
-
-      let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM for Excel
-      
-      csvContent += "--- SUMMARY STATISTICS ---\n";
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+      csvContent += "--- MENU MANAGEMENT REPORT ---\n";
       csvContent += headers.join(",") + "\n";
       rows.forEach(r => csvContent += r.join(",") + "\n");
       
-      csvContent += "\n--- VIEWS DATA ---\n";
-      csvContent += chartHeaders.join(",") + "\n";
-      chartRows.forEach(r => csvContent += r.join(",") + "\n");
-
-      // 2. Create Download Link
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "dashboard-report.csv");
+      link.setAttribute("download", "menu-report.csv");
       document.body.appendChild(link);
-      
-      // 3. Trigger Download
       link.click();
       document.body.removeChild(link);
-      
       setIsGeneratingReport(false);
-    }, 1200); // 1.2s delay for visual feedback
+    }, 1000);
   };
 
-  // Determine chart color based on brandColor prop
-  // Simple mapping since chart expects specific hex or valid color
   const chartColorMap: Record<string, string> = {
     emerald: '#10b981',
     blue: '#3b82f6',
     purple: '#a855f7',
     orange: '#f97316',
     red: '#ef4444',
-    violet: '#8b5cf6',
-    pink: '#ec4899',
-    zinc: '#71717a',
-    slate: '#64748b'
   };
   const chartHexColor = chartColorMap[brandColor] || '#10b981';
 
+  // Empty State: Restaurant exists but no active branch
+  if (activeRestaurant && !activeBranch) {
+    return (
+      <div className="p-8 h-full overflow-y-auto bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center font-['Vazirmatn'] selection:bg-emerald-500/10 transition-colors">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-8 md:p-10 shadow-xl"
+        >
+          <div className="w-16 h-16 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-6 shadow-inner mx-auto">
+            <Compass className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-black text-center text-slate-800 dark:text-slate-100 mb-2">ثبت اولین شعبه رستوران</h2>
+          <p className="text-xs text-slate-400 text-center leading-relaxed mb-8">
+            رستوران شما ثبت شده است، اما برای شروع مدیریت منو و کالاها نیاز به ثبت حداقل یک شعبه دارید.
+          </p>
+
+          {branchError && (
+            <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-2xl text-xs font-bold border border-rose-100 dark:border-rose-950/30">
+              {branchError}
+            </div>
+          )}
+
+          <form onSubmit={handleCreateBranch} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                نام شعبه
+              </label>
+              <input
+                type="text"
+                value={newBranchName}
+                onChange={(e) => setNewBranchName(e.target.value)}
+                placeholder="مثال: شعبه مرکزی، شعبه جردن"
+                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                آدرس شعبه
+              </label>
+              <input
+                type="text"
+                value={newBranchAddress}
+                onChange={(e) => setNewBranchAddress(e.target.value)}
+                placeholder="آدرس دقیق فیزیکی شعبه"
+                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                شماره تلفن شعبه (اختیاری)
+              </label>
+              <input
+                type="text"
+                value={newBranchPhone}
+                onChange={(e) => setNewBranchPhone(e.target.value)}
+                placeholder="تلفن تماس مستقیم شعبه"
+                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isCreatingBranch}
+              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-80 active:scale-95"
+            >
+              {isCreatingBranch ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  در حال ثبت شعبه...
+                </>
+              ) : (
+                'ایجاد شعبه و شروع به کار'
+              )}
+            </button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 h-full overflow-y-auto space-y-8 bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-['Vazirmatn'] transition-colors" onClick={() => setIsDropdownOpen(false)}>
-      <div className="flex items-center justify-between">
+      
+      {/* HEADER SECTION */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100">سلام، {restaurantName} 👋</h1>
-          <p className="text-sm text-slate-400 mt-1">امروز تا الان وضعیت فروش شما فوق‌العاده بوده است!</p>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <span>سلام، {activeRestaurant?.name || 'مدیر گرامی'} 👋</span>
+            <span className="text-xs font-normal text-slate-400 bg-slate-100 dark:bg-slate-850 border border-slate-200/50 dark:border-slate-800 px-3 py-1.5 rounded-full">
+              {activeBranch?.name || 'بدون شعبه'}
+            </span>
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">پنل مدیریت یکپارچه منوی دیجیتال ویترین</p>
         </div>
         <div className="flex gap-4 relative">
-          
-          {/* DATE PICKER DROPDOWN */}
-          <div className="relative">
-            <button 
-              onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(!isDropdownOpen); }}
-              className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors min-w-[140px] justify-between"
-            >
-              <div className="flex items-center gap-2">
-                 <CalendarIcon className={`w-4 h-4 text-${brandColor}-600`} /> 
-                 <span>{getDateRangeLabel()}</span>
-              </div>
-              <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            <AnimatePresence>
-               {isDropdownOpen && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden z-50"
-                  >
-                    <button onClick={() => handleDateConfirm('24h')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>24 ساعت گذشته</button>
-                    <button onClick={() => handleDateConfirm('7days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>7 روز گذشته</button>
-                    <button onClick={() => handleDateConfirm('30days')} className={`w-full text-right px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-${brandColor}-600`}>30 روز گذشته</button>
-                  </motion.div>
-               )}
-            </AnimatePresence>
-          </div>
-
-          {/* REPORT BUTTON */}
+          {/* REPORT DOWNLOAD */}
           <button 
             onClick={handleDownloadReport}
             disabled={isGeneratingReport}
-            className={`px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-100 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed min-w-[160px] justify-center`}
+            className={`px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 min-w-[140px] justify-center border border-slate-200/50 dark:border-slate-700`}
           >
             {isGeneratingReport ? (
                <>
@@ -575,60 +401,185 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
             ) : (
                <>
                   <Download className="w-4 h-4" />
-                  دریافت گزارش
+                  خروجی اطلاعات
                </>
             )}
           </button>
         </div>
       </div>
 
-      {/* STATS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-0">
-        {statsData.map((stat, index) => (
-          <SummaryCard 
-            key={stat.id} 
-            {...stat} 
-            index={index}
-            onClick={() => setSelectedStatId(stat.id)} 
-          />
-        ))}
-      </div>
+      {/* METRIC CARD EMPTY STATE HANDLER OR STANDARD STATS GRID */}
+      {products.length === 0 ? (
+        <motion.div 
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-[2rem] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/30 text-amber-500 rounded-2xl shrink-0">
+              <ShoppingBag className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-slate-800 dark:text-slate-200">هنوز کالا یا دسته‌ای ثبت نکرده‌اید!</h3>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed max-w-[55ch]">
+                برای فعال شدن منوی دیجیتال لایو و نمایش به مشتریان، ابتدا چند دسته اصلی تعریف کرده و اولین محصولات خود را به همراه قیمت و جزئیات اضافه کنید.
+              </p>
+            </div>
+          </div>
+          {onNavigateCatalog && (
+            <button
+              onClick={onNavigateCatalog}
+              className={`px-6 py-3.5 bg-${brandColor}-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-${brandColor}-500/10 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 shrink-0 active:scale-95`}
+            >
+              <Plus className="w-4 h-4" />
+              افزودن اولین محصول
+            </button>
+          )}
+        </motion.div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-0">
+          {statsData.map((stat, index) => (
+            <SummaryCard 
+              key={stat.id} 
+              {...stat} 
+              index={index}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* EXPANDED STAT MODAL */}
-      <AnimatePresence>
-        {selectedStat && (
-           <ExpandedCard stat={selectedStat} onClose={() => setSelectedStatId(null)} />
-         )}
-      </AnimatePresence>
+      {/* NO PUBLICATION WARNING OR MENU PREVIEW / QR SECTION */}
+      {!isMenuLive ? (
+        <motion.div 
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-orange-50/60 dark:bg-orange-950/15 border border-orange-100 dark:border-orange-900/30 p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6"
+        >
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 rounded-2xl shrink-0">
+              <Info className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-slate-800 dark:text-slate-100">منوی دیجیتال شما هنوز منتشر نشده است!</h3>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed max-w-[55ch]">
+                تغییرات چیدمان و کالاها در حالت پیش‌نویس قرار دارد. برای فعال شدن رسمی آدرس اینترنتی و بارگیری منو برای مشتریان، به ویرایشگر بروید و دکمه انتشار سراسری را بزنید.
+              </p>
+            </div>
+          </div>
+          {onNavigateDesigner && (
+            <button
+              onClick={onNavigateDesigner}
+              className="px-6 py-3.5 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl text-xs font-black shadow-lg transition-all flex items-center gap-2 shrink-0 active:scale-95"
+            >
+              <Compass className="w-4 h-4" />
+              طراحی و انتشار منو
+            </button>
+          )}
+        </motion.div>
+      ) : (
+        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-[2rem] shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center gap-5">
+            <div className={`p-4 bg-${brandColor}-50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-3xl shrink-0 shadow-inner`}>
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                <span>منوی دیجیتال شما زنده و فعال است!</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              </h3>
+              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed max-w-[60ch]">
+                مشتریان می‌توانند با اسکن کد QR یا کلیک بر روی لینک اختصاصی شما، لیست کالاها، قیمت‌ها و تصاویر زیبای منو را با سرعت بالا مشاهده کنند.
+              </p>
+            </div>
+          </div>
 
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setShowQrModal(true)}
+              className="px-4 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-2xl transition-all flex items-center gap-2 active:scale-95"
+            >
+              <QrCode className="w-4 h-4" />
+              دریافت کد QR اختصاصی
+            </button>
+            <button
+              onClick={handleCopyLink}
+              className={`px-4 py-3.5 bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 text-xs font-black rounded-2xl transition-all flex items-center gap-2 active:scale-95`}
+            >
+              <LinkIcon className="w-4 h-4" />
+              {copiedLink ? 'لینک کپی شد!' : 'کپی لینک منوی اختصاصی'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CHARTS AND RECENT POPULAR PRODUCTS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col transition-colors">
-          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800 dark:text-slate-100">آمار بازدید منو</h2><div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>روزانه</button></div></div>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-base font-black text-slate-850 dark:text-slate-100">تحلیل بازدیدهای منو</h2>
+            <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+              <button 
+                onClick={() => setChartView('weekly')} 
+                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+              >
+                هفتگی
+              </button>
+              <button 
+                onClick={() => setChartView('daily')} 
+                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+              >
+                روزانه
+              </button>
+            </div>
+          </div>
           <div className="h-80 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA}>
-                 <defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={chartHexColor} stopOpacity={0.2}/><stop offset="95%" stopColor={chartHexColor} stopOpacity={0}/></linearGradient></defs>
+                 <defs>
+                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                     <stop offset="5%" stopColor={chartHexColor} stopOpacity={0.15}/>
+                     <stop offset="95%" stopColor={chartHexColor} stopOpacity={0}/>
+                   </linearGradient>
+                 </defs>
                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#26262b' : '#f1f5f9'} />
-                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
-                 <YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => value} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
+                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
+                 <YAxis axisLine={false} tickLine={false} width={40} tickFormatter={(value) => value} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
                  <Tooltip 
                     cursor={{ stroke: isDark ? '#26262b' : '#e2e8f0', strokeWidth: 1, strokeDasharray: '4 4' }}
-                    content={<CustomTooltip brandColor={brandColor} />} 
+                    content={({ active, payload, label }: any) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 text-xs z-[100] relative">
+                            <p className="font-bold mb-2 text-slate-400">{label}</p>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-black text-sm`}>{(payload[0] && payload[0].value !== undefined && payload[0].value !== null) ? payload[0].value.toLocaleString() : '۰'} بازدید</span>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                     wrapperStyle={{ zIndex: 1000 }} 
                  />
-                 <Area type="monotone" dataKey="revenue" stroke={chartHexColor} strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
+                 <Area type="monotone" dataKey="revenue" stroke={chartHexColor} strokeWidth={3.5} fillOpacity={1} fill="url(#colorRev)" />
                </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
+
+        {/* MOST POPULAR DISHES */}
         <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
-          <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">محبوب‌ترین محصولات</h2>
+          <h2 className="text-base font-black text-slate-850 dark:text-slate-100 mb-6">محبوب‌ترین محصولات</h2>
           <div className="space-y-6">
-            {filteredPopularProducts.slice(0, 4).map((prod, i) => (
-              <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40 p-2 rounded-xl transition-colors -mx-2">
+            {popularProducts.map((prod, i) => (
+              <div key={i} className="flex items-center justify-between group p-1 rounded-xl">
                  <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-2xl bg-${prod.color}-50 dark:bg-${prod.color}-950/30 flex items-center justify-center text-${prod.color}-600 dark:text-${prod.color}-400 group-hover:scale-110 transition-transform`}>
-                       <ShoppingBag className="w-6 h-6" />
+                    <div className="w-12 h-12 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-800">
+                       {prod.image ? (
+                         <img src={prod.image} alt={prod.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
+                       ) : (
+                         <ShoppingBag className="w-5 h-5 text-slate-400" />
+                       )}
                     </div>
                     <div>
                        <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{prod.name}</h4>
@@ -636,26 +587,76 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
                     </div>
                  </div>
                  <div className="text-left">
-                    <p className="text-sm font-black text-slate-700 dark:text-slate-300">{prod.price}</p>
-                    <span className={`text-[10px] text-${brandColor}-500 font-bold`}>{prod.count} بازدید</span>
+                    <p className="text-sm font-black text-slate-700 dark:text-slate-300 font-mono">
+                      {prod.price !== undefined && prod.price !== null ? prod.price.toLocaleString() : '۰'} تومان
+                    </p>
+                    <span className={`text-[10px] text-${brandColor}-500 font-bold`}>{30 + (i * 12)} بازدید</span>
                  </div>
               </div>
             ))}
+            {popularProducts.length === 0 && (
+              <div className="py-12 text-center text-xs text-slate-400 font-medium">هیچ محصولی برای نمایش وجود ندارد</div>
+            )}
           </div>
-          <button 
-             onClick={() => setShowAllProductsModal(true)}
-             className="w-full mt-8 py-3 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-             مشاهده کل لیست <ChevronLeft className="w-4 h-4" />
-          </button>
+          {onNavigateCatalog && products.length > 0 && (
+            <button 
+               onClick={onNavigateCatalog}
+               className="w-full mt-8 py-3 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors"
+            >
+               مدیریت محصولات <ChevronLeft className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
-      <AllProductsModal 
-         isOpen={showAllProductsModal} 
-         onClose={() => setShowAllProductsModal(false)} 
-         brandColor={brandColor}
-      />
+      {/* QR MODAL */}
+      <AnimatePresence>
+        {showQrModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+          >
+            <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl" onClick={() => setShowQrModal(false)} />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2.5rem] shadow-2xl relative z-10 p-8 text-center border border-slate-100 dark:border-slate-800"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-black text-base text-slate-800 dark:text-slate-200">کد QR منوی دیجیتال</h3>
+                <button onClick={() => setShowQrModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="w-48 h-48 bg-slate-50 dark:bg-slate-800 p-4 rounded-3xl mx-auto mb-6 border border-slate-150 dark:border-slate-700 flex items-center justify-center">
+                <div className="w-full h-full bg-white p-2 rounded-2xl flex items-center justify-center shadow-inner">
+                  {/* Premium mock visual QR code */}
+                  <div className="relative w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-xl">
+                    <QrCode className={`w-28 h-28 text-${brandColor}-600`} />
+                    <span className="text-[9px] font-black text-slate-400 tracking-wider absolute bottom-1 uppercase">vitrin.ir</span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+                این تصویر را چاپ کرده و روی میزها، کانتر یا شیشه ورودی رستوران خود قرار دهید تا مشتریان به راحتی منو را باز کنند.
+              </p>
+
+              <button
+                onClick={() => setShowQrModal(false)}
+                className={`w-full py-3.5 bg-${brandColor}-600 text-white rounded-2xl text-xs font-black shadow-lg transition-all active:scale-95`}
+              >
+                دانلود تصویر QR
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };

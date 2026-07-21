@@ -16,6 +16,7 @@ import CategoryManager from './components/CategoryManager';
 import CustomerMenu from './components/CustomerMenu';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import { OnboardingScreen } from './components/OnboardingScreen';
 import { LandingPage } from './components/LandingPage';
 import { FeaturesPage } from './components/FeaturesPage';
 import { SolutionsPage } from './components/SolutionsPage';
@@ -216,7 +217,16 @@ const App: React.FC = () => {
     }
 
     switch (activeView) {
-      case 'dashboard': return <Dashboard restaurantName={restaurantName} searchQuery={searchQuery} brandColor={brandColor} theme={theme} />;
+      case 'dashboard': 
+        return (
+          <Dashboard 
+            onNavigateDesigner={() => setActiveView('designer')}
+            onNavigateCatalog={() => setActiveView('products')}
+            onNavigateSettings={() => setActiveView('settings')}
+            brandColor={brandColor} 
+            theme={theme} 
+          />
+        );
       case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} brandColor={brandColor} />;
       case 'products': return <ProductManager brandColor={brandColor} highlightedItemId={highlightedItemId} clearHighlight={() => setHighlightedItemId(null)} />;
       case 'categories': return <CategoryManager brandColor={brandColor} />;
@@ -270,65 +280,10 @@ const App: React.FC = () => {
   if (isStandaloneCustomerView) return <CustomerMenu />;
 
   if (isAuthenticated && memberships.length === 0) {
-    return (
-      <div className="min-h-screen bg-app-bg text-app-text transition-colors duration-300 font-['Vazirmatn'] selection:bg-[#10b981]/10 selection:text-[#10b981] overflow-x-hidden flex flex-col relative" style={{ direction: 'rtl' }}>
-        <div className="fixed inset-0 w-full h-full pointer-events-none z-0">
-          <ReactiveGridBackground intensity="normal" />
-        </div>
-        <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
-          {/* Simple Customer Navigation Header */}
-          <header className="h-20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md relative z-20">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-600/20">V</div>
-              <span className="text-base font-black text-slate-800 dark:text-slate-100">ویترین</span>
-            </div>
-            <div className="flex items-center gap-3">
-              {toggleTheme && (
-                <button 
-                  onClick={toggleTheme} 
-                  className="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all animate-none"
-                >
-                  {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-slate-600" />}
-                </button>
-              )}
-              <button 
-                onClick={handleLogout}
-                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
-              >
-                خروج
-              </button>
-            </div>
-          </header>
-
-          <div className="flex-grow flex items-center justify-center p-6">
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full text-center relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-[#10b981]/10 rounded-full blur-2xl" />
-              <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/40 text-[#10b981] dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <User className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2 font-['Vazirmatn']">حساب کاربری مشتری</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6 font-['Vazirmatn']">
-                شما با موفقیت به عنوان مشتری وارد شده‌اید. در حال حاضر شما عضویت فروشگاهی ندارید، اما می‌توانید منوی دیجیتال لایو فروشگاه را بررسی و سفارشات خود را پیگیری کنید.
-              </p>
-              <div className="flex flex-col gap-2">
-                <button 
-                  onClick={() => setActiveView('customer-menu')}
-                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition-all flex items-center justify-center gap-2"
-                >
-                  <Eye className="w-4 h-4" /> مشاهده منوی دیجیتال
-                </button>
-                <button 
-                  onClick={handleLogout}
-                  className="w-full py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs rounded-2xl active:scale-95 transition-all"
-                >
-                  خروج از حساب کاربری
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    if (activeView === 'customer-menu') {
+      return <CustomerMenu source="PREVIEW_DRAFT" liveElements={canvasElements} theme={theme} toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />;
+    }
+    return <OnboardingScreen onLogout={handleLogout} />;
   }
   
   if (isAuthenticated && !isEmailVerified) {
@@ -340,20 +295,6 @@ const App: React.FC = () => {
           await refetchSession();
           setShowLoginFlow(false);
         }}
-      />
-    );
-  }
-
-  if (isAuthenticated && isEmailVerified && memberships.length === 0 && activeView !== 'customer-menu') {
-    return (
-      <LoginPage 
-        brandColor={brandColor} 
-        onBackToLanding={async () => {
-          await authRepository.logout();
-          await refetchSession();
-          setShowLoginFlow(false);
-        }}
-        onProceedAsCustomer={() => setActiveView('customer-menu')}
       />
     );
   }
@@ -479,6 +420,11 @@ const App: React.FC = () => {
         brandColor={brandColor}
         isOpenOnMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        onProfileClick={() => setActiveView('settings')}
+        onLogout={handleLogout}
+        restaurantName={restaurantName}
+        restaurantLogo={restaurantLogo}
+        isRestaurantOpen={isRestaurantOpen}
       />
 
       <main className="flex-1 flex flex-col min-w-0">
@@ -492,10 +438,6 @@ const App: React.FC = () => {
           showPublishSuccess={showPublishSuccess}
           notifications={notifications}
           onPreviewShop={handlePreviewShop}
-          onProfileClick={() => setActiveView('settings')}
-          onLogout={handleLogout}
-          restaurantName={restaurantName}
-          restaurantLogo={restaurantLogo}
           onViewAllNotifications={() => setActiveView('notifications')}
           brandColor={brandColor}
           onNotificationClick={(n) => {
@@ -508,7 +450,20 @@ const App: React.FC = () => {
           toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
           onMenuToggle={() => setIsMobileSidebarOpen(true)}
         />
-        <div className="flex-1 overflow-hidden relative">{renderView()}</div>
+        <div className="flex-1 overflow-hidden relative">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activeView}
+              initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, filter: 'blur(2px)' }}
+              animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -5, filter: 'blur(2px)' }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full"
+            >
+              {renderView()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
     </div>
   );

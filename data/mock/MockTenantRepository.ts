@@ -70,6 +70,18 @@ export class MockTenantRepository implements TenantRepository {
     const branchId = this.getActiveBranchId();
     await branchSettingsRepository.updateSettings(branchId, { brandColor: color });
   }
+
+  async createRestaurant(name: string, brandColor: string, address: string, phone: string): Promise<Restaurant> {
+    return restaurantsRepository.createRestaurant!(name, brandColor, address, phone);
+  }
+
+  async createBranch(restaurantId: string, name: string, address: string, phone?: string): Promise<Branch> {
+    return restaurantsRepository.createBranch!(restaurantId, name, address, phone);
+  }
+
+  async listAccessibleRestaurants(): Promise<Restaurant[]> {
+    return restaurantsRepository.listAccessibleRestaurants();
+  }
 }
 
 export const mockTenantRepository = new MockTenantRepository();

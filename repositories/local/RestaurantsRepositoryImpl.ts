@@ -91,5 +91,27 @@ export class RestaurantsRepositoryImpl implements RestaurantsRepository {
     localStore.save(store);
     return newRest;
   }
+
+  async createBranch(restaurantId: string, name: string, address: string, phone?: string): Promise<Branch> {
+    const store = localStore.load();
+    const id = `br_${Math.random().toString(36).substring(2, 11)}`;
+    const newBranch = {
+      id,
+      restaurantId,
+      name,
+      address,
+      phone,
+      createdAt: new Date().toISOString(),
+      activeMenuPublicationId: null
+    };
+    store.branches[id] = newBranch;
+    store.settings[id] = {
+      brandColor: 'emerald',
+      categoryPageLayout: 'grid',
+      categoryPageColumns: 2
+    };
+    localStore.save(store);
+    return newBranch;
+  }
 }
 export const restaurantsRepository = new RestaurantsRepositoryImpl();

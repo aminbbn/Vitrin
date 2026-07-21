@@ -48,6 +48,67 @@ const INITIAL_HOURS = [
   { id: 7, label: 'جمعه', isOpen: true, start: '12:00', end: '24:00' },
 ];
 
+const DAY_KEY_MAP: { [key: number]: string } = {
+  1: 'saturday',
+  2: 'sunday',
+  3: 'monday',
+  4: 'tuesday',
+  5: 'wednesday',
+  6: 'thursday',
+  7: 'friday'
+};
+
+function parseHoursFromStorage(storedHours: Record<string, string> | any): typeof INITIAL_HOURS {
+  if (!storedHours || typeof storedHours !== 'object' || Array.isArray(storedHours)) {
+    if (Array.isArray(storedHours)) {
+      return storedHours;
+    }
+    return INITIAL_HOURS;
+  }
+
+  return INITIAL_HOURS.map(dayTemplate => {
+    const key = DAY_KEY_MAP[dayTemplate.id];
+    if (!key || !storedHours[key]) return dayTemplate;
+
+    const val = storedHours[key];
+    if (val === 'تعطیل' || val === 'Closed') {
+      return {
+        ...dayTemplate,
+        isOpen: false,
+        start: '12:00',
+        end: '23:30'
+      };
+    }
+
+    const parts = val.split('-').map((p: string) => p.trim());
+    if (parts.length === 2) {
+      return {
+        ...dayTemplate,
+        isOpen: true,
+        start: parts[0],
+        end: parts[1]
+      };
+    }
+
+    return dayTemplate;
+  });
+}
+
+function serializeHoursToStorage(uiHours: typeof INITIAL_HOURS): Record<string, string> {
+  const result: Record<string, string> = {};
+  uiHours.forEach(day => {
+    const key = DAY_KEY_MAP[day.id];
+    if (key) {
+      if (day.isOpen) {
+        result[key] = `${day.start} - ${day.end}`;
+      } else {
+        result[key] = 'تعطیل';
+      }
+    }
+  });
+  return result;
+}
+
 const SectionCard = ({ id, title, subtitle, children, icon: Icon, brandColor, isHighlighted }: any) => (
   <section 
     id={id} 
@@ -115,7 +176,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
       if (restaurant.address) setAddress(restaurant.address);
       if (restaurant.phone) setPhone(restaurant.phone);
       if (restaurant.description) setDescription(restaurant.description);
-      if (restaurant.hours) setHours(restaurant.hours as any);
+      if (restaurant.hours) {
+        setHours(parseHoursFromStorage(restaurant.hours));
+      }
     }
   }, [restaurant]);
 
@@ -125,7 +188,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         address,
         phone,
         description,
-        hours: hours as any
+        hours: serializeHoursToStorage(hours)
       });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);

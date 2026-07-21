@@ -7,4 +7,5 @@ export interface RestaurantsRepository {
   getBranch(id: string): Promise<Branch | null>;
   getMemberships(): Promise<RestaurantMembership[]>;
   createRestaurant?(name: string, brandColor: string, address: string, phone: string): Promise<Restaurant>;
+  createBranch?(restaurantId: string, name: string, address: string, phone?: string): Promise<Branch>;
 }

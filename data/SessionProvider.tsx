@@ -11,6 +11,10 @@ export interface AppSessionContextType {
   activeMembership: RestaurantMembership | null;
   activeRestaurant: Restaurant | null;
   activeBranch: Branch | null;
+  activeRestaurantId: string | null;
+  activeBranchId: string | null;
+  accessibleRestaurants: Restaurant[];
+  accessibleBranches: Branch[];
   role: MembershipRole | null;
   permissions: MembershipPermission[];
   loading: boolean;
@@ -34,6 +38,11 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [activeRestaurant, setActiveRestaurantState] = useState<Restaurant | null>(null);
   const [activeBranch, setActiveBranchState] = useState<Branch | null>(null);
   
+  const [activeRestaurantId, setActiveRestaurantIdState] = useState<string | null>(null);
+  const [activeBranchId, setActiveBranchIdState] = useState<string | null>(null);
+  const [accessibleRestaurants, setAccessibleRestaurants] = useState<Restaurant[]>([]);
+  const [accessibleBranches, setAccessibleBranches] = useState<Branch[]>([]);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +57,10 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         setActiveMembership(null);
         setActiveRestaurantState(null);
         setActiveBranchState(null);
+        setActiveRestaurantIdState(null);
+        setActiveBranchIdState(null);
+        setAccessibleRestaurants([]);
+        setAccessibleBranches([]);
         setError(null);
         return;
       }
@@ -55,10 +68,16 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setUser(session.user);
       setIsAuthenticated(true);
 
-      // Load memberships
+      // Load memberships and filter by active user
       const allMemberships = await tenantRepository.getMemberships();
-      const activeMemberships = allMemberships.filter(m => m.status === 'ACTIVE');
-      setMemberships(allMemberships);
+      const currentUserId = session.userId || session.user?.id;
+      const userMemberships = allMemberships.filter(m => m.userId === currentUserId && m.status === 'ACTIVE');
+      setMemberships(userMemberships);
+
+      // Fetch accessible restaurants matching memberships
+      const allRestaurants = tenantRepository.listAccessibleRestaurants ? await tenantRepository.listAccessibleRestaurants() : [];
+      const userRestaurants = allRestaurants.filter(r => userMemberships.some(m => m.restaurantId === r.id));
+      setAccessibleRestaurants(userRestaurants);
 
       const storage = localStore.load();
       let persistedRestId = storage.session.activeRestaurantId;
@@ -67,21 +86,21 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       let activeRestId: string | null = null;
       let currentMembership: RestaurantMembership | null = null;
 
-      if (activeMemberships.length > 0) {
-        const found = activeMemberships.find(m => m.restaurantId === persistedRestId);
+      if (userRestaurants.length > 0) {
+        const found = userRestaurants.find(r => r.id === persistedRestId);
         if (found) {
-          currentMembership = found;
-          activeRestId = found.restaurantId;
+          activeRestId = found.id;
         } else {
-          currentMembership = activeMemberships[0];
-          activeRestId = currentMembership.restaurantId;
+          activeRestId = userRestaurants[0].id;
         }
+        currentMembership = userMemberships.find(m => m.restaurantId === activeRestId) || null;
       } else {
         activeRestId = null;
         currentMembership = null;
       }
 
       setActiveMembership(currentMembership);
+      setActiveRestaurantIdState(activeRestId);
 
       // Save updated activeRestaurantId in localStore session
       let storageUpdated = false;
@@ -108,6 +127,7 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       setActiveRestaurantState(fetchedRestaurant);
+      setAccessibleBranches(branches);
 
       // Validate persisted branch ID
       let activeBranchId: string | null = null;
@@ -128,6 +148,7 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       setActiveBranchState(currentBranch);
+      setActiveBranchIdState(activeBranchId);
 
       // Persist the final validated choices
       const finalData = localStore.load();
@@ -235,6 +256,10 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     activeMembership,
     activeRestaurant,
     activeBranch,
+    activeRestaurantId,
+    activeBranchId,
+    accessibleRestaurants,
+    accessibleBranches,
     role,
     permissions,
     loading,

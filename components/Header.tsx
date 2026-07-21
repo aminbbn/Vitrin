@@ -1,15 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppSession } from '../data/useRepositories';
-import { useRepositories } from '../data/RepositoryProvider';
-import { devSwitchMockUser } from '../data/mock/MockAuthRepository';
-import { Branch } from '../domain';
-import { ALL_RESTAURANTS, ALL_BRANCHES } from '../data/mock/MockTenantRepository';
 import { 
-  Search, Power, Eye, Sparkles, CheckCircle2, Bell, User,
-  LogOut, Store, MapPin, Phone, Clock, X, ChevronDown,
-  Check, Trash2, Sun, Moon, Menu
+  Search, Power, Eye, Sparkles, CheckCircle2, Bell,
+  Trash2, Sun, Moon, Menu, Check
 } from 'lucide-react';
 import { Notification } from '../types';
 
@@ -23,10 +17,6 @@ interface HeaderProps {
   showPublishSuccess: boolean;
   notifications: Notification[];
   onPreviewShop: () => void;
-  onProfileClick: () => void;
-  onLogout: () => void;
-  restaurantName: string;
-  restaurantLogo: string;
   onViewAllNotifications: () => void;
   brandColor: string;
   onNotificationClick: (n: Notification) => void;
@@ -47,10 +37,6 @@ const Header: React.FC<HeaderProps> = ({
   showPublishSuccess,
   notifications,
   onPreviewShop,
-  onProfileClick,
-  onLogout,
-  restaurantName,
-  restaurantLogo,
   onViewAllNotifications,
   brandColor,
   onNotificationClick,
@@ -60,46 +46,16 @@ const Header: React.FC<HeaderProps> = ({
   toggleTheme,
   onMenuToggle
 }) => {
-  const {
-    user,
-    isAuthenticated,
-    memberships,
-    activeRestaurant,
-    activeBranch,
-    role,
-    setActiveRestaurant,
-    setActiveBranch
-  } = useAppSession();
-
-  const { tenantRepository } = useRepositories();
-
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isRestaurantInfoOpen, setIsRestaurantInfoOpen] = useState(false);
-  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
-  const [availableBranches, setAvailableBranches] = useState<Branch[]>([]);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-  const profileRef = useRef<HTMLDivElement>(null);
-  const workspaceRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (activeRestaurant) {
-      tenantRepository.getBranches().then(brs => {
-        setAvailableBranches(brs);
-      }).catch(err => console.error('Error loading branches in Header:', err));
-    } else {
-      setAvailableBranches([]);
-    }
-  }, [activeRestaurant, tenantRepository]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) setIsSearchFocused(false);
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) setIsNotificationsOpen(false);
-      if (workspaceRef.current && !workspaceRef.current.contains(event.target as Node)) setIsWorkspaceOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -108,9 +64,7 @@ const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsWorkspaceOpen(false);
         setIsNotificationsOpen(false);
-        setIsProfileOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -313,326 +267,8 @@ const Header: React.FC<HeaderProps> = ({
             </AnimatePresence>
           </div>
 
-          {/* Tenant/Workspace Selector (Restaurant & Branch Selector) */}
-          <div className="relative shrink-0" ref={workspaceRef}>
-            <div 
-              onClick={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
-              className={`flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 rounded-2xl border transition-all cursor-pointer group select-none ${
-                isWorkspaceOpen 
-                  ? `border-${brandColor}-500 bg-${brandColor}-50/50 dark:bg-${brandColor}-950/20 shadow-inner` 
-                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-850/50'
-              }`}
-            >
-              <div 
-                className={`w-9 h-9 rounded-xl border shadow-sm flex items-center justify-center transition-all overflow-hidden shrink-0 ${
-                  isWorkspaceOpen 
-                    ? `border-${brandColor}-500 bg-white dark:bg-slate-900` 
-                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                }`}
-              >
-                <Store className={`w-4 h-4 ${isWorkspaceOpen ? `text-${brandColor}-600` : 'text-slate-500'}`} />
-              </div>
-              <div className="text-right hidden md:flex flex-col items-start pl-1">
-                <div className="flex items-center gap-1.5">
-                  <span className={`text-sm font-black text-slate-800 dark:text-slate-200 group-hover:text-${brandColor}-600 dark:group-hover:text-${brandColor}-400 transition-colors`}>
-                    {activeRestaurant ? activeRestaurant.name : 'انتخاب فروشگاه'}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 group-hover:translate-y-0.5" />
-                </div>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                  {activeBranch ? activeBranch.name : (activeRestaurant ? 'بدون شعبه فعال' : 'بدون حساب')}
-                </span>
-              </div>
-            </div>
-
-            <AnimatePresence>
-              {isWorkspaceOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute top-full left-0 md:left-auto md:right-0 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-200 dark:border-slate-800 z-[60] p-3 origin-top-left md:origin-top-right mt-2"
-                >
-                  {/* Restaurants Section */}
-                  <div className="mb-3">
-                    <span className="block text-[10px] font-black text-slate-400 dark:text-slate-500 px-2 pb-1 text-right uppercase tracking-wider">فروشگاه‌های من</span>
-                    {memberships.length === 0 ? (
-                      <div className="p-4 bg-slate-50 dark:bg-slate-850/40 rounded-xl text-center">
-                        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">حساب کاربری مشتری (فاقد عضویت فروشگاهی)</span>
-                      </div>
-                    ) : (
-                      <div className="space-y-0.5">
-                        {memberships.map(m => {
-                          const isSelected = activeRestaurant?.id === m.restaurantId;
-                          const restName = m.restaurantId === 'r1' ? 'رستوران ایتالیایی لیمو' : 'کافه قنادی بهار';
-                          return (
-                            <button
-                              key={m.id}
-                              onClick={async () => {
-                                try {
-                                  await setActiveRestaurant(m.restaurantId);
-                                  setIsWorkspaceOpen(false);
-                                } catch (err) {
-                                  console.error(err);
-                                }
-                              }}
-                              className={`w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-between group ${
-                                isSelected 
-                                  ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400` 
-                                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
-                              }`}
-                            >
-                              <span className="truncate">{restName}</span>
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-black uppercase ${
-                                  m.role === 'OWNER' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' : 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400'
-                                }`}>
-                                  {m.role === 'OWNER' ? 'مالک' : 'مدیر'}
-                                </span>
-                                {isSelected && <Check className={`w-3.5 h-3.5 text-${brandColor}-500`} />}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Branches Section */}
-                  {activeRestaurant && (
-                    <div className="border-t border-slate-100 dark:border-slate-850 pt-2.5 mb-2">
-                      <span className="block text-[10px] font-black text-slate-400 dark:text-slate-500 px-2 pb-1 text-right uppercase tracking-wider">شعبه‌های فعال</span>
-                      {availableBranches.length === 0 ? (
-                        <div className="p-3 text-center bg-slate-50 dark:bg-slate-850/40 rounded-xl">
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">این فروشگاه فاقد شعبه فعال است</span>
-                        </div>
-                      ) : (
-                        <div className="space-y-0.5">
-                          {availableBranches.map(b => {
-                            const isSelected = activeBranch?.id === b.id;
-                            return (
-                              <button
-                                key={b.id}
-                                onClick={async () => {
-                                  try {
-                                    await setActiveBranch(b.id);
-                                    setIsWorkspaceOpen(false);
-                                  } catch (err) {
-                                    console.error(err);
-                                  }
-                                }}
-                                className={`w-full text-right px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between ${
-                                  isSelected 
-                                    ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400 font-black` 
-                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40'
-                                }`}
-                              >
-                                <span>{b.name}</span>
-                                {isSelected && <Check className={`w-3.5 h-3.5 text-${brandColor}-500`} />}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Dev Switcher Helper */}
-                  <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-850">
-                    <div className="px-2 pb-1.5 flex items-center justify-between">
-                      <span className="text-[9px] font-black text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md uppercase">شبیه‌ساز کاربر (توسعه)</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-1">
-                      {[
-                        { id: 'user-owner', label: 'مالک' },
-                        { id: 'user-manager', label: 'مدیر' },
-                        { id: 'user-customer', label: 'مشتری' }
-                      ].map(u => (
-                        <button
-                          key={u.id}
-                          onClick={() => {
-                            devSwitchMockUser(u.id as any);
-                            setIsWorkspaceOpen(false);
-                          }}
-                          className={`text-[10px] py-1 px-1.5 rounded-lg font-bold transition-all text-center ${
-                            user?.id === u.id || (u.id === 'user-owner' && user?.id === 'mock-admin-id')
-                              ? 'bg-amber-500 text-white shadow-sm'
-                              : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-750'
-                          }`}
-                        >
-                          {u.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="w-[1px] h-8 bg-slate-200 dark:bg-slate-800 mx-1" />
-
-          {/* Identity & Profile */}
-          <div 
-            className="relative shrink-0" 
-            ref={profileRef} 
-            onMouseEnter={() => setIsProfileOpen(true)} 
-            onMouseLeave={() => setIsProfileOpen(false)}
-          >
-            <div 
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className={`flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 rounded-2xl border transition-all cursor-pointer group select-none ${
-                isProfileOpen 
-                  ? `border-${brandColor}-500 bg-${brandColor}-50/50 dark:bg-${brandColor}-950/20 shadow-inner` 
-                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-850/50'
-              }`}
-            >
-              <div className="text-left hidden md:flex flex-col items-end pl-1">
-                <div className="flex items-center gap-1.5">
-                    <span className={`text-sm font-black text-slate-800 dark:text-slate-200 group-hover:text-${brandColor}-600 dark:group-hover:text-${brandColor}-400 transition-colors`}>
-                      {user ? `${user.firstName} ${user.lastName}` : 'کاربر مهمان'}
-                    </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 group-hover:translate-y-0.5" />
-                </div>
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                  {role === 'OWNER' ? 'مالک سیستم' : role === 'MANAGER' ? 'مدیر سیستم' : 'مشتری'}
-                </span>
-              </div>
-              <div 
-                className={`w-9 h-9 rounded-xl border shadow-sm flex items-center justify-center transition-all overflow-hidden shrink-0 ${
-                  isProfileOpen 
-                    ? `border-${brandColor}-500 bg-white dark:bg-slate-900` 
-                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                }`}
-              >
-                {restaurantLogo && restaurantLogo.trim() !== '' ? (
-                  <img src={restaurantLogo || undefined} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                ) : (
-                  <User className={`w-4 h-4 ${isProfileOpen ? `text-${brandColor}-600` : 'text-slate-400'}`} />
-                )}
-              </div>
-            </div>
-
-            <AnimatePresence>
-              {isProfileOpen && (
-                 <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-slate-200 dark:border-slate-800 z-[60] p-2 origin-top-left mt-2"
-                 >
-                    <div className="px-4 py-3 bg-slate-50 dark:bg-slate-850 rounded-xl mb-1.5 text-right">
-                       <p className="font-black text-xs text-slate-800 dark:text-slate-200 uppercase tracking-tight">
-                         {user ? `${user.firstName} ${user.lastName}` : 'کاربر مهمان'}
-                       </p>
-                       <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
-                         {user ? user.email : 'guest@vitrin.com'}
-                       </p>
-                    </div>
-                    
-                    <button 
-                      onClick={() => { setIsRestaurantInfoOpen(true); setIsProfileOpen(false); }}
-                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-center justify-between group mb-1"
-                    >
-                       <span>اطلاعات فروشگاه</span>
-                       <Store className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
-                    </button>
-
-                    <button 
-                      onClick={() => { onProfileClick(); setIsProfileOpen(false); }}
-                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-center justify-between group mb-1"
-                    >
-                       <span>تنظیمات سیستم</span>
-                       <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
-                    </button>
-
-                    <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
-
-                    <button 
-                      onClick={() => { onLogout(); setIsProfileOpen(false); }}
-                      className="w-full text-right px-4 py-2.5 rounded-xl text-xs font-black text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors flex items-center justify-between group"
-                    >
-                       <span>خروج از حساب</span>
-                       <LogOut className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    </button>
-                 </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
       </header>
-
-      {/* Restaurant Info Modal */}
-      <AnimatePresence>
-        {isRestaurantInfoOpen && (
-          <motion.div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-             <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               onClick={() => setIsRestaurantInfoOpen(false)}
-               className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
-             />
-             
-             <motion.div 
-               initial={{ scale: 0.9, opacity: 0, y: 20 }}
-               animate={{ scale: 1, opacity: 1, y: 0 }}
-               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-               className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 overflow-hidden border border-slate-100 dark:border-slate-800 flex flex-col"
-               onClick={(e) => e.stopPropagation()}
-             >
-               <div className="p-8 relative">
-                  <div className="flex items-center justify-between mb-8">
-                     <div className="flex items-center gap-4">
-                        <div className={`p-4 rounded-[1.25rem] bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 shadow-inner`}>
-                           <Store className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-xl font-black text-slate-800 dark:text-slate-100">اطلاعات فروشگاه</h3>
-                     </div>
-                     <button onClick={() => setIsRestaurantInfoOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
-                        <X className="w-5 h-5" />
-                     </button>
-                  </div>
-
-                  <div className="space-y-5">
-                     <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-850 rounded-2xl border border-slate-200/50 dark:border-slate-800">
-                        <div className="flex flex-col">
-                           <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1">نام رسمی</span>
-                           <span className="text-lg font-black text-slate-800 dark:text-slate-100">{restaurantName}</span>
-                        </div>
-                        <div className={`px-3 py-1 rounded-full text-[10px] font-black border ${isRestaurantOpen ? `bg-${brandColor}-100 text-${brandColor}-700 border-${brandColor}-200 dark:bg-${brandColor}-950/50 dark:text-${brandColor}-400 dark:border-${brandColor}-800` : 'bg-rose-100 text-rose-700 border-rose-200'}`}>
-                           {isRestaurantOpen ? 'فعال' : 'غیرفعال'}
-                        </div>
-                     </div>
-
-                     <div className="space-y-2">
-                        {[
-                          { icon: MapPin, label: "آدرس", value: "تهران، سعادت آباد، میدان کاج، خیابان سرو شرقی" },
-                          { icon: Phone, label: "تلفن", value: "021-88990000" },
-                          { icon: Clock, label: "ساعت کار", value: "همه روزه 11:00 صبح تا 11:30 شب" }
-                        ].map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-850 rounded-2xl transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
-                             <item.icon className="w-5 h-5 text-slate-400 mt-0.5" />
-                             <div>
-                                <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-0.5">{item.label}</span>
-                                <p className="text-xs font-bold text-slate-700 dark:text-slate-300 leading-relaxed">{item.value}</p>
-                             </div>
-                          </div>
-                        ))}
-                     </div>
-
-                     <button 
-                        onClick={() => { setIsRestaurantInfoOpen(false); onProfileClick(); }} 
-                        className="w-full py-4 bg-slate-900 dark:bg-slate-800 text-white rounded-2xl font-black text-sm hover:bg-slate-800 dark:hover:bg-slate-700 transition-all shadow-xl shadow-slate-900/10 active:scale-95 mt-4"
-                     >
-                        ویرایش تنظیمات فروشگاه
-                     </button>
-                  </div>
-               </div>
-             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 };
