@@ -158,10 +158,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
       id: `bp-${productId}-${activeBranch.id}`,
       branchId: activeBranch.id,
       productId,
-      branchPriceRial: 150000, // Default price: 15,000 Tomans
-      isAvailable: true,
+      branchPriceIRR: 150000, // Default price: 15,000 Tomans
       availability: 'AVAILABLE',
-      orderingEnabled: true,
       isVisible: true
     };
     await catalogRepository.saveBranchProduct(defaultBp);
@@ -214,16 +212,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     // 1. Map edited fields back to the clean Domain Product model
     const updatedDomainProduct: DomainProduct = {
       id: editingProduct.id,
+      restaurantId: domainProducts.find(p => p.id === editingProduct.id)?.restaurantId || '',
       categoryId: editingProduct.categoryId,
       name: editingProduct.name,
-      internalName: editingProduct.internalName || editingProduct.name,
+      displayName: editingProduct.internalName || editingProduct.name,
       description: editingProduct.description || '',
       imageUrl: editingProduct.image || '',
-      estimatedTime: editingProduct.estimatedTime || '15 دقیقه',
-      rating: editingProduct.rating || 5,
+      isActive: editingProduct.isAvailable !== false,
       tags: editingProduct.tags || [],
-      state: editingProduct.state || 'active',
-      createdAt: new Date().toISOString(),
       modifierGroups: editingProduct.modifiers.map(g => ({
         id: g.id,
         name: g.name,
@@ -231,7 +227,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
         options: g.options.map(opt => ({
           id: opt.id,
           name: opt.name,
-          priceRial: opt.price * 10 // UI Tomans to Domain Rial
+          priceAdjustmentIRR: opt.price * 10 // UI Tomans to Domain IRR
         }))
       }))
     };
@@ -239,24 +235,24 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     // 2. Map and save BranchProduct fields
     if (activeBranch && catalogRepository) {
       const currentBp = branchProducts[editingProduct.id];
-      const formPriceRial = editingProduct.price * 10;
-      const formDiscountRial = editingProduct.discountPrice !== undefined ? editingProduct.discountPrice * 10 : undefined;
+      const formPriceIRR = editingProduct.price * 10;
+      const formDiscountIRR = editingProduct.discountPrice !== undefined ? editingProduct.discountPrice * 10 : undefined;
 
       if (currentBp) {
         // Evaluate if pricing changed relative to published pricing
         let hasPendingChange = currentBp.hasPendingPublishPrice || false;
-        let pendingPrice = currentBp.pendingPriceRial;
-        let pendingDiscount = currentBp.pendingDiscountPriceRial;
+        let pendingPrice = currentBp.pendingPriceIRR;
+        let pendingDiscount = currentBp.pendingDiscountPriceIRR;
 
-        if (formPriceRial !== currentBp.branchPriceRial) {
-          pendingPrice = formPriceRial;
+        if (formPriceIRR !== currentBp.branchPriceIRR) {
+          pendingPrice = formPriceIRR;
           hasPendingChange = true;
         } else {
           pendingPrice = undefined;
         }
 
-        if (formDiscountRial !== currentBp.branchDiscountPriceRial) {
-          pendingDiscount = formDiscountRial;
+        if (formDiscountIRR !== currentBp.branchDiscountPriceIRR) {
+          pendingDiscount = formDiscountIRR;
           hasPendingChange = true;
         } else {
           pendingDiscount = undefined;
@@ -264,10 +260,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
 
         const updatedBp: BranchProduct = {
           ...currentBp,
-          pendingPriceRial: pendingPrice,
-          pendingDiscountPriceRial: pendingDiscount,
+          pendingPriceIRR: pendingPrice,
+          pendingDiscountPriceIRR: pendingDiscount,
           hasPendingPublishPrice: hasPendingChange,
-          isAvailable: editingProduct.isAvailable !== false,
           availability: editingProduct.isAvailable !== false ? 'AVAILABLE' : 'UNAVAILABLE'
         };
         await catalogRepository.saveBranchProduct(updatedBp);
@@ -277,11 +272,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
           id: `bp-${editingProduct.id}-${activeBranch.id}`,
           branchId: activeBranch.id,
           productId: editingProduct.id,
-          branchPriceRial: formPriceRial,
-          branchDiscountPriceRial: formDiscountRial,
-          isAvailable: editingProduct.isAvailable !== false,
+          branchPriceIRR: formPriceIRR,
+          branchDiscountPriceIRR: formDiscountIRR,
           availability: editingProduct.isAvailable !== false ? 'AVAILABLE' : 'UNAVAILABLE',
-          orderingEnabled: true,
           isVisible: true
         };
         await catalogRepository.saveBranchProduct(newBp);
@@ -310,7 +303,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
         // Soft archive instead of hard delete
         const updatedProd: DomainProduct = {
           ...prod,
-          state: 'archived'
+          isActive: false
         };
         const otherProducts = domainProducts.filter(p => p.id !== productToDelete);
         await saveProducts([...otherProducts, updatedProd]);
@@ -518,7 +511,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
               className="h-full flex flex-col p-4 sm:p-8 overflow-hidden"
             >
               {/* Subtle price publish warning banner if any item has unpublished pending changes */}
-              {Object.values(branchProducts).some(bp => bp.hasPendingPublishPrice) && (
+              {Object.values(branchProducts).some((bp: BranchProduct) => bp.hasPendingPublishPrice) && (
                  <motion.div 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -1044,8 +1037,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                                            if (bp) {
                                               setEditingProduct({
                                                  ...editingProduct,
-                                                 price: bp.branchPriceRial / 10,
-                                                 discountPrice: bp.branchDiscountPriceRial ? bp.branchDiscountPriceRial / 10 : undefined,
+                                                 price: bp.branchPriceIRR / 10,
+                                                 discountPrice: bp.branchDiscountPriceIRR ? bp.branchDiscountPriceIRR / 10 : undefined,
                                                  hasPendingPublishPrice: false
                                               });
                                            }

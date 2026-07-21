@@ -5,7 +5,6 @@ import {
   Trash, 
   ToggleLeft, 
   ToggleRight, 
-  Sparkles,
   ShoppingBag,
   Circle
 } from '@phosphor-icons/react';

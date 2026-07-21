@@ -6,7 +6,6 @@ import {
   Lightning, 
   Printer, 
   ShieldCheck, 
-  SoundWave,
   ChefHat
 } from '@phosphor-icons/react';
 

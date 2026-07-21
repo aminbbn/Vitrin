@@ -131,19 +131,10 @@ const App: React.FC = () => {
     }
   }, [debouncedQuery]);
 
-  const handleLogin = async (name?: string) => { 
-    setAuthLoading(true);
-    try {
-      await authRepository.login('mock-password', name);
-      await refetchSession();
-      if (name) {
-        await updateInfo({ name });
-      }
-    } catch (e) {
-      console.error('Error logging in:', e);
-    } finally {
-      setAuthLoading(false);
-    }
+  const handleLogin = async (_email?: string, _password?: string) => {
+    // Login is handled by AuthContainer → loginWithEmail / loginWithGoogle.
+    // This handler is kept for backward compatibility only.
+    await refetchSession();
   };
 
   const handleLogout = async () => {
