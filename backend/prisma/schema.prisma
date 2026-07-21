@@ -1,0 +1,475 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum AuthProvider {
+  GOOGLE
+}
+
+enum RestaurantStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum BranchStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum MembershipRole {
+  OWNER
+  MANAGER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+  REMOVED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+enum PermissionCode {
+  MENU_PUBLISH
+  MENU_ROLLBACK
+}
+
+enum BranchTableStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TableQrTokenStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum ProductAvailability {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+model User {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  passwordHash    String?
+  fullName        String
+  avatarMediaId   String?    @unique
+  emailVerifiedAt DateTime?
+  status          UserStatus @default(ACTIVE)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  avatarMedia             MediaAsset?              @relation("UserAvatar", fields: [avatarMediaId], references: [id], onDelete: SetNull)
+  authAccounts            AuthAccount[]
+  refreshSessions         RefreshSession[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  memberships             RestaurantMembership[]
+  sentInvitations         RestaurantInvitation[]   @relation("InvitationSender")
+  grantedPermissions      MembershipPermission[]   @relation("PermissionGrantor")
+  publishedMenus          MenuPublication[]        @relation("MenuPublisher")
+  uploadedMediaAssets     MediaAsset[]             @relation("MediaUploader")
+
+  @@index([status])
+}
+
+model AuthAccount {
+  id                String       @id @default(uuid())
+  userId            String
+  provider          AuthProvider
+  providerAccountId String
+  providerEmail     String?
+  createdAt         DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model RefreshSession {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique
+  deviceInfo String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+  @@index([revokedAt])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+}
+
+model Restaurant {
+  id          String           @id @default(uuid())
+  name        String
+  slug        String           @unique
+  logoMediaId String?          @unique
+  description String?
+  status      RestaurantStatus @default(ACTIVE)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  logoMedia      MediaAsset?            @relation("RestaurantLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
+  memberships    RestaurantMembership[]
+  invitations    RestaurantInvitation[]
+  branches       Branch[]
+  categories     Category[]
+  products       Product[]
+  modifierGroups ModifierGroup[]
+  mediaAssets    MediaAsset[]           @relation("RestaurantMediaAssets")
+
+  @@index([status])
+}
+
+model Branch {
+  id                      String       @id @default(uuid())
+  restaurantId            String
+  name                    String
+  address                 String?
+  latitude                Decimal?
+  longitude               Decimal?
+  timezone                String       @default("Asia/Tehran")
+  currencyCode            String       @default("IRR")
+  status                  BranchStatus @default(ACTIVE)
+  publicMenuEnabled       Boolean      @default(true)
+  activeMenuPublicationId String?      @unique
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  restaurant            Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  activeMenuPublication MenuPublication?        @relation("ActiveMenuPublication", fields: [activeMenuPublicationId], references: [id], onDelete: SetNull)
+  workingIntervals      BranchWorkingInterval[]
+  specialHours          BranchSpecialHours[]
+  tables                BranchTable[]
+  branchProducts        BranchProduct[]
+  menuDraft             MenuDraft?
+  menuPublications      MenuPublication[]       @relation("BranchMenuPublications")
+
+  @@index([restaurantId, status])
+  @@index([restaurantId, name])
+}
+
+model RestaurantMembership {
+  id           String           @id @default(uuid())
+  userId       String
+  restaurantId String
+  role         MembershipRole
+  status       MembershipStatus @default(ACTIVE)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  user        User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  restaurant  Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  permissions MembershipPermission[]
+
+  @@unique([userId, restaurantId])
+  @@index([restaurantId, status, role])
+}
+
+model RestaurantInvitation {
+  id              String           @id @default(uuid())
+  restaurantId    String
+  invitedEmail    String
+  role            MembershipRole
+  invitedByUserId String
+  tokenHash       String           @unique
+  status          InvitationStatus @default(PENDING)
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+  createdAt       DateTime         @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  invitedBy  User       @relation("InvitationSender", fields: [invitedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([restaurantId, invitedEmail, status])
+  @@index([expiresAt, status])
+}
+
+model MembershipPermission {
+  id              String         @id @default(uuid())
+  membershipId    String
+  permission      PermissionCode
+  grantedAt       DateTime       @default(now())
+  grantedByUserId String
+
+  membership RestaurantMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  grantedBy  User                 @relation("PermissionGrantor", fields: [grantedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([membershipId, permission])
+  @@index([grantedByUserId])
+}
+
+model BranchWorkingInterval {
+  id           String   @id @default(uuid())
+  branchId     String
+  weekday      Int
+  opensAt      String
+  closesAt     String
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, weekday, displayOrder])
+  @@index([branchId, weekday])
+}
+
+model BranchSpecialHours {
+  id        String   @id @default(uuid())
+  branchId  String
+  /// Stored as a normalized date-only value at 00:00:00 UTC.
+  localDate DateTime
+  isClosed  Boolean  @default(false)
+  opensAt   String?
+  closesAt  String?
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([branchId, localDate])
+  @@index([localDate])
+}
+
+model BranchTable {
+  id          String            @id @default(uuid())
+  branchId    String
+  tableNumber String
+  capacity    Int?
+  status      BranchTableStatus @default(ACTIVE)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  branch   Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  qrTokens TableQrToken[]
+
+  @@unique([branchId, tableNumber])
+  @@index([branchId, status])
+}
+
+model TableQrToken {
+  id        String             @id @default(uuid())
+  tableId   String
+  token     String             @unique
+  status    TableQrTokenStatus @default(ACTIVE)
+  revokedAt DateTime?
+  createdAt DateTime           @default(now())
+
+  table BranchTable @relation(fields: [tableId], references: [id], onDelete: Restrict)
+
+  @@index([tableId, status])
+}
+
+model Category {
+  id           String    @id @default(uuid())
+  restaurantId String
+  name         String
+  displayOrder Int       @default(0)
+  isActive     Boolean   @default(true)
+  archivedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  products   Product[]
+
+  @@unique([restaurantId, displayOrder])
+  @@index([restaurantId, isActive, archivedAt])
+}
+
+model Product {
+  id           String    @id @default(uuid())
+  restaurantId String
+  categoryId   String
+  name         String
+  displayName  String
+  description  String?
+  imageMediaId String?
+  isActive     Boolean   @default(true)
+  archivedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  restaurant     Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  category       Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  imageMedia     MediaAsset?            @relation("ProductImage", fields: [imageMediaId], references: [id], onDelete: SetNull)
+  branchProducts BranchProduct[]
+  modifierGroups ProductModifierGroup[]
+
+  @@index([restaurantId, categoryId])
+  @@index([restaurantId, isActive, archivedAt])
+}
+
+model BranchProduct {
+  id                  String              @id @default(uuid())
+  branchId            String
+  productId           String
+  branchPrice         Int
+  branchDiscountPrice Int?
+  availability        ProductAvailability @default(AVAILABLE)
+  isVisible           Boolean             @default(true)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  branch  Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([branchId, productId])
+  @@index([branchId, isVisible, availability])
+  @@index([productId])
+}
+
+model ModifierGroup {
+  id            String   @id @default(uuid())
+  restaurantId  String
+  name          String
+  isRequired    Boolean  @default(false)
+  minSelections Int      @default(0)
+  maxSelections Int?
+  displayOrder  Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  restaurant Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  options    ModifierOption[]
+  products   ProductModifierGroup[]
+
+  @@unique([restaurantId, displayOrder])
+  @@index([restaurantId, isActive])
+}
+
+model ModifierOption {
+  id              String   @id @default(uuid())
+  modifierGroupId String
+  name            String
+  priceAdjustment Int      @default(0)
+  displayOrder    Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  modifierGroup ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([modifierGroupId, displayOrder])
+  @@index([modifierGroupId, isActive])
+}
+
+model ProductModifierGroup {
+  id              String   @id @default(uuid())
+  productId       String
+  modifierGroupId String
+  displayOrder    Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  modifierGroup ModifierGroup @relation(fields: [modifierGroupId], references: [id], onDelete: Restrict)
+
+  @@unique([productId, modifierGroupId])
+  @@unique([productId, displayOrder])
+  @@index([modifierGroupId])
+}
+
+model MenuDraft {
+  id              String    @id @default(uuid())
+  branchId        String    @unique
+  layout          Json
+  theme           Json
+  categoryConfig  Json
+  productConfig   Json
+  displaySettings Json
+  lastPublishedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Restrict)
+}
+
+model MenuPublication {
+  id                String   @id @default(uuid())
+  branchId          String
+  version           Int
+  schemaVersion     Int      @default(1)
+  snapshot          Json
+  publishedByUserId String
+  createdAt         DateTime @default(now())
+
+  branch          Branch  @relation("BranchMenuPublications", fields: [branchId], references: [id], onDelete: Restrict)
+  publishedBy     User    @relation("MenuPublisher", fields: [publishedByUserId], references: [id], onDelete: Restrict)
+  activeForBranch Branch? @relation("ActiveMenuPublication")
+
+  @@unique([branchId, version])
+  @@index([branchId, createdAt])
+  @@index([publishedByUserId])
+}
+
+model MediaAsset {
+  id               String    @id @default(uuid())
+  uploadedByUserId String
+  restaurantId     String?
+  storageKey       String    @unique
+  publicUrl        String
+  mimeType         String
+  fileSizeBytes    Int
+  widthPx          Int?
+  heightPx         Int?
+  createdAt        DateTime  @default(now())
+  archivedAt       DateTime?
+
+  uploadedBy        User        @relation("MediaUploader", fields: [uploadedByUserId], references: [id], onDelete: Restrict)
+  restaurant        Restaurant? @relation("RestaurantMediaAssets", fields: [restaurantId], references: [id], onDelete: Restrict)
+  avatarForUser     User?       @relation("UserAvatar")
+  logoForRestaurant Restaurant? @relation("RestaurantLogo")
+  productImages     Product[]   @relation("ProductImage")
+
+  @@index([restaurantId, archivedAt])
+  @@index([uploadedByUserId])
+}
