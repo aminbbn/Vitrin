@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Star, ChevronLeft } from 'lucide-react';
 import { ComponentItem, Product } from '../../types';
 import { INITIAL_PRODUCTS } from '../../constants';
+import { useCatalog } from '../../data/useRepositories';
 
 interface FeaturedBlockProps {
   element?: ComponentItem;
@@ -44,36 +45,8 @@ export const FeaturedBlock: React.FC<FeaturedBlockProps> = ({
   device = 'mobile',
   products: propProducts,
 }) => {
-  const [localProducts, setLocalProducts] = useState<Product[]>(INITIAL_PRODUCTS);
-
-  const products = propProducts || localProducts;
-
-  useEffect(() => {
-    const handleLoadProducts = () => {
-      const saved = localStorage.getItem('vitrin_products');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setLocalProducts(parsed);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    };
-
-    handleLoadProducts();
-
-    if (mode === 'live') {
-      window.addEventListener('storage', handleLoadProducts);
-      window.addEventListener('focus', handleLoadProducts);
-      return () => {
-        window.removeEventListener('storage', handleLoadProducts);
-        window.removeEventListener('focus', handleLoadProducts);
-      };
-    }
-  }, [mode]);
+  const { products: catalogProducts } = useCatalog();
+  const products = propProducts || catalogProducts || INITIAL_PRODUCTS;
 
   // Use the first product as featured, or second depending on availability
   const baseProduct = products[1] || products[0] || INITIAL_PRODUCTS[1];

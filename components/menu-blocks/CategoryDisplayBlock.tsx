@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ComponentItem } from '../../types';
 import { INITIAL_CATEGORIES } from '../../constants';
+import { useCatalog } from '../../data/useRepositories';
 
 interface CategoryDisplayBlockProps {
   element?: ComponentItem;
@@ -23,8 +24,8 @@ export const CategoryDisplayBlock: React.FC<CategoryDisplayBlockProps> = ({
   onCategoryClick,
   categories: propCategories,
 }) => {
-  const [localCategories, setLocalCategories] = useState<any[]>(INITIAL_CATEGORIES);
-  const categories = propCategories || localCategories;
+  const { categories: catalogCategories } = useCatalog();
+  const categories = propCategories || catalogCategories || INITIAL_CATEGORIES;
   const layout = element?.settings?.layout || 'grid'; // 'grid' or 'scroll'
   const columns = element?.settings?.columns || 2;
   const visibleCategories = element?.settings?.visibleCategories || [];
@@ -72,32 +73,7 @@ export const CategoryDisplayBlock: React.FC<CategoryDisplayBlockProps> = ({
     return list;
   }, [categories, visibleCategories, categoriesOrder]);
 
-  useEffect(() => {
-    const handleLoadCategories = () => {
-      const saved = localStorage.getItem('vitrin_categories');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) {
-            setLocalCategories(parsed);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    };
 
-    handleLoadCategories();
-
-    if (mode === 'live') {
-      window.addEventListener('storage', handleLoadCategories);
-      window.addEventListener('focus', handleLoadCategories);
-      return () => {
-        window.removeEventListener('storage', handleLoadCategories);
-        window.removeEventListener('focus', handleLoadCategories);
-      };
-    }
-  }, [mode]);
 
   useEffect(() => {
     const el = scrollRef.current;

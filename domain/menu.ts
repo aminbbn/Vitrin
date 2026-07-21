@@ -1,38 +1,52 @@
 import { Category, Product, BranchProduct } from './catalog';
 
 export interface MenuDraft {
-  id: string; // UUID-like string
+  id: string;
   branchId: string;
   restaurantId: string;
-  elements: any[]; // Designer elements/blocks
+  elements: unknown[]; // replace any with unknown to comply with "no any"
   lastUpdatedBy: string;
   updatedAt: string;
 }
 
-export interface MenuPublicationSnapshot {
-  schemaVersion: number; // Snapshot schema version
-  elements: any[]; // Immutable layout elements
-  categories: Category[]; // Immutable category list snapshot
-  products: Product[]; // Immutable product catalog snapshot
-  branchProducts: BranchProduct[]; // Immutable branch-specific pricing snapshots
+export interface PublicMenuSnapshot {
+  schemaVersion: number;
+  elements?: unknown[]; // optional designer elements
+  categories: Category[];
+  products: Product[];
+  branchProducts: BranchProduct[];
   snapshotAt: string;
 }
 
 export interface MenuPublication {
-  id: string; // UUID-like string
+  id: string;
   branchId: string;
   restaurantId: string;
   publishedBy: string;
   version: number;
   publishedAt: string;
-  snapshot: MenuPublicationSnapshot; // Immutable versioned snapshot of the menu catalog
+  snapshot: PublicMenuSnapshot;
+}
+
+export interface MenuPublicationSummary {
+  id: string;
+  branchId: string;
+  version: number;
+  publishedAt: string;
+  publishedBy: string;
+}
+
+export interface TableContext {
+  tableNumber: number;
+  qrCodeUrl?: string;
+  capacity?: number;
 }
 
 export interface CustomerMenuSource {
   branchId: string;
   restaurantId: string;
   publicationId: string;
-  versionSnapshot: MenuPublicationSnapshot;
+  versionSnapshot: PublicMenuSnapshot;
   sourceMode: 'PREVIEW_DRAFT' | 'PUBLICATION';
 }
 

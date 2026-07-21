@@ -14,6 +14,11 @@ export const formatCurrency = (value: number): string => {
   return `${formatNumber(value)} تومان`;
 };
 
+export const formatIRRToToman = (valueIRR: number): string => {
+  const toman = Math.floor(valueIRR / 10);
+  return `${formatNumber(toman)} تومان`;
+};
+
 export const formatPercent = (value: number, decimals: number = 0): string => {
   return `${formatNumber(value, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}%`;
 };

@@ -3,6 +3,7 @@ import {
   UserStatus,
   AuthProvider,
   AppSession,
+  UserSession,
   Restaurant,
   Branch,
   RestaurantMembership,
@@ -14,21 +15,13 @@ import {
   BranchProduct,
   ModifierGroup as DomainModifierGroup,
   ModifierOption as DomainModifierOption,
-  ProductModifierGroup,
   MenuDraft,
   MenuPublication,
-  MenuPublicationSnapshot,
+  MenuPublicationSummary,
+  PublicMenuSnapshot,
+  TableContext,
+  MenuItemView,
   CustomerMenuSource,
-  OrderType,
-  OrderStatus as DomainOrderStatus,
-  CustomerOrder,
-  OrderItem,
-  OrderItemModifier,
-  DineInContext,
-  PaymentMethod,
-  PaymentStatus,
-  Payment,
-  isTerminalOrderStatus,
   isActiveMembership,
   hasPermission,
   getBranchProductEffectivePrice
@@ -107,7 +100,7 @@ export interface Category {
   order: number;
 }
 
-// Legacy Product shape representing the combined product view model for the UI
+// Legacy Product shape representing the combined product view model for the UI (excluding rawMaterials/estimatedTime)
 export interface Product {
   id: string;
   name: string;
@@ -117,8 +110,6 @@ export interface Product {
   price: number;
   image: string;
   modifiers: ModifierGroup[];
-  rawMaterials?: string[]; // Note: legacy rawMaterials is excluded from new domain models, but kept here in the view-model adapter to prevent compilation breakage of the legacy dashboard forms
-  estimatedTime?: string;
   rating?: number;
   reviews?: ProductReview[];
   isAvailable?: boolean;
@@ -128,19 +119,6 @@ export interface Product {
   pendingDiscountPrice?: number;
   hasPendingPublishPrice?: boolean;
   internalName?: string;
-}
-
-export type OrderStatus = 'new' | 'preparing' | 'ready' | 'delivered';
-
-export interface Order {
-  id: string;
-  tableNumber: number;
-  customerName?: string;
-  items: string[];
-  notes?: string;
-  totalPrice: number;
-  status: OrderStatus;
-  timestamp: string;
 }
 
 // --- EXPLICIT COMPATIBILITY ADAPTER FUNCTIONS ---
@@ -160,7 +138,7 @@ export function toProductViewModel(
     options: (g.options || []).map(opt => ({
       id: opt.id,
       name: opt.name,
-      price: opt.priceRial / 10 // Convert from Rial to Toman
+      price: opt.priceAdjustmentIRR / 10 // Convert from IRR to Toman for legacy display
     }))
   }));
 
@@ -170,46 +148,39 @@ export function toProductViewModel(
     category: categoryName || 'دسته بندی نشده',
     categoryId: domainProduct.categoryId,
     description: domainProduct.description || '',
-    price: branchProduct ? (branchProduct.branchPriceRial / 10) : 0,
-    image: domainProduct.imageUrl || '',
+    price: branchProduct ? (branchProduct.branchPriceIRR / 10) : 0,
+    image: domainProduct.imageUrl || domainProduct.imageReference || '',
     modifiers: legacyModifiers,
-    estimatedTime: domainProduct.estimatedTime || '',
-    rating: domainProduct.rating,
-    isAvailable: branchProduct ? branchProduct.isAvailable : true,
-    discountPrice: (branchProduct && branchProduct.branchDiscountPriceRial) ? (branchProduct.branchDiscountPriceRial / 10) : undefined,
+    rating: 4.5,
+    isAvailable: branchProduct ? branchProduct.availability === 'AVAILABLE' : true,
+    discountPrice: (branchProduct && branchProduct.branchDiscountPriceIRR) ? (branchProduct.branchDiscountPriceIRR / 10) : undefined,
     tags: domainProduct.tags || [],
-    rawMaterials: [], // Empty fallback since legacy raw materials are excluded from domain models
-    pendingPrice: (branchProduct && branchProduct.pendingPriceRial !== undefined) ? (branchProduct.pendingPriceRial / 10) : undefined,
-    pendingDiscountPrice: (branchProduct && branchProduct.pendingDiscountPriceRial !== undefined) ? (branchProduct.pendingDiscountPriceRial / 10) : undefined,
-    hasPendingPublishPrice: branchProduct ? branchProduct.hasPendingPublishPrice : false,
-    internalName: domainProduct.internalName || domainProduct.name
+    internalName: domainProduct.displayName || domainProduct.name
   };
 }
 
 /**
- * Maps a clean CustomerOrder into the legacy view-model Order shape for UI.
+ * Clean adapter helper that creates MenuItemView from Product, Category, and BranchProduct.
  */
-export function toOrderViewModel(customerOrder: CustomerOrder): Order {
-  let legacyStatus: OrderStatus = 'new';
-  if (customerOrder.status === DomainOrderStatus.PREPARING) {
-    legacyStatus = 'preparing';
-  } else if (customerOrder.status === DomainOrderStatus.READY) {
-    legacyStatus = 'ready';
-  } else if (
-    customerOrder.status === DomainOrderStatus.COMPLETED ||
-    customerOrder.status === DomainOrderStatus.OUT_FOR_DELIVERY
-  ) {
-    legacyStatus = 'delivered';
-  }
-
+export function toMenuItemView(
+  product: DomainProduct,
+  category: DomainCategory,
+  branchProduct: BranchProduct
+): MenuItemView {
   return {
-    id: customerOrder.id,
-    tableNumber: customerOrder.dineInTable?.tableNumber || 0,
-    customerName: customerOrder.customerName,
-    items: customerOrder.items.map(item => `${item.name} x${item.quantity}`),
-    notes: customerOrder.notes,
-    totalPrice: customerOrder.grandTotalRial,
-    status: legacyStatus,
-    timestamp: customerOrder.createdAt
+    id: product.id,
+    productId: product.id,
+    categoryId: product.categoryId,
+    categoryName: category.name,
+    name: product.name,
+    displayName: product.displayName,
+    description: product.description,
+    imageReference: product.imageReference,
+    branchPriceIRR: branchProduct.branchPriceIRR,
+    branchDiscountPriceIRR: branchProduct.branchDiscountPriceIRR,
+    availability: branchProduct.availability,
+    isVisible: branchProduct.isVisible,
+    modifierGroups: product.modifierGroups || [],
+    tags: product.tags
   };
 }

@@ -1,8 +1,6 @@
 export enum MembershipRole {
   OWNER = 'OWNER',
-  ADMIN = 'ADMIN',
-  MANAGER = 'MANAGER',
-  STAFF = 'STAFF'
+  MANAGER = 'MANAGER'
 }
 
 export enum MembershipStatus {
@@ -45,4 +43,24 @@ export interface RestaurantMembership {
   status: MembershipStatus;
   permissions: MembershipPermission[];
   createdAt: string;
+}
+
+export interface RestaurantSummary {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  status: 'ACTIVE' | 'SUSPENDED' | 'PENDING';
+  currentRole: MembershipRole;
+}
+
+export interface BranchSummary {
+  id: string;
+  restaurantId: string;
+  name: string;
+  address?: string;
+  timezone: string;
+  currencyCode: 'IRR' | 'TOMAN';
+  publicMenuEnabled: boolean;
+  status: 'ACTIVE' | 'INACTIVE';
 }

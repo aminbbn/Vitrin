@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRepositories } from './RepositoryProvider';
 import { Category, Product, Restaurant, MenuPublication } from '../domain';
 import { ComponentItem } from '../types';
-import { useAppSession } from './AppSessionProvider';
+import { useAppSession } from './SessionProvider';
 
 /**
  * Custom helper to track mount status and prevent updates on unmounted components.

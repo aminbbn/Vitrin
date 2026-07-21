@@ -35,6 +35,7 @@ import {
 import { COMPONENT_LIBRARY } from '../constants';
 import { ComponentItem, Product } from '../types';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '../constants';
+import { useCatalog } from '../data/useRepositories';
 
 // --- Types for Local State ---
 interface CartItem {
@@ -144,53 +145,24 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
   };
   const [inspectorTab, setInspectorTab] = useState<'home' | 'categories'>('home');
   const [previewCategoryId, setPreviewCategoryId] = useState<string | null>(null);
-  const [categoryPageLayout, setCategoryPageLayout] = useState<'grid' | 'list'>(() => {
-    return (localStorage.getItem('vitrin_category_products_layout') as 'grid' | 'list') || 'grid';
-  });
-  const [categoryPageColumns, setCategoryPageColumns] = useState<number>(() => {
-    const saved = localStorage.getItem('vitrin_category_products_columns');
-    return saved ? parseInt(saved) : 2;
-  });
-  const [cats, setCats] = useState<any[]>(INITIAL_CATEGORIES);
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
 
-  useEffect(() => {
-    localStorage.setItem('vitrin_category_products_layout', categoryPageLayout);
-  }, [categoryPageLayout]);
+  const {
+    categories: cats,
+    products,
+    layoutSettings,
+    updateCategoryPageSettings
+  } = useCatalog();
 
-  useEffect(() => {
-    localStorage.setItem('vitrin_category_products_columns', categoryPageColumns.toString());
-  }, [categoryPageColumns]);
+  const categoryPageLayout = layoutSettings?.layout || 'grid';
+  const categoryPageColumns = layoutSettings?.columns || 2;
 
-  useEffect(() => {
-    const saved = localStorage.getItem('vitrin_categories');
-    if (saved) {
-      try { setCats(JSON.parse(saved)); } catch (e) {}
-    }
-  }, []);
+  const setCategoryPageLayout = (layout: 'grid' | 'list') => {
+    updateCategoryPageSettings({ layout });
+  };
 
-  useEffect(() => {
-    const handleLoadProducts = () => {
-      const saved = localStorage.getItem('vitrin_products');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setProducts(parsed);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-      }
-    };
-    handleLoadProducts();
-    window.addEventListener('storage', handleLoadProducts);
-    window.addEventListener('focus', handleLoadProducts);
-    return () => {
-      window.removeEventListener('storage', handleLoadProducts);
-      window.removeEventListener('focus', handleLoadProducts);
-    };
-  }, []);
+  const setCategoryPageColumns = (columns: number) => {
+    updateCategoryPageSettings({ columns });
+  };
   
   // Preview State
   const [cart, setCart] = useState<CartItem[]>([]);

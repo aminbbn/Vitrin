@@ -1,16 +1,7 @@
-export interface Category {
-  id: string; // UUID-like string
-  name: string;
-  image?: string;
-  icon?: string;
-  order: number;
-  state?: 'active' | 'archived';
-}
-
 export interface ModifierOption {
   id: string; // UUID-like string
   name: string;
-  priceRial: number; // Integer IRR
+  priceAdjustmentIRR: number; // Integer IRR display-only price adjustment
 }
 
 export interface ModifierGroup {
@@ -20,38 +11,55 @@ export interface ModifierGroup {
   options: ModifierOption[];
 }
 
-export interface ProductModifierGroup {
-  productId: string;
-  modifierGroupId: string;
-  order: number;
+export interface Category {
+  id: string;
+  restaurantId: string;
+  name: string;
+  displayOrder: number;
+  isActive: boolean;
+  archivedAt?: string;
+  image?: string; // fallback
+  icon?: string; // fallback
 }
 
 export interface Product {
-  id: string; // UUID-like string
-  categoryId: string; // A Product belongs to exactly one Category
-  internalName?: string; // Master identity internal name
-  name: string; // Customer-facing display name
-  description: string;
-  imageUrl?: string;
-  estimatedTime?: string;
-  rating?: number;
+  id: string;
+  restaurantId: string;
+  categoryId: string;
+  name: string;
+  displayName: string;
+  description?: string;
+  imageReference?: string; // image reference optional
+  imageUrl?: string; // fallback for legacy views
+  isActive: boolean;
+  archivedAt?: string;
+  modifierGroups?: ModifierGroup[];
   tags?: string[];
-  modifierGroups: ModifierGroup[];
-  createdAt: string;
-  state?: 'active' | 'archived';
 }
 
 export interface BranchProduct {
-  id: string; // UUID-like string
+  id: string;
   branchId: string;
   productId: string;
-  branchPriceRial: number; // Integer IRR (Published)
-  branchDiscountPriceRial?: number; // Integer IRR (Published)
-  pendingPriceRial?: number; // Integer IRR (Unpublished)
-  pendingDiscountPriceRial?: number; // Integer IRR (Unpublished)
-  hasPendingPublishPrice?: boolean; // Subtle pending-publish indicator flag
-  isAvailable: boolean; // Immediate status
-  availability: 'AVAILABLE' | 'UNAVAILABLE'; // Immediate status presented as AVAILABLE/UNAVAILABLE
-  orderingEnabled: boolean;
+  branchPriceIRR: number;
+  branchDiscountPriceIRR?: number;
+  availability: 'AVAILABLE' | 'UNAVAILABLE';
   isVisible: boolean;
+}
+
+export interface MenuItemView {
+  id: string; // unique item view or product ID
+  productId: string;
+  categoryId: string;
+  categoryName: string;
+  name: string;
+  displayName: string;
+  description?: string;
+  imageReference?: string;
+  branchPriceIRR: number;
+  branchDiscountPriceIRR?: number;
+  availability: 'AVAILABLE' | 'UNAVAILABLE';
+  isVisible: boolean;
+  modifierGroups: ModifierGroup[];
+  tags?: string[];
 }

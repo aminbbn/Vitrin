@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, X, Plus } from 'lucide-react';
 import { Product, Category } from '../../types';
 import { INITIAL_CATEGORIES, INITIAL_PRODUCTS } from '../../constants';
+import { useCatalog } from '../../data/useRepositories';
 
 interface CategoryProductsScreenProps {
   categoryId: string;
@@ -45,56 +46,15 @@ export const CategoryProductsScreen: React.FC<CategoryProductsScreenProps> = ({
   categories: propCategories,
   products: propProducts,
 }) => {
-  const [localCategories, setLocalCategories] = useState<Category[]>(INITIAL_CATEGORIES);
-  const [localProducts, setLocalProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const { categories: catalogCategories, products: catalogProducts, layoutSettings } = useCatalog();
 
-  const categories = propCategories || localCategories;
-  const products = propProducts || localProducts;
+  const categories = propCategories || catalogCategories || INITIAL_CATEGORIES;
+  const products = propProducts || catalogProducts || INITIAL_PRODUCTS;
 
-  // Layout preferences for live mode
-  const [liveLayoutStyle, setLiveLayoutStyle] = useState<'grid' | 'list'>('grid');
-  const [liveColumns, setLiveColumns] = useState<number>(2);
+  const liveLayoutStyle = layoutSettings?.layout || 'grid';
+  const liveColumns = layoutSettings?.columns || 2;
 
   const isEdit = mode === 'edit';
-
-  useEffect(() => {
-    const handleLoadData = () => {
-      const savedCats = localStorage.getItem('vitrin_categories');
-      if (savedCats) {
-        try {
-          const parsed = JSON.parse(savedCats);
-          if (Array.isArray(parsed)) setLocalCategories(parsed);
-        } catch (e) {}
-      }
-      const savedProds = localStorage.getItem('vitrin_products');
-      if (savedProds) {
-        try {
-          const parsed = JSON.parse(savedProds);
-          if (Array.isArray(parsed)) setLocalProducts(parsed);
-        } catch (e) {}
-      }
-    };
-
-    handleLoadData();
-
-    if (mode === 'live') {
-      const savedLayout = localStorage.getItem('vitrin_category_products_layout');
-      if (savedLayout === 'list' || savedLayout === 'grid') {
-        setLiveLayoutStyle(savedLayout);
-      }
-      const savedCols = localStorage.getItem('vitrin_category_products_columns');
-      if (savedCols) {
-        setLiveColumns(parseInt(savedCols) || 2);
-      }
-
-      window.addEventListener('storage', handleLoadData);
-      window.addEventListener('focus', handleLoadData);
-      return () => {
-        window.removeEventListener('storage', handleLoadData);
-        window.removeEventListener('focus', handleLoadData);
-      };
-    }
-  }, [mode]);
 
   const activeLayoutStyle = isEdit ? editLayoutStyle || 'grid' : liveLayoutStyle;
   const activeColumns = isEdit ? editColumns || 2 : liveColumns;

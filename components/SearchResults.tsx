@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SEARCH_ITEMS } from '../constants';
+import { useTenant } from '../data/useRepositories';
 
 interface SearchResultsProps {
   query: string;
@@ -179,7 +180,7 @@ const SearchCustomerProfileModal: React.FC<SearchCustomerProfileModalProps> = ({
 
 const SearchResults: React.FC<SearchResultsProps> = ({ query, onBack, onNavigate }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<any | null>(null);
-  const brandColor = localStorage.getItem('vitrin_brand_color') || 'emerald';
+  const { brandColor = 'emerald' } = useTenant();
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {

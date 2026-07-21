@@ -7,8 +7,6 @@ import { SIDEBAR_LINKS, SEARCH_ITEMS } from './constants';
 import Dashboard from './components/Dashboard';
 import CanvasDesigner from './components/CanvasDesigner';
 import ProductManager from './components/ProductManager';
-import OrderBoard from './components/OrderBoard';
-import Analytics from './components/Analytics';
 import SettingsPage from './components/Settings';
 import LoginPage from './components/LoginPage';
 import SearchResults from './components/SearchResults';
@@ -29,7 +27,7 @@ import { useRepositories } from './data/RepositoryProvider';
 import { useTenant, useMenuDraft, useAppSession } from './data/useRepositories';
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
-  { id: '1', type: 'order', title: 'سفارش جدید #12895', message: '2 پیتزا پپرونی، 1 سالاد سزار - میز 5', time: '2 دقیقه پیش', read: false, link: 'orders' },
+  { id: '1', type: 'system', title: 'خوش آمدید', message: 'به پنل مدیریت ویترین خوش آمدید. منوی دیجیتال آماده طراحی و انتشار است.', time: 'هم‌اکنون', read: false, link: 'dashboard' },
 ];
 
 const App: React.FC = () => {
@@ -222,8 +220,6 @@ const App: React.FC = () => {
       case 'designer': return <CanvasDesigner elements={canvasElements} onElementsChange={setCanvasElements} brandColor={brandColor} />;
       case 'products': return <ProductManager brandColor={brandColor} highlightedItemId={highlightedItemId} clearHighlight={() => setHighlightedItemId(null)} />;
       case 'categories': return <CategoryManager brandColor={brandColor} />;
-      case 'orders': return <OrderBoard brandColor={brandColor} highlightedItemId={highlightedItemId} clearHighlight={() => setHighlightedItemId(null)} />;
-      case 'analytics': return <Analytics brandColor={brandColor} theme={theme} />;
       case 'settings': 
         return (
           <SettingsPage 
@@ -235,7 +231,7 @@ const App: React.FC = () => {
             setBrandColor={(color) => updateBrandColor(color)}
           />
         );
-      case 'customer-menu': return <CustomerMenu liveElements={canvasElements} theme={theme} toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />;
+      case 'customer-menu': return <CustomerMenu source="PREVIEW_DRAFT" liveElements={canvasElements} theme={theme} toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />;
       case 'search-results': return <SearchResults query={searchQuery} onBack={() => setActiveView(previousView)} onNavigate={(view, itemId) => {
         setActiveView(view as ViewState);
         if (itemId) setHighlightedItemId(itemId);
@@ -456,7 +452,7 @@ const App: React.FC = () => {
         >
            <X className="w-4 h-4" /> بستن پیش‌نمایش
         </button>
-        <CustomerMenu liveElements={canvasElements} theme={theme} toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />
+        <CustomerMenu source="PREVIEW_DRAFT" liveElements={canvasElements} theme={theme} toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />
       </div>
     );
   }

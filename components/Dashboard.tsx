@@ -21,23 +21,23 @@ import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, A
 import { motion, AnimatePresence } from 'framer-motion';
 
 const WEEKLY_DATA = [
-  { name: 'شنبه', revenue: 8500000 },
-  { name: 'یکشنبه', revenue: 14200000 },
-  { name: 'دوشنبه', revenue: 25800000 },
-  { name: 'سه‌شنبه', revenue: 18900000 },
-  { name: 'چهارشنبه', revenue: 32500000 },
-  { name: 'پنج‌شنبه', revenue: 28400000 },
-  { name: 'جمعه', revenue: 46800000 },
+  { name: 'شنبه', revenue: 120 },
+  { name: 'یکشنبه', revenue: 180 },
+  { name: 'دوشنبه', revenue: 340 },
+  { name: 'سه‌شنبه', revenue: 290 },
+  { name: 'چهارشنبه', revenue: 420 },
+  { name: 'پنج‌شنبه', revenue: 490 },
+  { name: 'جمعه', revenue: 650 },
 ];
 
 const DAILY_DATA = [
-  { name: '10:00', revenue: 2500000 },
-  { name: '12:00', revenue: 8900000 },
-  { name: '14:00', revenue: 15400000 },
-  { name: '16:00', revenue: 6500000 },
-  { name: '18:00', revenue: 12800000 },
-  { name: '20:00', revenue: 38600000 },
-  { name: '22:00', revenue: 24400000 },
+  { name: '10:00', revenue: 15 },
+  { name: '12:00', revenue: 45 },
+  { name: '14:00', revenue: 85 },
+  { name: '16:00', revenue: 50 },
+  { name: '18:00', revenue: 110 },
+  { name: '20:00', revenue: 210 },
+  { name: '22:00', revenue: 135 },
 ];
 
 const MOCK_POPULAR_PRODUCTS = [
@@ -54,77 +54,74 @@ const MOCK_POPULAR_PRODUCTS = [
 const getMockStats = (range: string, brandColor: string) => {
   const baseStats = [
     { 
-      id: 'revenue', 
-      label: 'کل فروش', 
-      value: '38,450,000', 
-      unit: 'تومان', 
+      id: 'views', 
+      label: 'بازدید منوی دیجیتال', 
+      value: '2,490', 
+      unit: 'بار بازدید', 
       trend: '+12%', 
       up: true, 
       icon: TrendingUp, 
       color: brandColor,
       insights: [
-        { label: 'میانگین فاکتور', value: '450,000 تومان' },
-        { label: 'فروش سالن', value: '28,450,000' },
-        { label: 'بیرون‌بر', value: '10,000,000' }
+        { label: 'بازدیدکننده یکتا', value: '820 نفر' },
+        { label: 'نرخ کلیک محصولات', value: '45%' },
+        { label: 'اشتراک‌گذاری منو', value: '32 بار' }
       ]
     },
     { 
-      id: 'orders', 
-      label: 'سفارشات جدید', 
-      value: '48', 
-      unit: 'سفارش امروز', 
-      trend: '+5%', 
+      id: 'products', 
+      label: 'محصولات فعال', 
+      value: '24', 
+      unit: 'غذا و نوشیدنی', 
+      trend: '+2', 
       up: true, 
       icon: ShoppingBag, 
       color: 'blue',
       insights: [
-         { label: 'تکمیل شده', value: '24' },
-         { label: 'در انتظار', value: '12' },
-         { label: 'لغو شده', value: '2' }
+         { label: 'غذاهای اصلی', value: '18' },
+         { label: 'نوشیدنی‌ها', value: '4' },
+         { label: 'پیش‌غذا و دسر', value: '2' }
       ]
     },
     { 
-      id: 'customers', 
-      label: 'مشتریان جدید', 
-      value: '12', 
-      unit: 'نفر', 
-      trend: '-2%', 
-      up: false, 
-      icon: Users, 
+      id: 'categories', 
+      label: 'دسته‌بندی‌ها', 
+      value: '6', 
+      unit: 'دسته اصلی', 
+      trend: 'ثابت', 
+      up: true, 
+      icon: BarChart2, 
       color: 'purple',
       insights: [
-         { label: 'مشتریان وفادار', value: '105' },
-         { label: 'مشتریان جدید', value: '12' }
+         { label: 'دسته‌های فعال', value: '6' },
+         { label: 'دسته‌های پنهان', value: '0' }
       ]
     },
     { 
-      id: 'prep', 
-      label: 'زمان آماده‌سازی', 
-      value: '18', 
-      unit: 'دقیقه میانگین', 
-      trend: '-3 دقیقه', 
+      id: 'status', 
+      label: 'وضعیت منوی لایو', 
+      value: 'منتشر شده', 
+      unit: 'آماده نمایش', 
+      trend: 'عالی', 
       up: true, 
       icon: Clock, 
       color: 'orange',
       insights: [
-         { label: 'پیش‌غذا', value: '8 دقیقه' },
-         { label: 'غذای اصلی', value: '20 دقیقه' }
+         { label: 'آخرین ویرایش', value: '۱۰ دقیقه پیش' },
+         { label: 'نسخه فعال منو', value: 'v2.4' }
       ]
     },
   ];
 
   if (range === '24h' || range === '24 ساعت گذشته') {
     return baseStats.map(s => {
-      if (s.id === 'revenue') return { ...s, value: '3,850,000', trend: '+2%' };
-      if (s.id === 'orders') return { ...s, value: '12', trend: '0%' };
+      if (s.id === 'views') return { ...s, value: '380', trend: '+2%' };
       return s;
     });
   }
   if (range === '30days' || range === '30 روز گذشته') {
     return baseStats.map(s => {
-      if (s.id === 'revenue') return { ...s, value: '450,000,000', trend: '+15%' };
-      if (s.id === 'orders') return { ...s, value: '1,200', trend: '+10%' };
-      if (s.id === 'customers') return { ...s, value: '140', trend: '+8%', up: true };
+      if (s.id === 'views') return { ...s, value: '12,400', trend: '+15%' };
       return s;
     });
   }
@@ -140,7 +137,7 @@ const CustomTooltip = ({ active, payload, label, brandColor }: any) => {
         <p className="font-bold mb-2 text-slate-500 dark:text-slate-400">{label}</p>
         <div className="flex items-center gap-2 mb-1">
           <div className={`w-2 h-2 rounded-full bg-${brandColor}-500`} />
-          <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-black text-sm`}>{payload[0].value.toLocaleString()} تومان</span>
+          <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-black text-sm`}>{payload[0].value.toLocaleString()} بازدید</span>
         </div>
       </div>
     );
@@ -373,7 +370,7 @@ const AllProductsModal = ({ isOpen, onClose, brandColor }: any) => {
                            <th className="px-6 py-4 text-xs font-black text-slate-500">نام محصول</th>
                            <th className="px-6 py-4 text-xs font-black text-slate-500">دسته‌بندی</th>
                            <th className="px-6 py-4 text-xs font-black text-slate-500">قیمت</th>
-                           <th className="px-6 py-4 text-xs font-black text-slate-500">تعداد فروش</th>
+                           <th className="px-6 py-4 text-xs font-black text-slate-500">تعداد بازدید</th>
                            <th className="px-6 py-4 text-xs font-black text-slate-500">وضعیت</th>
                         </tr>
                      </thead>
@@ -484,7 +481,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
       const headers = ['Metric', 'Value', 'Unit', 'Trend'];
       const rows = statsData.map(s => [s.label, s.value, s.unit, s.trend]);
       
-      const chartHeaders = ['Day/Time', 'Revenue'];
+      const chartHeaders = ['Day/Time', 'Views'];
       const chartRows = (chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA).map(d => [d.name, d.revenue]);
 
       let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM for Excel
@@ -493,7 +490,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
       csvContent += headers.join(",") + "\n";
       rows.forEach(r => csvContent += r.join(",") + "\n");
       
-      csvContent += "\n--- SALES DATA ---\n";
+      csvContent += "\n--- VIEWS DATA ---\n";
       csvContent += chartHeaders.join(",") + "\n";
       chartRows.forEach(r => csvContent += r.join(",") + "\n");
 
@@ -606,14 +603,14 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col transition-colors">
-          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800 dark:text-slate-100">آمار فروش</h2><div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>روزانه</button></div></div>
+          <div className="flex items-center justify-between mb-8"><h2 className="text-lg font-black text-slate-800 dark:text-slate-100">آمار بازدید منو</h2><div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl"><button onClick={() => setChartView('weekly')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>هفتگی</button><button onClick={() => setChartView('daily')} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}>روزانه</button></div></div>
           <div className="h-80 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA}>
                  <defs><linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={chartHexColor} stopOpacity={0.2}/><stop offset="95%" stopColor={chartHexColor} stopOpacity={0}/></linearGradient></defs>
                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#26262b' : '#f1f5f9'} />
                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} dy={10} />
-                 <YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => `${value / 1000000} م`} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
+                 <YAxis axisLine={false} tickLine={false} width={60} tickFormatter={(value) => value} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
                  <Tooltip 
                     cursor={{ stroke: isDark ? '#26262b' : '#e2e8f0', strokeWidth: 1, strokeDasharray: '4 4' }}
                     content={<CustomTooltip brandColor={brandColor} />} 
@@ -625,7 +622,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
           </div>
         </div>
         <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
-          <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">پرفروش‌ترین‌ها</h2>
+          <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-6">محبوب‌ترین محصولات</h2>
           <div className="space-y-6">
             {filteredPopularProducts.slice(0, 4).map((prod, i) => (
               <div key={i} className="flex items-center justify-between group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40 p-2 rounded-xl transition-colors -mx-2">
@@ -640,7 +637,7 @@ const Dashboard: React.FC<DashboardProps> = ({ restaurantName, searchQuery = '',
                  </div>
                  <div className="text-left">
                     <p className="text-sm font-black text-slate-700 dark:text-slate-300">{prod.price}</p>
-                    <span className={`text-[10px] text-${brandColor}-500 font-bold`}>{prod.count} فروش</span>
+                    <span className={`text-[10px] text-${brandColor}-500 font-bold`}>{prod.count} بازدید</span>
                  </div>
               </div>
             ))}

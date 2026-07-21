@@ -28,3 +28,10 @@ export interface AppSession {
   token: string;
   expiresAt: string;
 }
+
+export interface UserSession {
+  userId: string;
+  email: string;
+  fullName: string;
+  isAdmin: boolean; // authenticated administrator state
+}

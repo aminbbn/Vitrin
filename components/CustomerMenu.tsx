@@ -25,8 +25,8 @@ import {
 import { ComponentItem, Product } from '../types';
 import { Search3DAnimation } from './Search3DAnimation';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES } from '../constants';
-import { useTenant, useCatalog, useMenuDraft, useCustomerContext, useOrders } from '../data/useRepositories';
-import { useAppSession } from '../data/AppSessionProvider';
+import { useTenant, useCatalog, useMenuDraft } from '../data/useRepositories';
+import { useAppSession } from '../data/SessionProvider';
 import { useRepositories } from '../data/RepositoryProvider';
 import { MenuPublication, BranchProduct } from '../domain';
 
@@ -38,198 +38,9 @@ import {
   FeaturedBlock, 
   FooterBlock, 
   CategoryProductsScreen, 
-  ProductDetailSheet, 
-  CartBar, 
-  CartDrawer 
+  ProductDetailSheet
 } from './menu-blocks';
 
-const ProfileModal = ({ isOpen, onClose, brandColor }: { isOpen: boolean; onClose: () => void; brandColor: string }) => {
-  const { context, saveContext } = useCustomerContext();
-  const { orders } = useOrders();
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [table, setTable] = useState('5');
-  const [isSaved, setIsSaved] = useState(false);
-
-  useEffect(() => {
-    if (isOpen && context) {
-      setName(context.name || '');
-      setPhone(context.phone || '');
-      setTable(context.table || '5');
-      setIsSaved(false);
-    }
-  }, [isOpen, context]);
-
-  const handleSave = async () => {
-    try {
-      await saveContext({
-        name: name.trim(),
-        phone: phone.trim(),
-        table: table
-      });
-      setIsSaved(true);
-      setTimeout(() => {
-        setIsSaved(false);
-        onClose();
-      }, 1200);
-    } catch (e) {
-      console.error('Error saving customer info:', e);
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'new': return { label: 'ثبت شده', bg: 'bg-amber-50 text-amber-700 border-amber-100' };
-      case 'preparing': 
-      case 'preparing-chef': return { label: 'در حال آماده‌سازی', bg: 'bg-orange-50 text-orange-700 border-orange-100' };
-      case 'ready': return { label: 'آماده تحویل', bg: 'bg-blue-50 text-blue-700 border-blue-100' };
-      case 'delivered':
-      case 'completed': return { label: 'تحویل شده', bg: 'bg-emerald-50 text-emerald-700 border-emerald-100' };
-      case 'canceled': return { label: 'لغو شده', bg: 'bg-rose-50 text-rose-700 border-rose-100' };
-      default: return { label: 'نامشخص', bg: 'bg-slate-50 text-slate-700 border-slate-100' };
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end justify-center">
-        <motion.div 
-           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-           onClick={onClose} className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 pointer-events-auto"
-        />
-        <motion.div 
-          initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed bottom-0 left-0 right-0 z-50 bg-[#F8FAFC] dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 rounded-t-[2.5rem] h-[85vh] overflow-hidden flex flex-col max-w-md mx-auto shadow-[0_-10px_40px_rgba(0,0,0,0.2)] transition-colors"
-        >
-          {/* Header */}
-          <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 shrink-0 transition-colors">
-            <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-xl bg-${brandColor}-50 dark:bg-${brandColor}-950/30 flex items-center justify-center text-${brandColor}-600 dark:text-${brandColor}-400`}>
-                <User className="w-4 h-4" />
-              </div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-slate-100">پروفایل و سفارش‌های من</h2>
-            </div>
-            <button onClick={onClose} className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Scrollable Container */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-right">
-            
-            {/* User Details Form */}
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
-              <h3 className="text-xs font-black text-slate-800 dark:text-slate-200 border-r-2 border-slate-900 dark:border-slate-100 pr-2 leading-none">اطلاعات کاربری</h3>
-              
-              <div className="space-y-3 pt-1">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1.5 text-right">نام و نام خانوادگی</label>
-                  <input 
-                    type="text" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="مثال: علی محمدی"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-slate-400 dark:focus:border-slate-700 transition-colors font-medium text-slate-800 dark:text-slate-100 text-right"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1.5 text-right">شماره موبایل (اختیاری)</label>
-                  <input 
-                    type="tel" 
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="مثال: 09123456789"
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-slate-400 dark:focus:border-slate-700 transition-colors font-medium text-slate-800 dark:text-slate-100 text-left"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1.5 text-right">میز پیش‌فرض</label>
-                  <div className="grid grid-cols-5 gap-2 font-['Vazirmatn']">
-                    {['1', '2', '5', '8', '12'].map((num) => (
-                      <button 
-                        key={num} 
-                        type="button"
-                        onClick={() => setTable(num)}
-                        className={`py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${table === num ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/20 border-${brandColor}-500 text-${brandColor}-700 dark:text-${brandColor}-400 shadow-sm ring-2 ring-${brandColor}-500/10` : 'border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50'}'`}
-                      >
-                        میز {num}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <button 
-                onClick={handleSave}
-                disabled={isSaved}
-                className={`w-full py-2.5 rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer ${isSaved ? 'bg-emerald-600 text-white shadow-emerald-500/10' : `bg-${brandColor}-600 text-white shadow-${brandColor}-500/10 hover:bg-${brandColor}-500`}`}
-              >
-                {isSaved ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    تغییرات ذخیره شد
-                  </>
-                ) : (
-                  'ثبت و ذخیره تغییرات'
-                )}
-              </button>
-            </div>
-
-            {/* Orders History Section */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-black text-slate-800 dark:text-slate-200 border-r-2 border-slate-900 dark:border-slate-100 pr-2 leading-none">تاریخچه سفارش‌ها ({orders.length})</h3>
-              
-              {orders.length === 0 ? (
-                <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-100 dark:border-slate-800 text-center flex flex-col items-center justify-center space-y-3 shadow-sm transition-colors">
-                  <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-300 dark:text-slate-600">
-                     <ChefHat className="w-6 h-6 stroke-[1.5]" />
-                  </div>
-                  <p className="text-xs font-bold text-slate-400 dark:text-slate-500">هنوز سفارشی برای شما ثبت نشده است</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {orders.map((ord: any) => {
-                    const statusStyle = getStatusLabel(ord.status);
-                    return (
-                      <div key={ord.id} className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-slate-800 dark:text-slate-200">{ord.id}</span>
-                          <span className={`px-2 py-0.5 rounded-lg border text-[9px] font-black ${statusStyle.bg}`}>
-                            {statusStyle.label}
-                          </span>
-                        </div>
-                        
-                        <div className="text-[11px] text-slate-500 dark:text-slate-400 space-y-1 font-medium text-right">
-                          {ord.items && ord.items.map((itemStr: string, idx: number) => (
-                            <div key={idx} className="flex items-center justify-start gap-1.5 direction-rtl">
-                              <span className={`w-1 h-1 rounded-full bg-${brandColor}-500 shrink-0`} />
-                              <span>{itemStr}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="border-t border-slate-50 dark:border-slate-800/60 pt-2.5 flex items-center justify-between text-xs font-bold">
-                          <span className="text-slate-400 dark:text-slate-500">میز {ord.tableNumber} • {ord.timestamp || 'هم‌اکنون'}</span>
-                          <span className="text-slate-900 dark:text-slate-100 font-black">{ord.totalPrice.toLocaleString()} تومان</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-          </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
-  );
-};
 
 // --- MAIN PAGE ---
 
@@ -237,6 +48,7 @@ interface CustomerMenuProps {
   liveElements?: ComponentItem[];
   theme?: 'light' | 'dark';
   toggleTheme?: () => void;
+  source?: 'PUBLICATION' | 'PREVIEW_DRAFT';
 }
 
 const getTagStyles = (tag: string) => {
@@ -317,12 +129,9 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
   const [resolvedCategories, setResolvedCategories] = useState<any[]>([]);
   const [resolvedProducts, setResolvedProducts] = useState<any[]>([]);
 
-  const [cart, setCart] = useState<{ product: Product, qty: number, selectedModifiers?: Record<string, string>, singlePrice?: number }[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
 
@@ -412,6 +221,38 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
     }
   }, [source, liveElements, draftElements, activePub, repoCategories, repoProducts, liveBranchProducts]);
 
+  const [localIsDark, setLocalIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('vitrin_theme') || localStorage.getItem('vitrin_preview_theme')) === 'dark';
+    }
+    return false;
+  });
+
+  const isDark = theme !== undefined ? (theme === 'dark') : localIsDark;
+
+  const handleToggleTheme = () => {
+    if (toggleTheme) {
+      toggleTheme();
+    } else {
+      setLocalIsDark(prev => {
+        const next = !prev;
+        localStorage.setItem('vitrin_theme', next ? 'dark' : 'light');
+        localStorage.setItem('vitrin_preview_theme', next ? 'dark' : 'light');
+        return next;
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (theme === undefined) {
+      if (localIsDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, [localIsDark, theme]);
+
   const categories = resolvedCategories;
   const products = resolvedProducts;
 
@@ -451,69 +292,6 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
       </div>
     );
   }
-
-  const addToCart = (product: Product, qty: number, selectedModifiers?: Record<string, string>, singlePrice?: number) => {
-    setCart(prev => {
-      const existingIdx = prev.findIndex(item => 
-        item.product.id === product.id && 
-        JSON.stringify(item.selectedModifiers) === JSON.stringify(selectedModifiers)
-      );
-      if (existingIdx > -1) {
-        return prev.map((item, idx) => idx === existingIdx ? { ...item, qty: item.qty + qty } : item);
-      }
-      return [...prev, { product, qty, selectedModifiers, singlePrice: singlePrice || product.price }];
-    });
-  };
-
-  const updateCartQty = (product: Product, selectedModifiers: Record<string, string> | undefined, newQty: number) => {
-    setCart(prev => {
-      if (newQty <= 0) {
-        return prev.filter(item => 
-          !(item.product.id === product.id && JSON.stringify(item.selectedModifiers) === JSON.stringify(selectedModifiers))
-        );
-      }
-      return prev.map(item => 
-        (item.product.id === product.id && JSON.stringify(item.selectedModifiers) === JSON.stringify(selectedModifiers))
-          ? { ...item, qty: newQty }
-          : item
-      );
-    });
-  };
-
-  const [localIsDark, setLocalIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('vitrin_theme') || localStorage.getItem('vitrin_preview_theme')) === 'dark';
-    }
-    return false;
-  });
-
-  const isDark = theme !== undefined ? (theme === 'dark') : localIsDark;
-
-  const handleToggleTheme = () => {
-    if (toggleTheme) {
-      toggleTheme();
-    } else {
-      setLocalIsDark(prev => {
-        const next = !prev;
-        localStorage.setItem('vitrin_theme', next ? 'dark' : 'light');
-        localStorage.setItem('vitrin_preview_theme', next ? 'dark' : 'light');
-        return next;
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (theme === undefined) {
-      if (localIsDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
-  }, [localIsDark, theme]);
-
-  const cartTotal = cart.reduce((acc, item) => acc + ((item.singlePrice || item.product.price) * item.qty), 0);
-  const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
 
   return (
     <div className={`min-h-screen font-['Vazirmatn'] pb-32 max-w-md mx-auto shadow-2xl relative min-w-0 border-x transition-colors duration-200 ${isDark ? 'dark bg-slate-950 border-slate-800 text-slate-100' : 'bg-[#F2F4F7] border-slate-200 text-slate-900'}`}>
@@ -795,40 +573,13 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
         )}
       </div>
 
-      {/* Floating Cart */}
-      <CartBar 
-        cart={cart} 
-        products={products} 
-        brandColor={brandColor} 
-        mode="live" 
-        onClick={() => setIsCheckoutOpen(true)} 
-      />
-
       <ProductDetailSheet 
          product={selectedProduct} 
          isOpen={!!selectedProduct} 
          onClose={() => setSelectedProduct(null)} 
-         onAddToCart={addToCart}
+         onAddToCart={() => {}}
          brandColor={brandColor}
          mode="live"
-      />
-
-      <CartDrawer 
-         isOpen={isCheckoutOpen}
-         onClose={() => setIsCheckoutOpen(false)}
-         cart={cart}
-         products={products}
-         onRemoveItem={(product, modifiers) => updateCartQty(product, modifiers, 0)}
-         onUpdateQty={updateCartQty}
-         brandColor={brandColor}
-         onOrderPlaced={() => setCart([])}
-         mode="live"
-      />
-
-      <ProfileModal 
-         isOpen={isProfileOpen}
-         onClose={() => setIsProfileOpen(false)}
-         brandColor={brandColor}
       />
 
     </div>

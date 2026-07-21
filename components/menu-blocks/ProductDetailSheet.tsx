@@ -427,7 +427,35 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
 
             {/* Action Bar */}
             <div className="p-4 border-t border-slate-100 dark:border-slate-850 bg-white dark:bg-slate-950 safe-area-bottom shadow-[0_-5px_20px_rgba(0,0,0,0.03)] dark:shadow-none z-10 shrink-0 transition-colors">
-              {product.isAvailable === false ? (
+              {mode === 'live' ? (
+                <div>
+                  {product.isAvailable === false && (
+                    <p className="text-xs text-rose-500 dark:text-rose-400 font-bold mb-3 bg-rose-50 dark:bg-rose-950/20 p-2.5 rounded-xl border border-rose-100 dark:border-rose-900/30 text-center" dir="rtl">
+                      این محصول در حال حاضر موجود نیست.
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="text-right">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-550 block font-bold mb-0.5">
+                        قیمت محصول
+                      </span>
+                      <span className="text-lg font-black text-slate-950 dark:text-slate-100 font-sans">
+                        {singlePrice.toLocaleString()}{' '}
+                        <span className="text-xs font-normal text-slate-400 dark:text-slate-500 font-sans">
+                          تومان
+                        </span>
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      className={`px-8 bg-${brandColor}-600 hover:bg-${brandColor}-500 text-white py-3 border border-transparent rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-${brandColor}-500/10 active:scale-[0.98] transition-all cursor-pointer`}
+                    >
+                      بستن صفحه
+                    </button>
+                  </div>
+                </div>
+              ) : product.isAvailable === false ? (
                 <div className="text-center" dir="rtl">
                   <p className="text-xs text-rose-500 dark:text-rose-400 font-bold mb-3 bg-rose-50 dark:bg-rose-950/20 p-2.5 rounded-xl border border-rose-100 dark:border-rose-900/30">
                     این محصول در حال حاضر موجود نیست و امکان افزودن به سبد وجود ندارد.
@@ -466,7 +494,7 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
                       </span>
                       <span className="text-lg font-black text-slate-950 dark:text-slate-100">
                         {totalPrice.toLocaleString()}{' '}
-                        <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
+                        <span className="text-xs font-normal text-slate-400 dark:text-slate-500 font-sans">
                           تومان
                         </span>
                       </span>

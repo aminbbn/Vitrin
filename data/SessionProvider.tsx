@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, UserStatus, Restaurant, Branch, RestaurantMembership, MembershipRole, MembershipPermission } from '../domain';
 import { useRepositories } from './RepositoryProvider';
-import { storageAdapter } from './storage/StorageAdapter';
+import { localStore } from '../repositories/local/LocalStorageAdapter';
 
 export interface AppSessionContextType {
   user: User | null;
@@ -60,37 +60,34 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const activeMemberships = allMemberships.filter(m => m.status === 'ACTIVE');
       setMemberships(allMemberships);
 
-      const storage = storageAdapter.load();
-      let persistedRestId = storage.auth.activeRestaurantId;
-      let persistedBranchId = storage.auth.activeBranchId;
+      const storage = localStore.load();
+      let persistedRestId = storage.session.activeRestaurantId;
+      let persistedBranchId = storage.session.activeBranchId;
 
       let activeRestId: string | null = null;
       let currentMembership: RestaurantMembership | null = null;
 
       if (activeMemberships.length > 0) {
-        // Validate persisted restaurant ID exists in user memberships
         const found = activeMemberships.find(m => m.restaurantId === persistedRestId);
         if (found) {
           currentMembership = found;
           activeRestId = found.restaurantId;
         } else {
-          // Stale or missing: fall back to first valid membership
           currentMembership = activeMemberships[0];
           activeRestId = currentMembership.restaurantId;
         }
       } else {
-        // Customer-only user has no active restaurant
         activeRestId = null;
         currentMembership = null;
       }
 
       setActiveMembership(currentMembership);
 
-      // Save updated activeRestaurantId so that next repository queries get the correct context
+      // Save updated activeRestaurantId in localStore session
       let storageUpdated = false;
-      const data = storageAdapter.load();
-      if (data.auth.activeRestaurantId !== activeRestId) {
-        data.auth.activeRestaurantId = activeRestId;
+      const data = localStore.load();
+      if (data.session.activeRestaurantId !== activeRestId) {
+        data.session.activeRestaurantId = activeRestId;
         storageUpdated = true;
       }
 
@@ -99,7 +96,7 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       if (activeRestId) {
         if (storageUpdated) {
-          storageAdapter.save(data);
+          localStore.save(data);
         }
         // Fetch restaurant details and branches for this restaurant
         const [rest, brs] = await Promise.all([
@@ -122,7 +119,6 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           currentBranch = foundB;
           activeBranchId = foundB.id;
         } else {
-          // Stale or missing: fall back to first branch
           currentBranch = branches[0];
           activeBranchId = currentBranch.id;
         }
@@ -134,18 +130,18 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       setActiveBranchState(currentBranch);
 
       // Persist the final validated choices
-      const finalData = storageAdapter.load();
+      const finalData = localStore.load();
       let saveNeeded = false;
-      if (finalData.auth.activeRestaurantId !== activeRestId) {
-        finalData.auth.activeRestaurantId = activeRestId;
+      if (finalData.session.activeRestaurantId !== activeRestId) {
+        finalData.session.activeRestaurantId = activeRestId;
         saveNeeded = true;
       }
-      if (finalData.auth.activeBranchId !== activeBranchId) {
-        finalData.auth.activeBranchId = activeBranchId;
+      if (finalData.session.activeBranchId !== activeBranchId) {
+        finalData.session.activeBranchId = activeBranchId;
         saveNeeded = true;
       }
       if (saveNeeded) {
-        storageAdapter.save(finalData);
+        localStore.save(finalData);
       }
 
       setError(null);
@@ -160,8 +156,8 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   useEffect(() => {
     syncAndValidateSession();
 
-    // Subscribe to storage changes so switching users/sessions triggers hot-reloading
-    const unsubscribe = storageAdapter.subscribe(() => {
+    // Subscribe to localStore updates for instant reactive tab synchronization
+    const unsubscribe = localStore.subscribe(() => {
       syncAndValidateSession();
     });
 
@@ -171,16 +167,15 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [syncAndValidateSession]);
 
   const setActiveRestaurant = async (restaurantId: string) => {
-    // Validate restaurant belongs to active memberships context
     const valid = memberships.some(m => m.restaurantId === restaurantId && m.status === 'ACTIVE');
     if (!valid) {
       throw new Error('Restaurant ID is outside the user active membership context');
     }
 
-    const data = storageAdapter.load();
-    data.auth.activeRestaurantId = restaurantId;
-    data.auth.activeBranchId = null; // force validation to choose first branch of new restaurant
-    storageAdapter.save(data);
+    const data = localStore.load();
+    data.session.activeRestaurantId = restaurantId;
+    data.session.activeBranchId = null;
+    localStore.save(data);
 
     await syncAndValidateSession();
   };
@@ -196,9 +191,9 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       throw new Error('Branch ID is outside the active restaurant context');
     }
 
-    const data = storageAdapter.load();
-    data.auth.activeBranchId = branchId;
-    storageAdapter.save(data);
+    const data = localStore.load();
+    data.session.activeBranchId = branchId;
+    localStore.save(data);
 
     await syncAndValidateSession();
   };
@@ -212,10 +207,8 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const canAccess = (feature: string): boolean => {
     if (!isAuthenticated) return false;
-    // Customer-only user has access to basic view
     if (memberships.length === 0) return feature === 'customer_menu';
     
-    // Derived accesses
     switch (feature) {
       case 'publish_menu':
         return hasPermission(MembershipPermission.MENU_PUBLISH);
