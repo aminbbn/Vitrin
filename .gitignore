@@ -38,3 +38,9 @@ backend/prisma/*.db-shm
 
 # Generated Prisma Client
 backend/src/generated/prisma/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
