@@ -113,5 +113,35 @@ export class RestaurantsRepositoryImpl implements RestaurantsRepository {
     localStore.save(store);
     return newBranch;
   }
+
+  async deleteBranch(branchId: string): Promise<void> {
+    const store = localStore.load();
+    if (!store.branches[branchId]) {
+      throw new Error('شعبه یافت نشد.');
+    }
+    delete store.branches[branchId];
+    if (store.settings[branchId]) {
+      delete store.settings[branchId];
+    }
+    if (store.session.activeBranchId === branchId) {
+      store.session.activeBranchId = null;
+    }
+    localStore.save(store);
+  }
+
+  async updateBranch(branchId: string, updates: { name?: string; address?: string; phone?: string }): Promise<Branch> {
+    const store = localStore.load();
+    const branch = store.branches[branchId];
+    if (!branch) {
+      throw new Error('شعبه یافت نشد.');
+    }
+    const updatedBranch = {
+      ...branch,
+      ...updates
+    };
+    store.branches[branchId] = updatedBranch;
+    localStore.save(store);
+    return updatedBranch;
+  }
 }
 export const restaurantsRepository = new RestaurantsRepositoryImpl();

@@ -17,5 +17,7 @@ export interface TenantRepository {
   updateBrandColor(color: string): Promise<void>;
   createRestaurant?(name: string, brandColor: string, address: string, phone: string): Promise<Restaurant>;
   createBranch?(restaurantId: string, name: string, address: string, phone?: string): Promise<Branch>;
+  deleteBranch?(branchId: string): Promise<void>;
+  updateBranch?(branchId: string, updates: { name?: string; address?: string; phone?: string }): Promise<Branch>;
   listAccessibleRestaurants?(): Promise<Restaurant[]>;
 }

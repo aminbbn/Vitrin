@@ -6,13 +6,13 @@ import { useRepositories } from '../../data/RepositoryProvider';
 import { devSwitchMockUser } from '../../data/mock/MockAuthRepository';
 import { Branch } from '../../domain';
 import { 
-  Store, ChevronDown, User, LogOut, MapPin, Phone, Clock, X, Check
+  Store, ChevronDown, User, LogOut, MapPin, Phone, Clock, X, Check, Palette, Settings
 } from 'lucide-react';
 
 interface SidebarAccountAreaProps {
   isCollapsed: boolean;
   brandColor: string;
-  onProfileClick: () => void;
+  onProfileClick: (tab?: 'restaurant' | 'branches' | 'account' | 'appearance') => void;
   onLogout: () => void;
   restaurantName: string;
   restaurantLogo: string;
@@ -439,19 +439,35 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
               </div>
               
               <button 
-                onClick={() => { setIsRestaurantInfoOpen(true); setOpenPopover(null); }}
+                onClick={() => { onProfileClick('restaurant'); setOpenPopover(null); }}
                 className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)] transition-colors flex items-center justify-between group mb-1"
               >
-                <span>اطلاعات فروشگاه</span>
-                <Store className="w-4 h-4 text-slate-400 group-hover:text-slate-600 shrink-0" />
+                <span>تنظیمات رستوران</span>
+                <Store className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 shrink-0" />
               </button>
 
               <button 
-                onClick={() => { onProfileClick(); setOpenPopover(null); }}
+                onClick={() => { onProfileClick('branches'); setOpenPopover(null); }}
                 className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)] transition-colors flex items-center justify-between group mb-1"
               >
-                <span>تنظیمات سیستم</span>
-                <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600 shrink-0" />
+                <span>مدیریت شعب</span>
+                <MapPin className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 shrink-0" />
+              </button>
+
+              <button 
+                onClick={() => { onProfileClick('account'); setOpenPopover(null); }}
+                className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)] transition-colors flex items-center justify-between group mb-1"
+              >
+                <span>حساب کاربری</span>
+                <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 shrink-0" />
+              </button>
+
+              <button 
+                onClick={() => { onProfileClick('appearance'); setOpenPopover(null); }}
+                className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)] transition-colors flex items-center justify-between group mb-1"
+              >
+                <span>پوسته و ظاهر</span>
+                <Palette className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 shrink-0" />
               </button>
 
               <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />

@@ -154,7 +154,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
   }
 
   return (
-    <div className={`p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto h-full font-['Vazirmatn'] ${view === 'list' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto pb-32'}`} dir="rtl">
+    <div className={`p-4 sm:p-6 lg:p-8 w-full max-w-[1440px] mx-auto h-full font-['Vazirmatn'] ${view === 'list' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto pb-32'}`} dir="rtl">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 shrink-0">
@@ -204,57 +204,76 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
                     key={category.id}
                     variants={itemVariants}
                     layout
-                    className="p-4 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-950/20 transition-colors group"
+                    className="p-4 flex flex-col md:flex-row md:items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-950/20 transition-colors group"
                   >
-                    {/* Image */}
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 flex-shrink-0 border border-slate-200/60 dark:border-slate-800 relative">
-                      {category.image && category.image.trim() !== '' ? (
-                        <img src={category.image || undefined} alt={category.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500">
-                          <ImageIcon className="w-6 h-6 opacity-40" />
-                        </div>
-                      )}
+                    {/* First row: image + name */}
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      {/* Image */}
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 flex-shrink-0 border border-slate-200/60 dark:border-slate-800 relative">
+                        {category.image && category.image.trim() !== '' ? (
+                          <img src={category.image || undefined} alt={category.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500">
+                            <ImageIcon className="w-6 h-6 opacity-40" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm truncate md:whitespace-normal">{category.name}</h3>
+                        {/* Optional metadata: count of products in this category */}
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                          {products.filter(p => p.categoryId === category.id).length} محصول
+                        </p>
+                      </div>
                     </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{category.name}</h3>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-1.5 md:gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="flex flex-col gap-1 mr-1 bg-slate-100 dark:bg-slate-950 rounded-xl p-0.5 sm:p-1 border border-slate-200/50 dark:border-slate-800">
+                    {/* Actions and Reordering row on mobile, inline on desktop */}
+                    <div className="flex items-center justify-between md:justify-end gap-2 border-t border-slate-100 dark:border-slate-800/40 pt-3 md:pt-0 md:border-t-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                      {/* Reorder controls */}
+                      <div className="flex items-center md:flex-row gap-1 bg-slate-100 dark:bg-slate-950 rounded-xl p-1 border border-slate-200/50 dark:border-slate-800">
                         <button 
                           onClick={() => handleMove(index, 'up')}
                           disabled={index === 0}
-                          className="p-1 sm:p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors"
+                          title="انتقال به بالا"
+                          aria-label="انتقال به بالا"
                         >
-                          <ChevronUp className="w-4 h-4" />
+                          <ChevronUp className="w-4 h-4 md:hidden" />
+                          <MoveUp className="w-3.5 h-3.5 hidden md:block" />
                         </button>
                         <button 
                           onClick={() => handleMove(index, 'down')}
                           disabled={index === activeCategoriesOnly.length - 1}
-                          className="p-1 sm:p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors"
+                          title="انتقال به پایین"
+                          aria-label="انتقال به پایین"
                         >
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown className="w-4 h-4 md:hidden" />
+                          <MoveDown className="w-3.5 h-3.5 hidden md:block" />
                         </button>
                       </div>
 
-                      <button 
-                        onClick={() => handleEdit(category)}
-                        className={`w-11 h-11 md:w-9 md:h-9 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950 text-slate-550 dark:text-slate-400 hover:text-${brandColor}-600 dark:hover:text-${brandColor}-400 rounded-xl transition-all active:scale-95`}
-                        title="ویرایش"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => setCategoryToDelete(category.id)}
-                        className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-slate-550 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-450 rounded-xl transition-all active:scale-95"
-                        title="حذف"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {/* Edit / Delete */}
+                      <div className="flex items-center gap-1.5">
+                        <button 
+                          onClick={() => handleEdit(category)}
+                          className={`w-11 h-11 md:w-9 md:h-9 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950 text-slate-550 dark:text-slate-400 hover:text-${brandColor}-600 dark:hover:text-${brandColor}-400 rounded-xl transition-all active:scale-95`}
+                          title="ویرایش"
+                          aria-label="ویرایش دسته‌بندی"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => setCategoryToDelete(category.id)}
+                          className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-slate-550 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-450 rounded-xl transition-all active:scale-95"
+                          title="حذف"
+                          aria-label="حذف دسته‌بندی"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 ))}

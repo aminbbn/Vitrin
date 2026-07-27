@@ -79,6 +79,19 @@ export class MockTenantRepository implements TenantRepository {
     return restaurantsRepository.createBranch!(restaurantId, name, address, phone);
   }
 
+  async deleteBranch(branchId: string): Promise<void> {
+    if (restaurantsRepository.deleteBranch) {
+      await restaurantsRepository.deleteBranch(branchId);
+    }
+  }
+
+  async updateBranch(branchId: string, updates: { name?: string; address?: string; phone?: string }): Promise<Branch> {
+    if (restaurantsRepository.updateBranch) {
+      return restaurantsRepository.updateBranch(branchId, updates);
+    }
+    throw new Error('updateBranch not supported');
+  }
+
   async listAccessibleRestaurants(): Promise<Restaurant[]> {
     return restaurantsRepository.listAccessibleRestaurants();
   }

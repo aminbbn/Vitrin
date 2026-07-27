@@ -12,5 +12,6 @@ export interface AuthRepository {
   resetPassword(email: string, code: string, password: string): Promise<void>;
   onboardOwner(userId: string, restaurantName: string, brandColor: string, address: string, phone: string): Promise<void>;
   logout(): Promise<void>;
+  updateProfile?(userId: string, updates: { firstName?: string; lastName?: string; email?: string; phone?: string }): Promise<User>;
 }
 

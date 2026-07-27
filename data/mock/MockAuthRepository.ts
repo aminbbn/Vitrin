@@ -109,6 +109,19 @@ export class MockAuthRepository implements AuthRepository {
   async logout(): Promise<void> {
     await sessionRepository.signOut();
   }
+
+  async updateProfile(userId: string, updates: { firstName?: string; lastName?: string; email?: string; phone?: string }): Promise<User> {
+    const store = localStore.load();
+    const user = store.users[userId];
+    if (!user) throw new Error('کاربر یافت نشد');
+    const updatedUser = {
+      ...user,
+      ...updates
+    };
+    store.users[userId] = updatedUser;
+    localStore.save(store);
+    return updatedUser;
+  }
 }
 
 function emailParts(email: string): string {

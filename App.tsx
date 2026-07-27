@@ -92,6 +92,7 @@ const App: React.FC = () => {
 
   const [activeView, setActiveView] = useState<ViewState>('dashboard');
   const [previousView, setPreviousView] = useState<ViewState>('dashboard');
+  const [settingsTab, setSettingsTab] = useState<'restaurant' | 'branches' | 'account' | 'appearance'>('restaurant');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isRestaurantOpen, setIsRestaurantOpen] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -134,6 +135,16 @@ const App: React.FC = () => {
       root.style.setProperty('--app-hover', `color-mix(in srgb, ${hex} 8%, transparent)`);
       root.style.setProperty('--app-active-bg', `color-mix(in srgb, ${hex} 12%, transparent)`);
       root.style.setProperty('--app-active-border', `color-mix(in srgb, ${hex} 30%, transparent)`);
+      
+      // Centralized Semantic Header Variables for Dark Mode
+      root.style.setProperty('--app-header', `color-mix(in srgb, color-mix(in oklab, ${hex} 7%, #070908) 85%, transparent)`);
+      root.style.setProperty('--app-header-elevated', `color-mix(in oklab, ${hex} 12%, #0b0e0c)`);
+      root.style.setProperty('--app-header-border', `color-mix(in srgb, ${hex} 14%, transparent)`);
+      root.style.setProperty('--app-header-control', `color-mix(in srgb, ${hex} 8%, transparent)`);
+      root.style.setProperty('--app-header-control-hover', `color-mix(in srgb, ${hex} 15%, transparent)`);
+      root.style.setProperty('--app-header-input', `color-mix(in oklab, ${hex} 6%, #060807)`);
+      root.style.setProperty('--app-header-text', '#F3F7F4');
+      root.style.setProperty('--app-header-muted', '#A0AAA4');
     } else {
       root.style.setProperty('--app-bg', '#F5F7F6');
       root.style.setProperty('--page-bg', '#F5F7F6');
@@ -145,6 +156,16 @@ const App: React.FC = () => {
       root.style.setProperty('--app-hover', `color-mix(in srgb, ${hex} 5%, transparent)`);
       root.style.setProperty('--app-active-bg', `color-mix(in srgb, ${hex} 8%, transparent)`);
       root.style.setProperty('--app-active-border', `color-mix(in srgb, ${hex} 20%, transparent)`);
+
+      // Centralized Semantic Header Variables for Light Mode
+      root.style.setProperty('--app-header', 'rgba(255, 255, 255, 0.85)');
+      root.style.setProperty('--app-header-elevated', '#FFFFFF');
+      root.style.setProperty('--app-header-border', 'rgba(17, 31, 24, 0.08)');
+      root.style.setProperty('--app-header-control', 'rgba(17, 31, 24, 0.04)');
+      root.style.setProperty('--app-header-control-hover', 'rgba(17, 31, 24, 0.08)');
+      root.style.setProperty('--app-header-input', 'rgba(17, 31, 24, 0.03)');
+      root.style.setProperty('--app-header-text', '#111F18');
+      root.style.setProperty('--app-header-muted', '#68756F');
     }
   }, [brandColor, theme]);
 
@@ -287,6 +308,8 @@ const App: React.FC = () => {
             setRestaurantLogo={(logoUrl) => updateInfo({ logoUrl })}
             brandColor={brandColor}
             setBrandColor={(color) => updateBrandColor(color)}
+            initialTab={settingsTab}
+            onTabChange={setSettingsTab}
           />
         );
       case 'customer-menu': return <CustomerMenu source="PREVIEW_DRAFT" liveElements={canvasElements} theme={theme} toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} />;
@@ -468,7 +491,10 @@ const App: React.FC = () => {
         brandColor={brandColor}
         isOpenOnMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
-        onProfileClick={() => setActiveView('settings')}
+        onProfileClick={(tab) => {
+          if (tab) setSettingsTab(tab);
+          setActiveView('settings');
+        }}
         onLogout={handleLogout}
         restaurantName={restaurantName}
         restaurantLogo={restaurantLogo}

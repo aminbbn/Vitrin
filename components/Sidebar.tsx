@@ -13,7 +13,7 @@ interface SidebarProps {
   brandColor: string;
   isOpenOnMobile?: boolean;
   onCloseMobile?: () => void;
-  onProfileClick: () => void;
+  onProfileClick: (tab?: 'restaurant' | 'branches' | 'account' | 'appearance') => void;
   onLogout: () => void;
   restaurantName: string;
   restaurantLogo: string;
