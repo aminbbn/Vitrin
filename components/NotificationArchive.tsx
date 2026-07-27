@@ -51,28 +51,28 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
 
   const getBgColor = (type: string) => {
     switch (type) {
-      case 'order': return 'bg-emerald-50 border-emerald-100';
-      case 'inventory': return 'bg-red-50 border-red-100';
-      case 'system': return 'bg-blue-50 border-blue-100';
-      default: return 'bg-slate-50 border-slate-100';
+      case 'order': return 'bg-emerald-50 dark:bg-emerald-950/25 border-emerald-100 dark:border-emerald-900/30';
+      case 'inventory': return 'bg-red-50 dark:bg-red-950/25 border-red-100 dark:border-red-900/30';
+      case 'system': return 'bg-blue-50 dark:bg-blue-950/25 border-blue-100 dark:border-blue-900/30';
+      default: return 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800/50';
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-50 font-['Vazirmatn'] overflow-hidden">
+    <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-950 font-['Vazirmatn'] overflow-hidden transition-colors">
       {/* Header */}
-      <div className="p-8 pb-6 bg-white border-b border-slate-200 shrink-0">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-4 sm:p-6 lg:p-8 pb-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0 transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
            <div>
               <button 
                 onClick={onBack}
-                className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors text-sm font-bold mb-4"
+                className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-xs sm:text-sm font-bold mb-3 sm:mb-4"
               >
                 <ArrowRight className="w-4 h-4" />
                 بازگشت به داشبورد
               </button>
-              <h1 className="text-2xl font-black text-slate-900 flex items-center gap-3">
-                <Bell className="w-6 h-6 text-emerald-600" />
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-3">
+                <Bell className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 آرشیو اعلان‌ها
               </h1>
            </div>
@@ -80,7 +80,7 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
            {notifications.length > 0 && (
              <button 
                onClick={onClearAll}
-               className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-bold hover:bg-red-100 transition-colors border border-red-100"
+               className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2.5 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-xl text-xs sm:text-sm font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/20 active:scale-95"
              >
                <Trash2 className="w-4 h-4" />
                حذف همه
@@ -91,15 +91,15 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
           {/* Filters */}
-          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-full md:w-auto">
+          <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl w-full md:w-auto border border-slate-200/20 dark:border-slate-800/60">
             {['all', 'order', 'system'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f as any)}
-                className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                className={`flex-1 md:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                   filter === f 
-                    ? 'bg-white text-slate-800 shadow-sm' 
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-100 shadow-sm' 
+                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
               >
                 {f === 'all' && 'همه'}
@@ -117,14 +117,14 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
                placeholder="جستجو در اعلان‌ها..."
-               className="w-full bg-white border border-slate-200 rounded-xl px-4 pr-10 py-2.5 text-sm outline-none focus:border-emerald-500 transition-colors"
+               className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 pr-10 py-2.5 text-sm outline-none focus:border-emerald-500 dark:focus:border-emerald-500 transition-colors text-slate-850 dark:text-slate-100"
              />
           </div>
         </div>
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto p-8">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <AnimatePresence mode="popLayout">
           {filteredNotifications.length > 0 ? (
             <div className="space-y-3 max-w-4xl mx-auto">
@@ -136,54 +136,57 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   className={`relative p-4 rounded-2xl border transition-all hover:shadow-md group ${
-                    notification.read ? 'bg-white border-slate-200 opacity-80 hover:opacity-100' : 'bg-white border-emerald-200 shadow-sm'
+                    notification.read 
+                      ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 opacity-80 hover:opacity-100' 
+                      : 'bg-white dark:bg-slate-900 border-emerald-200 dark:border-emerald-800/50 shadow-sm'
                   }`}
                 >
-                  <div className="flex items-start gap-4">
-                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${getBgColor(notification.type)}`}>
+                  <div className="flex flex-col sm:flex-row items-start gap-4">
+                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border ${getBgColor(notification.type)}`}>
                         {getIcon(notification.type)}
                      </div>
                      
-                     <div className="flex-1 cursor-pointer" onClick={() => onMarkRead(notification)}>
-                        <div className="flex items-center justify-between mb-1">
-                           <h3 className={`text-sm font-black ${notification.read ? 'text-slate-700' : 'text-slate-900'}`}>
+                     <div className="flex-1 cursor-pointer w-full min-w-0" onClick={() => onMarkRead(notification)}>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1">
+                           <h3 className={`text-sm font-black ${notification.read ? 'text-slate-500 dark:text-slate-400' : 'text-slate-900 dark:text-slate-100'}`}>
                               {notification.title}
                            </h3>
-                           <span className="text-[10px] text-slate-400 font-bold bg-slate-50 px-2 py-1 rounded-lg">
+                           <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded-lg border border-slate-200/20 dark:border-slate-800/40 w-fit">
                               {notification.time}
                            </span>
                         </div>
-                        <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
                            {notification.message}
                         </p>
                         
                         <div className="flex items-center gap-2 mt-3">
                            {notification.type === 'order' && (
-                              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">سفارش جدید</span>
+                              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-900/30">سفارش جدید</span>
                            )}
                            {notification.type === 'inventory' && (
-                              <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100">هشدار موجودی</span>
+                              <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded border border-red-100 dark:border-red-900/30">هشدار موجودی</span>
                            )}
                            {!notification.read && (
-                              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded flex items-center gap-1">
+                              <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded flex items-center gap-1">
                                  جدید
                               </span>
                            )}
                         </div>
                      </div>
 
-                     <div className="flex flex-col gap-2">
+                     {/* Action tray persistent on mobile, group hover on desktop */}
+                     <div className="flex flex-row sm:flex-col gap-1.5 sm:gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shrink-0 w-full sm:w-auto justify-end border-t sm:border-t-0 border-slate-100 dark:border-slate-800/40 pt-3 sm:pt-0 mt-2 sm:mt-0">
                         <button 
-                           onClick={() => onDelete(notification.id)}
-                           className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                           onClick={(e) => { e.stopPropagation(); onDelete(notification.id); }}
+                           className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors active:scale-95"
                            title="حذف"
                         >
                            <Trash2 className="w-4 h-4" />
                         </button>
                         {!notification.read && (
                            <button 
-                              onClick={() => onMarkRead(notification)}
-                              className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors"
+                              onClick={(e) => { e.stopPropagation(); onMarkRead(notification); }}
+                              className="w-11 h-11 sm:w-9 sm:h-9 flex items-center justify-center text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 rounded-xl transition-colors active:scale-95"
                               title="خوانده شد"
                            >
                               <CheckCheck className="w-4 h-4" />
@@ -199,12 +202,12 @@ const NotificationArchive: React.FC<NotificationArchiveProps> = ({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-slate-400 opacity-60">
-               <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                  <Bell className="w-8 h-8 text-slate-300" />
+               <div className="w-20 h-20 bg-slate-100 dark:bg-slate-900 rounded-full flex items-center justify-center mb-4">
+                  <Bell className="w-8 h-8 text-slate-300 dark:text-slate-700" />
                </div>
-               <p className="font-bold">هیچ اعلانی یافت نشد</p>
+               <p className="font-bold dark:text-slate-300">هیچ اعلانی یافت نشد</p>
                {filter !== 'all' && (
-                  <button onClick={() => setFilter('all')} className="text-xs text-emerald-600 font-bold mt-2 hover:underline">
+                  <button onClick={() => setFilter('all')} className="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-2 hover:underline">
                      مشاهده همه
                   </button>
                )}

@@ -112,19 +112,19 @@ function serializeHoursToStorage(uiHours: typeof INITIAL_HOURS): Record<string, 
 const SectionCard = ({ id, title, subtitle, children, icon: Icon, brandColor, isHighlighted }: any) => (
   <section 
     id={id} 
-    className={`bg-white dark:bg-slate-900 rounded-[2rem] p-8 shadow-sm relative overflow-hidden transition-all duration-1000 scroll-mt-24 ${
+    className={`bg-white dark:bg-slate-900 rounded-[2rem] p-4 sm:p-6 md:p-8 shadow-sm relative overflow-hidden transition-all duration-1000 scroll-mt-24 ${
       isHighlighted 
         ? `border-2 border-${brandColor}-500 ring-4 ring-${brandColor}-500/40 scale-[1.02] z-10` 
-        : 'border border-slate-200 dark:border-slate-800'
+         : 'border border-slate-200 dark:border-slate-800'
     }`}
   >
-    <div className="flex items-start gap-4 mb-8">
-      <div className={`p-3 rounded-2xl bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400`}>
-        {Icon && <Icon className="w-6 h-6" />}
+    <div className="flex items-start gap-3 sm:gap-4 mb-6 sm:mb-8">
+      <div className={`p-2.5 sm:p-3 rounded-2xl bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400`}>
+        {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6" />}
       </div>
       <div>
-        <h2 className="text-lg font-black text-slate-800 dark:text-slate-100">{title}</h2>
-        <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{subtitle}</p>
+        <h2 className="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">{title}</h2>
+        <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 mt-1">{subtitle}</p>
       </div>
     </div>
     {children}
@@ -209,23 +209,23 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   };
 
   return (
-    <div className="h-full bg-slate-50 dark:bg-slate-950 font-['Vazirmatn'] overflow-y-auto p-8 pb-24 transition-colors">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="h-full bg-slate-50 dark:bg-slate-950 font-['Vazirmatn'] overflow-y-auto p-4 sm:p-6 lg:p-8 pb-24 transition-colors">
+      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
            <div>
-              <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-3">
-                 <Store className={`w-7 h-7 text-${brandColor}-600 dark:text-${brandColor}-400`} />
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-3">
+                 <Store className={`w-6 h-6 sm:w-7 sm:h-7 text-${brandColor}-600 dark:text-${brandColor}-400`} />
                  تنظیمات فروشگاه
               </h1>
-              <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">مدیریت اطلاعات رستوران و شخصی‌سازی پنل</p>
+              <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 mt-1">مدیریت اطلاعات رستوران و شخصی‌سازی پنل</p>
            </div>
            <button 
               onClick={handleSave}
-              className={`px-6 py-3 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2`}
+              className={`w-full sm:w-auto justify-center px-6 py-3 bg-${brandColor}-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2`}
            >
-              {isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+              {isSaved ? <CheckCircle2 className="w-4.5 h-4.5" /> : <Save className="w-4.5 h-4.5" />}
               {isSaved ? 'تنظیمات ذخیره شد' : 'ذخیره تغییرات'}
            </button>
         </div>
@@ -338,52 +338,57 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
 
          {/* HOURS SECTION */}
          <SectionCard id="hours" title="ساعات کاری" subtitle="زمان‌بندی فعالیت رستوران در طول هفته" icon={Clock} brandColor={brandColor} isHighlighted={localHighlight === 'hours'}>
-           <div className="space-y-4">
-             {hours.map((day) => (
-               <div key={day.id} className="grid grid-cols-12 gap-4 items-center py-2 border-b border-slate-50 dark:border-slate-800/50 last:border-0">
-                 <div className="col-span-3 text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${day.isOpen ? `bg-${brandColor}-500` : 'bg-slate-300'}`} />
-                    {day.label}
-                 </div>
-                 <div className="col-span-2 flex justify-center">
-                   <button 
-                     onClick={() => setHours(hours.map(h => h.id === day.id ? { ...h, isOpen: !h.isOpen } : h))} 
-                     className={`w-10 h-6 rounded-full relative transition-colors ${day.isOpen ? `bg-${brandColor}-500` : 'bg-slate-200 dark:bg-slate-800'}`}
-                   >
-                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all shadow-sm ${day.isOpen ? 'left-1' : 'left-5'}`} />
-                   </button>
-                 </div>
-                 <div className="col-span-7 flex items-center gap-2 justify-end">
-                   {day.isOpen ? (
-                     <>
-                       <div className="relative">
-                         <input 
-                           type="text" 
-                           value={day.start} 
-                           onChange={(e) => setHours(hours.map(h => h.id === day.id ? { ...h, start: e.target.value } : h))}
-                           className="w-20 text-center text-xs font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 focus:border-slate-400 dark:focus:border-slate-700 outline-none transition-colors text-slate-800 dark:text-slate-100" 
-                           dir="ltr" 
-                         />
-                       </div>
-                       <span className="text-slate-300 font-bold">-</span>
-                       <div className="relative">
-                         <input 
-                           type="text" 
-                           value={day.end} 
-                           onChange={(e) => setHours(hours.map(h => h.id === day.id ? { ...h, end: e.target.value } : h))}
-                           className="w-20 text-center text-xs font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 focus:border-slate-400 dark:focus:border-slate-700 outline-none transition-colors text-slate-800 dark:text-slate-100" 
-                           dir="ltr" 
-                         />
-                       </div>
-                     </>
-                   ) : (
-                     <span className="text-xs font-bold text-slate-300 dark:text-slate-600 bg-slate-50 dark:bg-slate-950 px-4 py-2 rounded-lg w-full text-center border border-slate-200/50 dark:border-slate-800">تعطیل</span>
-                   )}
-                 </div>
-               </div>
-             ))}
-           </div>
-         </SectionCard>
+            <div className="space-y-4">
+              {hours.map((day) => (
+                <div key={day.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 gap-3 border-b border-slate-50 dark:border-slate-800/50 last:border-0">
+                  
+                  {/* Left part: Day name + Switch Toggle */}
+                  <div className="flex items-center justify-between sm:justify-start gap-4 sm:w-1/3">
+                    <div className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                       <div className={`w-2 h-2 rounded-full ${day.isOpen ? `bg-${brandColor}-500` : 'bg-slate-300'}`} />
+                       {day.label}
+                    </div>
+                    <button 
+                      onClick={() => setHours(hours.map(h => h.id === day.id ? { ...h, isOpen: !h.isOpen } : h))} 
+                      className={`w-11 h-6.5 rounded-full relative transition-colors ${day.isOpen ? `bg-${brandColor}-500` : 'bg-slate-200 dark:bg-slate-800'}`}
+                      title={day.isOpen ? 'فعال' : 'غیرفعال'}
+                    >
+                      <div className={`absolute top-1 w-4.5 h-4.5 bg-white rounded-full transition-all shadow-sm ${day.isOpen ? 'left-1' : 'left-5.5'}`} />
+                    </button>
+                  </div>
+
+                  {/* Right part: Hours Input Fields */}
+                  <div className="flex items-center gap-2 justify-start sm:justify-end flex-1">
+                    {day.isOpen ? (
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <div className="flex-1 sm:flex-initial">
+                          <input 
+                            type="text" 
+                            value={day.start} 
+                            onChange={(e) => setHours(hours.map(h => h.id === day.id ? { ...h, start: e.target.value } : h))}
+                            className="w-full sm:w-24 text-center text-xs font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 focus:border-slate-450 dark:focus:border-slate-700 outline-none transition-colors text-slate-800 dark:text-slate-100" 
+                            dir="ltr" 
+                          />
+                        </div>
+                        <span className="text-slate-300 font-bold">-</span>
+                        <div className="flex-1 sm:flex-initial">
+                          <input 
+                            type="text" 
+                            value={day.end} 
+                            onChange={(e) => setHours(hours.map(h => h.id === day.id ? { ...h, end: e.target.value } : h))}
+                            className="w-full sm:w-24 text-center text-xs font-bold bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg py-2 focus:border-slate-450 dark:focus:border-slate-700 outline-none transition-colors text-slate-800 dark:text-slate-100" 
+                            dir="ltr" 
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-bold text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-950/50 px-4 py-2 rounded-lg w-full text-center border border-slate-200/40 dark:border-slate-800/40">تعطیل</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
 
        </div>
      </div>

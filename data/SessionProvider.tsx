@@ -1,7 +1,17 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, UserStatus, Restaurant, Branch, RestaurantMembership, MembershipRole, MembershipPermission } from '../domain';
-import { useRepositories } from './RepositoryProvider';
+import { useRepositories, isApiMode } from './RepositoryProvider';
 import { localStore } from '../repositories/local/LocalStorageAdapter';
+
+// Dynamically import ApiTenantRepository only when in API mode to set active context
+async function syncActiveContext(restId: string | null, branchId: string | null) {
+  if (!isApiMode) return;
+  try {
+    const mod = await import('./api/ApiTenantRepository');
+    mod.ApiTenantRepository.setActiveRestaurant(restId);
+    mod.ApiTenantRepository.setActiveBranch(branchId);
+  } catch {}
+}
 
 export interface AppSessionContextType {
   user: User | null;
@@ -164,6 +174,9 @@ export const AppSessionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (saveNeeded) {
         localStore.save(finalData);
       }
+
+      // Sync active context with API repository (for API mode)
+      await syncActiveContext(activeRestId, activeBranchId);
 
       setError(null);
     } catch (err: any) {

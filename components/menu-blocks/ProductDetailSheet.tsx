@@ -72,7 +72,16 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
 
   if (!product) return null;
 
-  const isMobile = device === 'mobile';
+  const [isMobile, setIsMobile] = useState(true);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const isEdit = mode === 'edit';
 
   // Calculate extra cost based on selected modifiers

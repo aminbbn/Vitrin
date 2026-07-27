@@ -101,6 +101,11 @@ export class MockAuthRepository implements AuthRepository {
     localStore.save(store);
   }
 
+  async loginWithGoogle(idToken: string): Promise<AppSession> {
+    // Simulate Google auth by using the email-based login
+    return this.loginWithEmail('google.user@gmail.com', 'google-pass-123');
+  }
+
   async logout(): Promise<void> {
     await sessionRepository.signOut();
   }

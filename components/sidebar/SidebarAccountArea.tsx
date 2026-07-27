@@ -151,7 +151,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
   }, [openPopover]);
 
   return (
-    <div className="flex flex-col gap-3 font-['Vazirmatn'] relative px-2 shrink-0">
+    <div className={`flex flex-col gap-3 font-['Vazirmatn'] relative shrink-0 ${isCollapsed ? 'px-0' : 'px-2'}`}>
       {/* 1. Workspace Selector Card */}
       <div className="relative">
         {isCollapsed ? (
@@ -163,7 +163,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
             className={`w-11 h-11 rounded-xl flex items-center justify-center border cursor-pointer transition-all mx-auto shrink-0 ${
               openPopover === 'workspace'
                 ? `border-${brandColor}-500 bg-${brandColor}-50/50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400 shadow-inner` 
-                : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+                : 'border-slate-200 dark:border-[var(--app-border)] bg-slate-50 dark:bg-[var(--app-surface-elevated)]/40 text-slate-500 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)]'
             }`}
             title={activeRestaurant ? `${activeRestaurant.name} - ${activeBranch ? activeBranch.name : 'بدون شعبه'}` : 'انتخاب فروشگاه'}
           >
@@ -177,20 +177,20 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
             }}
             className="w-full text-right"
           >
-            <div className="bg-slate-50 dark:bg-slate-800/20 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
+            <div className="bg-slate-50 dark:bg-[var(--app-surface-elevated)]/20 p-1 rounded-2xl border border-slate-200/50 dark:border-[var(--app-border)]">
               <div 
                 className={`flex items-center justify-between p-2 rounded-xl transition-all cursor-pointer select-none ${
                   openPopover === 'workspace' 
                     ? `bg-${brandColor}-50/50 dark:bg-${brandColor}-950/20` 
-                    : 'hover:bg-slate-100/80 dark:hover:bg-slate-800/40'
+                    : 'hover:bg-slate-100/80 dark:hover:bg-[var(--app-hover)]'
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div 
                     className={`w-9 h-9 rounded-lg border shadow-sm flex items-center justify-center transition-all overflow-hidden shrink-0 ${
                       openPopover === 'workspace' 
-                        ? `border-${brandColor}-500 bg-white dark:bg-slate-900 text-${brandColor}-600` 
-                        : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                        ? `border-${brandColor}-500 bg-white dark:bg-[var(--app-surface)] text-${brandColor}-600` 
+                        : 'bg-slate-100 dark:bg-[var(--app-surface-elevated)] border-slate-200 dark:border-[var(--app-border)] text-slate-500'
                     }`}
                   >
                     <Store className="w-4 h-4" />
@@ -222,7 +222,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
             className={`w-11 h-11 rounded-xl flex items-center justify-center border cursor-pointer transition-all mx-auto overflow-hidden shrink-0 ${
               openPopover === 'profile'
                 ? `border-${brandColor}-500 bg-${brandColor}-50/50 dark:bg-${brandColor}-950/20` 
-                : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+                : 'border-slate-200 dark:border-[var(--app-border)] bg-slate-50 dark:bg-[var(--app-surface-elevated)]/40 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)]'
             }`}
             title={user ? `${user.firstName} ${user.lastName}` : 'کاربر مهمان'}
           >
@@ -240,20 +240,20 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
             }}
             className="w-full text-right"
           >
-            <div className="bg-slate-50 dark:bg-slate-800/20 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
+            <div className="bg-slate-50 dark:bg-[var(--app-surface-elevated)]/20 p-1 rounded-2xl border border-slate-200/50 dark:border-[var(--app-border)]">
               <div 
                 className={`flex items-center justify-between p-2 rounded-xl transition-all cursor-pointer select-none ${
                   openPopover === 'profile' 
                     ? `bg-${brandColor}-50/50 dark:bg-${brandColor}-950/20` 
-                    : 'hover:bg-slate-100/80 dark:hover:bg-slate-800/40'
+                    : 'hover:bg-slate-100/80 dark:hover:bg-[var(--app-hover)]'
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div 
                     className={`w-9 h-9 rounded-lg border shadow-sm flex items-center justify-center transition-all overflow-hidden shrink-0 ${
                       openPopover === 'profile' 
-                        ? `border-${brandColor}-500 bg-white dark:bg-slate-900` 
-                        : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+                        ? `border-${brandColor}-500 bg-white dark:bg-[var(--app-surface)]` 
+                        : 'bg-slate-100 dark:bg-[var(--app-surface-elevated)] border-slate-200 dark:border-[var(--app-border)]'
                     }`}
                   >
                     {restaurantLogo && restaurantLogo.trim() !== '' ? (
@@ -288,7 +288,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ duration: 0.15 }}
-              className="fixed bg-white dark:bg-slate-900 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-800 z-[100] p-3 w-72 origin-bottom font-['Vazirmatn'] text-right"
+              className="fixed bg-white dark:bg-[var(--app-surface)] rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-[var(--app-border)] z-[100] p-3 w-72 origin-bottom font-['Vazirmatn'] text-right"
               style={{
                 top: `${popoverCoords.top}px`,
                 left: `${popoverCoords.left}px`,
@@ -299,7 +299,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
               <div className="mb-3">
                 <span className="block text-[10px] font-black text-slate-400 dark:text-slate-500 px-2 pb-1 text-right uppercase tracking-wider">فروشگاه‌های من</span>
                 {memberships.length === 0 ? (
-                  <div className="p-4 bg-slate-50 dark:bg-slate-850/40 rounded-xl text-center">
+                  <div className="p-4 bg-slate-50 dark:bg-[var(--app-surface-elevated)]/40 rounded-xl text-center">
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">حساب کاربری مشتری (فاقد عضویت فروشگاهی)</span>
                   </div>
                 ) : (
@@ -321,7 +321,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
                           className={`w-full text-right px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between group ${
                             isSelected 
                               ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400` 
-                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)]'
                           }`}
                         >
                           <span className="truncate">{restName}</span>
@@ -342,10 +342,10 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
 
               {/* Branches Section */}
               {activeRestaurant && (
-                <div className="border-t border-slate-100 dark:border-slate-850 pt-2.5 mb-2">
+                <div className="border-t border-slate-100 dark:border-[var(--app-border)] pt-2.5 mb-2">
                   <span className="block text-[10px] font-black text-slate-400 dark:text-slate-500 px-2 pb-1 text-right uppercase tracking-wider">شعبه‌های فعال</span>
                   {availableBranches.length === 0 ? (
-                    <div className="p-3 text-center bg-slate-50 dark:bg-slate-850/40 rounded-xl">
+                    <div className="p-3 text-center bg-slate-50 dark:bg-[var(--app-surface-elevated)]/40 rounded-xl">
                       <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">این فروشگاه فاقد شعبه فعال است</span>
                     </div>
                   ) : (
@@ -366,7 +366,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
                             className={`w-full text-right px-3 py-1.5 rounded-xl text-xs transition-all flex items-center justify-between ${
                               isSelected 
                                 ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400 font-black` 
-                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)]'
                             }`}
                           >
                             <span className="truncate">{b.name}</span>
@@ -380,7 +380,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
               )}
 
               {/* Dev Switcher Helper */}
-              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-850">
+              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-[var(--app-border)]">
                 <div className="px-2 pb-1.5 flex items-center justify-between">
                   <span className="text-[9px] font-black text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md uppercase">شبیه‌ساز کاربر</span>
                 </div>
@@ -399,7 +399,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
                       className={`text-[10px] py-1 px-1 rounded-lg font-bold transition-all text-center ${
                         user?.id === u.id || (u.id === 'user-owner' && user?.id === 'mock-admin-id')
                           ? 'bg-amber-500 text-white shadow-sm'
-                          : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-750'
+                          : 'bg-slate-50 dark:bg-[var(--app-surface-elevated)] text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)]'
                       }`}
                     >
                       {u.label}
@@ -422,14 +422,14 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ duration: 0.15 }}
-              className="fixed bg-white dark:bg-slate-900 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-800 z-[100] p-2 w-60 origin-bottom font-['Vazirmatn'] text-right"
+              className="fixed bg-white dark:bg-[var(--app-surface)] rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-[var(--app-border)] z-[100] p-2 w-60 origin-bottom font-['Vazirmatn'] text-right"
               style={{
                 top: `${popoverCoords.top}px`,
                 left: `${popoverCoords.left}px`,
                 direction: 'rtl',
               }}
             >
-              <div className="px-3 py-2 bg-slate-50 dark:bg-slate-850 rounded-xl mb-1.5 text-right">
+              <div className="px-3 py-2 bg-slate-50 dark:bg-[var(--app-surface-elevated)] rounded-xl mb-1.5 text-right">
                 <p className="font-black text-xs text-slate-800 dark:text-slate-200 uppercase tracking-tight truncate">
                   {user ? `${user.firstName} ${user.lastName}` : 'کاربر مهمان'}
                 </p>
@@ -440,7 +440,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
               
               <button 
                 onClick={() => { setIsRestaurantInfoOpen(true); setOpenPopover(null); }}
-                className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-center justify-between group mb-1"
+                className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)] transition-colors flex items-center justify-between group mb-1"
               >
                 <span>اطلاعات فروشگاه</span>
                 <Store className="w-4 h-4 text-slate-400 group-hover:text-slate-600 shrink-0" />
@@ -448,7 +448,7 @@ export const SidebarAccountArea: React.FC<SidebarAccountAreaProps> = ({
 
               <button 
                 onClick={() => { onProfileClick(); setOpenPopover(null); }}
-                className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-center justify-between group mb-1"
+                className="w-full text-right px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)] transition-colors flex items-center justify-between group mb-1"
               >
                 <span>تنظیمات سیستم</span>
                 <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600 shrink-0" />

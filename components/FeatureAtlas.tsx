@@ -555,14 +555,6 @@ const OrdersPreview = ({ theme }: { theme: 'light' | 'dark' }) => {
         </div>
       </div>
 
-      <div className="mt-3 flex justify-between items-center pt-2.5 border-t border-slate-100 dark:border-white/[0.04]">
-        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">
-          پیامک ارسال وضعیت:
-        </span>
-        <span className="text-[10px] text-emerald-500 font-black">
-          {step >= 3 ? 'ارسال شد به مشتری' : 'در نوبت ارسال'}
-        </span>
-      </div>
     </div>
   );
 };
@@ -662,7 +654,7 @@ export const FeatureAtlas: React.FC<FeatureAtlasProps> = ({
     >
       {/* 1. Main contained translucent showcase deck surface */}
       <div 
-        className="w-full min-h-[430px] max-h-[480px] lg:h-[440px] rounded-[36px] bg-white/75 dark:bg-[#0a0e0c]/74 border border-slate-200/50 dark:border-white/[0.06] p-4 md:p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04)] dark:shadow-none backdrop-blur-md relative overflow-hidden flex flex-col justify-between"
+        className="w-full min-h-[430px] max-h-[480px] lg:h-[440px] rounded-[36px] bg-white/75 dark:bg-slate-950/90 border border-slate-200/50 dark:border-emerald-500/20 p-4 md:p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04)] dark:shadow-none backdrop-blur-md relative overflow-hidden flex flex-col justify-between"
       >
         {/* Subtle grid accent faintly glowing behind and inside the surface */}
         <div className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-[0.06] bg-[radial-gradient(#10b981_1.2px,transparent_1.2px)] [background-size:16px_16px] -z-10" />
@@ -671,7 +663,7 @@ export const FeatureAtlas: React.FC<FeatureAtlasProps> = ({
         <div className="hidden lg:grid grid-cols-12 gap-1 items-center h-full relative">
           
           {/* A. Left Active Preview Area (65% width) */}
-          <div className="col-span-7 h-full flex flex-col justify-between rounded-2xl bg-slate-50/40 dark:bg-black/20 border border-slate-100/50 dark:border-white/[0.02] overflow-hidden">
+          <div className="col-span-7 h-full flex flex-col justify-between rounded-2xl bg-slate-50/40 dark:bg-black/50 border border-slate-100/50 dark:border-white/10 overflow-hidden">
             <ActiveModulePreview activeModule={activeModule} theme={theme} />
           </div>
 

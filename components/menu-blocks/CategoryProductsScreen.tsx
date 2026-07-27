@@ -134,10 +134,10 @@ export const CategoryProductsScreen: React.FC<CategoryProductsScreenProps> = ({
               isEdit ? 'pb-16' : 'pb-24'
             } ${
               activeColumns === 3
-                ? 'grid-cols-3'
+                ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6'
                 : activeColumns === 4
-                ? 'grid-cols-4'
-                : 'grid-cols-2'
+                ? 'grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7'
+                : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
             }`}
           >
             {filteredProducts.map((product, index) => {
@@ -214,7 +214,7 @@ export const CategoryProductsScreen: React.FC<CategoryProductsScreenProps> = ({
             })}
           </div>
         ) : (
-          <div className={`space-y-3 px-4 ${isEdit ? 'pb-16' : 'pb-24'}`}>
+          <div className={`grid gap-4 px-4 ${isEdit ? 'pb-16' : 'pb-24'} grid-cols-1 md:grid-cols-2`}>
             {filteredProducts.map((product, index) => {
               const hasDiscount = product.discountPrice !== undefined && product.discountPrice > 0 && product.discountPrice < product.price;
               const discountPercent = hasDiscount ? Math.round(((product.price - product.discountPrice!) / product.price) * 100) : 0;

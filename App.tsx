@@ -32,6 +32,24 @@ const INITIAL_NOTIFICATIONS: Notification[] = [
 ];
 
 const App: React.FC = () => {
+  // REPOSITORIES & HOOKS
+  const { authRepository } = useRepositories();
+  const {
+    user,
+    isAuthenticated,
+    isEmailVerified,
+    memberships,
+    activeRestaurant,
+    activeBranch,
+    role,
+    loading: sessionLoading,
+    refetchSession
+  } = useAppSession();
+
+  const { restaurant, brandColor, updateInfo, updateBrandColor, loading: tenantLoading } = useTenant();
+  const { draftElements: canvasElements, saveDraft: setCanvasElements, publishMenu, loading: menuLoading } = useMenuDraft();
+  const [authLoading, setAuthLoading] = useState(false);
+
   const [showLoginFlow, setShowLoginFlow] = useState(false);
   const [marketingRoute, setMarketingRoute] = useState<'home' | 'features' | 'solutions'>('home');
   const [pendingSection, setPendingSection] = useState<string | null>(null);
@@ -85,23 +103,62 @@ const App: React.FC = () => {
   // Dark/Light Theme State from global ThemeProvider
   const { theme, setTheme, toggleTheme } = useTheme();
 
-  // REPOSITORIES & HOOKS
-  const { authRepository } = useRepositories();
-  const {
-    user,
-    isAuthenticated,
-    isEmailVerified,
-    memberships,
-    activeRestaurant,
-    activeBranch,
-    role,
-    loading: sessionLoading,
-    refetchSession
-  } = useAppSession();
+  // Synchronize CSS variables with the brand color and theme
+  useEffect(() => {
+    const COLORS = [
+      { id: 'emerald', hex: '#10b981' },
+      { id: 'blue', hex: '#3b82f6' },
+      { id: 'purple', hex: '#a855f7' },
+      { id: 'orange', hex: '#f97316' },
+      { id: 'red', hex: '#ef4444' },
+      { id: 'violet', hex: '#8b5cf6' },
+      { id: 'pink', hex: '#ec4899' },
+      { id: 'zinc', hex: '#71717a' },
+      { id: 'slate', hex: '#64748b' },
+    ];
+    const colorObj = COLORS.find(c => c.id === brandColor) || COLORS[0];
+    const hex = colorObj.hex;
+    const root = document.documentElement;
 
-  const { restaurant, brandColor, updateInfo, updateBrandColor, loading: tenantLoading } = useTenant();
-  const { draftElements: canvasElements, saveDraft: setCanvasElements, publishMenu, loading: menuLoading } = useMenuDraft();
-  const [authLoading, setAuthLoading] = useState(false);
+    root.style.setProperty('--app-accent', hex);
+    root.style.setProperty('--accent', hex);
+
+    if (theme === 'dark') {
+      root.style.setProperty('--app-bg', `color-mix(in oklab, ${hex} 4%, #050605)`);
+      root.style.setProperty('--page-bg', `color-mix(in oklab, ${hex} 4%, #050605)`);
+      root.style.setProperty('--app-sidebar', `color-mix(in oklab, ${hex} 7%, #070908)`);
+      root.style.setProperty('--app-surface', `color-mix(in oklab, ${hex} 10%, #0a0d0b)`);
+      root.style.setProperty('--surface-bg', `color-mix(in oklab, ${hex} 10%, #0a0d0b)`);
+      root.style.setProperty('--app-surface-elevated', `color-mix(in oklab, ${hex} 14%, #0d110f)`);
+      root.style.setProperty('--app-border', `color-mix(in srgb, ${hex} 12%, transparent)`);
+      root.style.setProperty('--app-hover', `color-mix(in srgb, ${hex} 8%, transparent)`);
+      root.style.setProperty('--app-active-bg', `color-mix(in srgb, ${hex} 12%, transparent)`);
+      root.style.setProperty('--app-active-border', `color-mix(in srgb, ${hex} 30%, transparent)`);
+    } else {
+      root.style.setProperty('--app-bg', '#F5F7F6');
+      root.style.setProperty('--page-bg', '#F5F7F6');
+      root.style.setProperty('--app-sidebar', '#FFFFFF');
+      root.style.setProperty('--app-surface', '#FFFFFF');
+      root.style.setProperty('--surface-bg', '#FFFFFF');
+      root.style.setProperty('--app-surface-elevated', '#FFFFFF');
+      root.style.setProperty('--app-border', 'rgba(17, 31, 24, 0.08)');
+      root.style.setProperty('--app-hover', `color-mix(in srgb, ${hex} 5%, transparent)`);
+      root.style.setProperty('--app-active-bg', `color-mix(in srgb, ${hex} 8%, transparent)`);
+      root.style.setProperty('--app-active-border', `color-mix(in srgb, ${hex} 20%, transparent)`);
+    }
+  }, [brandColor, theme]);
+
+  // Prevent background scrolling on mobile when sidebar drawer is open
+  useEffect(() => {
+    if (isMobileSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileSidebarOpen]);
 
   // Set local state for backward compatibility if needed, though we can use restaurant info directly
   const restaurantName = activeRestaurant?.name || restaurant?.name || 'رستوران ایتالیایی لیمو';
@@ -131,19 +188,10 @@ const App: React.FC = () => {
     }
   }, [debouncedQuery]);
 
-  const handleLogin = async (name?: string) => { 
-    setAuthLoading(true);
-    try {
-      await authRepository.login('mock-password', name);
-      await refetchSession();
-      if (name) {
-        await updateInfo({ name });
-      }
-    } catch (e) {
-      console.error('Error logging in:', e);
-    } finally {
-      setAuthLoading(false);
-    }
+  const handleLogin = async (_email?: string, _password?: string) => {
+    // Login is handled by AuthContainer → loginWithEmail / loginWithGoogle.
+    // This handler is kept for backward compatibility only.
+    await refetchSession();
   };
 
   const handleLogout = async () => {
@@ -399,7 +447,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-app-bg text-app-text overflow-hidden font-['Vazirmatn'] transition-colors duration-300">
+    <div className="flex h-screen h-[100dvh] bg-app-bg text-app-text overflow-hidden font-['Vazirmatn'] transition-colors duration-300">
       {/* Mobile Sidebar Backdrop */}
       {isMobileSidebarOpen && (
         <div 

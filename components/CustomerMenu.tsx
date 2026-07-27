@@ -132,6 +132,7 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
 
@@ -294,7 +295,7 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
   }
 
   return (
-    <div className={`min-h-screen font-['Vazirmatn'] pb-32 max-w-md mx-auto shadow-2xl relative min-w-0 border-x transition-colors duration-200 ${isDark ? 'dark bg-slate-950 border-slate-800 text-slate-100' : 'bg-[#F2F4F7] border-slate-200 text-slate-900'}`}>
+    <div className={`min-h-screen font-['Vazirmatn'] pb-32 max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative min-w-0 border-x transition-colors duration-200 ${isDark ? 'dark bg-slate-950 border-slate-800 text-slate-100' : 'bg-[#F2F4F7] border-slate-200 text-slate-900'}`}>
       
       {/* Top Navigation - Styled to Match Studio Customizations */}
       <div className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-5 py-3 flex items-center justify-between shadow-sm min-h-[60px] transition-colors">
@@ -411,7 +412,7 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
               }
 
               return (
-                <div className="grid grid-cols-2 gap-3.5" dir="rtl">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5" dir="rtl">
                   {filtered.map(product => {
                     const isAvailable = product.isAvailable !== false;
                     const hasDiscount = product.discountPrice !== undefined && product.discountPrice > 0 && product.discountPrice < product.price;

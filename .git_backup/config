@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[user]
+	name = AI Coding Agent
+	email = agent@google.com
+[remote "origin"]
+	url = https://github.com/aminbbn/Vitrin.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

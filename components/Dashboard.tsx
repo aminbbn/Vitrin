@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   TrendingUp, 
   ShoppingBag, 
@@ -66,11 +67,19 @@ const SummaryCard = ({
   up, 
   icon: Icon, 
   color, 
-  index 
+  index,
+  onClick
 }: any) => {
   const theme = { 
     bg: `bg-${color}-50 dark:bg-${color}-950/30`, 
     text: `text-${color}-600 dark:text-${color}-400`, 
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
   };
 
   return (
@@ -78,34 +87,90 @@ const SummaryCard = ({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, type: "spring", stiffness: 200, damping: 22 }}
-      whileHover={{ y: -2 }}
-      className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all h-[170px] flex flex-col justify-between relative overflow-hidden"
+      whileHover={{ y: -4, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      className="bg-white dark:bg-[var(--app-surface)] border border-slate-100 dark:border-[var(--app-border)] p-4 sm:p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all min-h-[145px] sm:min-h-[170px] flex flex-col justify-between relative overflow-hidden cursor-pointer select-none outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 group"
     >
-      <div className="flex items-start justify-between">
-         <div className={`p-2.5 rounded-2xl ${theme.bg} ${theme.text} shadow-sm`}>
-            <Icon className="w-5 h-5" />
+      <div className="flex items-start justify-between gap-2">
+         <div className={`p-2 rounded-2xl ${theme.bg} ${theme.text} shadow-sm group-hover:scale-110 transition-transform shrink-0`}>
+            <Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
          </div>
-         <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-1">{label}</span>
+         <span className="text-[11px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 mt-1 text-left sm:text-right line-clamp-1">{label}</span>
       </div>
 
-      <div className="flex flex-col items-center justify-center flex-1 py-1">
-         <h3 className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight font-mono">
+      <div className="flex flex-col items-center justify-center flex-1 py-1 min-w-0">
+         <h3 className="text-xl sm:text-3xl font-black text-slate-800 dark:text-slate-100 tabular-nums break-words text-center w-full">
             {value}
          </h3>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-         <div className={`flex items-center gap-1 text-[10px] font-black px-2.5 py-1 rounded-full border ${up ? `text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40` : 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/40'}`}>
-            {up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-            {trend}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+         <div className={`flex items-center gap-1 text-[9px] sm:text-[10px] font-black px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border shrink-0 ${up ? `text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40` : 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/40'}`}>
+            {up ? <ArrowUpRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> : <ArrowDownRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
+            <span className="truncate max-w-[80px]">{trend}</span>
          </div>
-         <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 px-2.5 py-1 rounded-full">
+         <span className="text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold bg-slate-50 dark:bg-[var(--app-surface-elevated)] border border-slate-100 dark:border-[var(--app-border)] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full truncate max-w-[90px]">
             {unit}
          </span>
       </div>
 
       <div className={`absolute -right-12 -bottom-12 w-32 h-32 bg-${color}-500/5 blur-[60px] rounded-full pointer-events-none`} />
     </motion.div>
+  );
+};
+
+// --- EXPANDED CARD CONTENT ---
+const ExpandedCardContent = ({ stat, onClose }: { stat: any, onClose: () => void }) => {
+  const Icon = stat.icon;
+  const color = stat.color;
+  return (
+    <div className="p-6 relative font-['Vazirmatn'] text-right" dir="rtl">
+       <div className="flex items-center justify-between mb-8">
+           <div className="flex items-center gap-3">
+              <div className={`p-3.5 rounded-2xl bg-${color}-50 dark:bg-${color}-950/30 text-${color}-600 dark:text-${color}-400 shadow-sm`}>
+                <Icon className="w-6 h-6" />
+              </div>
+              <span className="text-lg font-black text-slate-700 dark:text-slate-200">{stat.label}</span>
+           </div>
+           <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 cursor-pointer border-none bg-transparent">
+              <X className="w-5 h-5" />
+           </button>
+       </div>
+       <div className="flex flex-col items-start mb-8">
+           <h2 className="text-5xl font-black text-slate-900 dark:text-slate-100 tabular-nums leading-none">
+             {stat.value}
+           </h2>
+           <div className="flex items-center gap-3 mt-3">
+              <span className={`text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 border ${stat.up ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-850' : 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-850'}`}>
+                  {stat.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
+                  {stat.trend}
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-bold bg-slate-50 dark:bg-[var(--app-surface-elevated)] px-3 py-1.5 rounded-full border border-slate-100 dark:border-[var(--app-border)]">{stat.unit}</span>
+           </div>
+       </div>
+       <div className="space-y-4">
+          <h4 className="text-xs font-black text-slate-400 uppercase tracking-normal mb-2 flex items-center gap-2">
+             <BarChart2 className="w-3 h-3" />
+             جزئیات سریع
+          </h4>
+          <div className="space-y-3">
+             {stat.insights?.map((detail: any, i: number) => (
+                <div
+                   key={i}
+                   className="flex items-center justify-between p-4 bg-slate-50 dark:bg-[var(--app-surface-elevated)] rounded-2xl border border-slate-100 dark:border-[var(--app-border)]/60 hover:border-slate-200 dark:hover:bg-[var(--app-hover)] transition-colors"
+                >
+                   <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{detail.label}</span>
+                   <span className="text-sm font-black text-slate-800 dark:text-slate-200 tabular-nums">{detail.value}</span>
+                </div>
+             ))}
+          </div>
+       </div>
+       <div className="h-6" />
+    </div>
   );
 };
 
@@ -154,6 +219,19 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, [products, categories, activeBranch, catalogRepository]);
 
   const [isDark, setIsDark] = useState(() => theme === 'dark' || document.documentElement.classList.contains('dark'));
+  const [selectedStatId, setSelectedStatId] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (selectedStatId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedStatId]);
+
   const [dateRange, setDateRange] = useState<'24h' | '7days' | '30days'>('7days');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [chartView, setChartView] = useState<'weekly' | 'daily'>('weekly');
@@ -226,6 +304,11 @@ const Dashboard: React.FC<DashboardProps> = ({
       up: unavailableProductsCount === 0,
       icon: ShoppingBag,
       color: brandColor,
+      insights: [
+        { label: 'آیتم‌های فعال (در حال نمایش)', value: `${activeProductsCount} محصول` },
+        { label: 'آیتم‌های غیرفعال (پنهان)', value: `${unavailableProductsCount} محصول` },
+        { label: 'کل محصولات تعریف شده', value: `${products.length} محصول` }
+      ]
     },
     {
       id: 'categories_count',
@@ -236,6 +319,11 @@ const Dashboard: React.FC<DashboardProps> = ({
       up: true,
       icon: Layers,
       color: 'blue',
+      insights: [
+        { label: 'تعداد کل دسته‌ها', value: `${categoriesCount} دسته` },
+        { label: 'دسته‌بندی‌های دارای محصول', value: `${categories.filter(c => products.some(p => p.categoryId === c.id)).length} دسته` },
+        { label: 'دسته‌بندی‌های خالی', value: `${categories.filter(c => !products.some(p => p.categoryId === c.id)).length} دسته` }
+      ]
     },
     {
       id: 'menu_status',
@@ -246,6 +334,11 @@ const Dashboard: React.FC<DashboardProps> = ({
       up: isMenuLive,
       icon: Clock,
       color: isMenuLive ? 'emerald' : 'orange',
+      insights: [
+        { label: 'وضعیت فعلی', value: isMenuLive ? 'منتشر شده و زنده' : 'پیش‌نویس (نیاز به انتشار)' },
+        { label: 'نسخه منو', value: isMenuLive ? (activePublication?.version || 'v1.0') : 'در انتظار انتشار' },
+        { label: 'تعداد کل صفحات لایو', value: isMenuLive ? '۱ صفحه اصلی' : '۰' }
+      ]
     },
     {
       id: 'last_published',
@@ -256,8 +349,15 @@ const Dashboard: React.FC<DashboardProps> = ({
       up: isMenuLive,
       icon: TrendingUp,
       color: 'purple',
+      insights: [
+        { label: 'آخرین تاریخ انتشار', value: lastPublishedAt },
+        { label: 'تاریخ تغییرات محلی', value: 'بروزرسانی لحظه‌ای' },
+        { label: 'وضعیت همگام‌سازی', value: isMenuLive ? 'کاملاً همگام‌سازی شده' : 'تغییرات محلی منتشر نشده' }
+      ]
     }
   ];
+
+  const selectedStat = statsData.find(s => s.id === selectedStatId);
 
   const handleDownloadReport = () => {
     setIsGeneratingReport(true);
@@ -292,11 +392,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   // Empty State: Restaurant exists but no active branch
   if (activeRestaurant && !activeBranch) {
     return (
-      <div className="p-8 h-full overflow-y-auto bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center font-['Vazirmatn'] selection:bg-emerald-500/10 transition-colors">
+      <div className="p-8 h-full overflow-y-auto bg-[#F8FAFC] dark:bg-[var(--app-bg)] text-slate-900 dark:text-slate-100 flex items-center justify-center font-['Vazirmatn'] selection:bg-emerald-500/10 transition-colors">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-8 md:p-10 shadow-xl"
+          className="w-full max-w-lg bg-white dark:bg-[var(--app-surface)] border border-slate-100 dark:border-[var(--app-border)] rounded-[2.5rem] p-8 md:p-10 shadow-xl"
         >
           <div className="w-16 h-16 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-6 shadow-inner mx-auto">
             <Compass className="w-8 h-8" />
@@ -322,7 +422,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 value={newBranchName}
                 onChange={(e) => setNewBranchName(e.target.value)}
                 placeholder="مثال: شعبه مرکزی، شعبه جردن"
-                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
+                className="w-full bg-slate-50 dark:bg-[var(--app-surface-elevated)] border border-slate-200 dark:border-[var(--app-border)] rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
               />
             </div>
 
@@ -335,7 +435,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 value={newBranchAddress}
                 onChange={(e) => setNewBranchAddress(e.target.value)}
                 placeholder="آدرس دقیق فیزیکی شعبه"
-                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
+                className="w-full bg-slate-50 dark:bg-[var(--app-surface-elevated)] border border-slate-200 dark:border-[var(--app-border)] rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
               />
             </div>
 
@@ -348,7 +448,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 value={newBranchPhone}
                 onChange={(e) => setNewBranchPhone(e.target.value)}
                 placeholder="تلفن تماس مستقیم شعبه"
-                className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
+                className="w-full bg-slate-50 dark:bg-[var(--app-surface-elevated)] border border-slate-200 dark:border-[var(--app-border)] rounded-2xl px-4 py-3.5 text-sm focus:border-emerald-500 outline-none transition-colors dark:text-slate-100"
               />
             </div>
 
@@ -373,25 +473,25 @@ const Dashboard: React.FC<DashboardProps> = ({
   }
 
   return (
-    <div className="p-8 h-full overflow-y-auto space-y-8 bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-['Vazirmatn'] transition-colors" onClick={() => setIsDropdownOpen(false)}>
+    <div className="p-4 sm:p-6 lg:p-8 h-full overflow-y-auto space-y-6 sm:space-y-8 bg-[#F8FAFC] dark:bg-[var(--app-bg)] text-slate-900 dark:text-slate-100 relative font-['Vazirmatn'] transition-colors" onClick={() => setIsDropdownOpen(false)}>
       
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 flex flex-wrap items-center gap-2">
             <span>سلام، {activeRestaurant?.name || 'مدیر گرامی'} 👋</span>
-            <span className="text-xs font-normal text-slate-400 bg-slate-100 dark:bg-slate-850 border border-slate-200/50 dark:border-slate-800 px-3 py-1.5 rounded-full">
+            <span className="text-[10px] sm:text-xs font-normal text-slate-400 bg-slate-100 dark:bg-[var(--app-surface-elevated)] border border-slate-200/50 dark:border-[var(--app-border)] px-2.5 py-1 rounded-full whitespace-nowrap">
               {activeBranch?.name || 'بدون شعبه'}
             </span>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">پنل مدیریت یکپارچه منوی دیجیتال ویترین</p>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">پنل مدیریت یکپارچه منوی دیجیتال ویترین</p>
         </div>
-        <div className="flex gap-4 relative">
+        <div className="flex gap-4 relative w-full sm:w-auto">
           {/* REPORT DOWNLOAD */}
           <button 
             onClick={handleDownloadReport}
             disabled={isGeneratingReport}
-            className={`px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 min-w-[140px] justify-center border border-slate-200/50 dark:border-slate-700`}
+            className={`px-5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-80 w-full sm:min-w-[140px] justify-center border border-slate-200/50 dark:border-slate-700`}
           >
             {isGeneratingReport ? (
                <>
@@ -413,15 +513,15 @@ const Dashboard: React.FC<DashboardProps> = ({
         <motion.div 
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-[2rem] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6"
+          className="bg-white dark:bg-[var(--app-surface)] border border-slate-100 dark:border-[var(--app-border)] p-5 sm:p-6 md:p-8 rounded-[2rem] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-right"
         >
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-amber-50 dark:bg-amber-950/30 text-amber-500 rounded-2xl shrink-0">
-              <ShoppingBag className="w-8 h-8" />
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 text-amber-500 rounded-2xl shrink-0">
+              <ShoppingBag className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-base font-black text-slate-800 dark:text-slate-200">هنوز کالا یا دسته‌ای ثبت نکرده‌اید!</h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed max-w-[55ch]">
+              <h3 className="text-sm sm:text-base font-black text-slate-800 dark:text-slate-200">هنوز کالا یا دسته‌ای ثبت نکرده‌اید!</h3>
+              <p className="text-[11px] sm:text-xs text-slate-400 mt-1 leading-relaxed max-w-[55ch]">
                 برای فعال شدن منوی دیجیتال لایو و نمایش به مشتریان، ابتدا چند دسته اصلی تعریف کرده و اولین محصولات خود را به همراه قیمت و جزئیات اضافه کنید.
               </p>
             </div>
@@ -429,7 +529,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           {onNavigateCatalog && (
             <button
               onClick={onNavigateCatalog}
-              className={`px-6 py-3.5 bg-${brandColor}-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-${brandColor}-500/10 hover:bg-${brandColor}-700 transition-all flex items-center gap-2 shrink-0 active:scale-95`}
+              className={`w-full md:w-auto px-6 py-3.5 bg-${brandColor}-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-${brandColor}-500/10 hover:bg-${brandColor}-700 transition-all flex items-center justify-center gap-2 shrink-0 active:scale-95`}
             >
               <Plus className="w-4 h-4" />
               افزودن اولین محصول
@@ -437,12 +537,13 @@ const Dashboard: React.FC<DashboardProps> = ({
           )}
         </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative z-0">
           {statsData.map((stat, index) => (
             <SummaryCard 
               key={stat.id} 
               {...stat} 
               index={index}
+              onClick={() => setSelectedStatId(stat.id)}
             />
           ))}
         </div>
@@ -453,15 +554,15 @@ const Dashboard: React.FC<DashboardProps> = ({
         <motion.div 
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-orange-50/60 dark:bg-orange-950/15 border border-orange-100 dark:border-orange-900/30 p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6"
+          className="bg-orange-50/60 dark:bg-orange-950/15 border border-orange-100 dark:border-orange-900/30 p-5 sm:p-6 md:p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-right"
         >
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 rounded-2xl shrink-0">
-              <Info className="w-8 h-8" />
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="p-3 bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 rounded-2xl shrink-0">
+              <Info className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-base font-black text-slate-800 dark:text-slate-100">منوی دیجیتال شما هنوز منتشر نشده است!</h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed max-w-[55ch]">
+              <h3 className="text-sm sm:text-base font-black text-slate-800 dark:text-slate-100">منوی دیجیتال شما هنوز منتشر نشده است!</h3>
+              <p className="text-[11px] sm:text-xs text-slate-400 mt-1 leading-relaxed max-w-[55ch]">
                 تغییرات چیدمان و کالاها در حالت پیش‌نویس قرار دارد. برای فعال شدن رسمی آدرس اینترنتی و بارگیری منو برای مشتریان، به ویرایشگر بروید و دکمه انتشار سراسری را بزنید.
               </p>
             </div>
@@ -469,7 +570,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           {onNavigateDesigner && (
             <button
               onClick={onNavigateDesigner}
-              className="px-6 py-3.5 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl text-xs font-black shadow-lg transition-all flex items-center gap-2 shrink-0 active:scale-95"
+              className="w-full md:w-auto px-6 py-3.5 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl text-xs font-black shadow-lg transition-all flex items-center justify-center gap-2 shrink-0 active:scale-95"
             >
               <Compass className="w-4 h-4" />
               طراحی و انتشار منو
@@ -477,33 +578,33 @@ const Dashboard: React.FC<DashboardProps> = ({
           )}
         </motion.div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-[2rem] shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-5">
-            <div className={`p-4 bg-${brandColor}-50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-3xl shrink-0 shadow-inner`}>
-              <CheckCircle2 className="w-8 h-8" />
+        <div className="bg-white dark:bg-[var(--app-surface)] border border-slate-100 dark:border-[var(--app-border)] p-5 sm:p-6 md:p-8 rounded-[2rem] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-right">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-5">
+            <div className={`p-3 bg-${brandColor}-50 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400 rounded-3xl shrink-0 shadow-inner`}>
+              <CheckCircle2 className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-base font-black text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-black text-slate-800 dark:text-slate-200 flex items-center justify-center md:justify-start gap-2">
                 <span>منوی دیجیتال شما زنده و فعال است!</span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </h3>
-              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed max-w-[60ch]">
+              <p className="text-[11px] sm:text-xs text-slate-400 mt-1.5 leading-relaxed max-w-[60ch]">
                 مشتریان می‌توانند با اسکن کد QR یا کلیک بر روی لینک اختصاصی شما، لیست کالاها، قیمت‌ها و تصاویر زیبای منو را با سرعت بالا مشاهده کنند.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto shrink-0">
             <button
               onClick={() => setShowQrModal(true)}
-              className="px-4 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-2xl transition-all flex items-center gap-2 active:scale-95"
+              className="w-full sm:w-auto px-4 py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95"
             >
               <QrCode className="w-4 h-4" />
               دریافت کد QR اختصاصی
             </button>
             <button
               onClick={handleCopyLink}
-              className={`px-4 py-3.5 bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 text-xs font-black rounded-2xl transition-all flex items-center gap-2 active:scale-95`}
+              className={`w-full sm:w-auto px-4 py-3.5 bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 dark:text-${brandColor}-400 text-xs font-black rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95`}
             >
               <LinkIcon className="w-4 h-4" />
               {copiedLink ? 'لینک کپی شد!' : 'کپی لینک منوی اختصاصی'}
@@ -513,26 +614,26 @@ const Dashboard: React.FC<DashboardProps> = ({
       )}
 
       {/* CHARTS AND RECENT POPULAR PRODUCTS */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col transition-colors">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-base font-black text-slate-850 dark:text-slate-100">تحلیل بازدیدهای منو</h2>
-            <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="lg:col-span-2 bg-white dark:bg-[var(--app-surface)] p-4 sm:p-6 md:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-[var(--app-border)] flex flex-col transition-colors">
+          <div className="flex flex-col xs:flex-row gap-4 items-start xs:items-center justify-between mb-6 sm:mb-8">
+            <h2 className="text-sm sm:text-base font-black text-slate-850 dark:text-slate-100">تحلیل بازدیدهای منو</h2>
+            <div className="flex gap-1.5 bg-slate-100 dark:bg-[var(--app-surface-elevated)] p-1 rounded-xl w-full xs:w-auto justify-between xs:justify-start">
               <button 
                 onClick={() => setChartView('weekly')} 
-                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                className={`flex-1 xs:flex-none px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'weekly' ? `bg-white dark:bg-[var(--app-surface)] shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
               >
                 هفتگی
               </button>
               <button 
                 onClick={() => setChartView('daily')} 
-                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white dark:bg-slate-900 shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                className={`flex-1 xs:flex-none px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${chartView === 'daily' ? `bg-white dark:bg-[var(--app-surface)] shadow-sm text-${brandColor}-600 dark:text-${brandColor}-400` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
               >
                 روزانه
               </button>
             </div>
           </div>
-          <div className="h-80 w-full relative">
+          <div className="h-[220px] sm:h-[300px] md:h-80 w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartView === 'weekly' ? WEEKLY_DATA : DAILY_DATA}>
                  <defs>
@@ -542,17 +643,17 @@ const Dashboard: React.FC<DashboardProps> = ({
                    </linearGradient>
                  </defs>
                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#26262b' : '#f1f5f9'} />
-                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} dy={10} />
-                 <YAxis axisLine={false} tickLine={false} width={40} tickFormatter={(value) => value} tick={{ fontSize: 11, fill: '#94a3b8' }} dx={-10} />
+                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={10} />
+                 <YAxis axisLine={false} tickLine={false} width={30} tickFormatter={(value) => value} tick={{ fontSize: 10, fill: '#94a3b8' }} dx={-10} />
                  <Tooltip 
                     cursor={{ stroke: isDark ? '#26262b' : '#e2e8f0', strokeWidth: 1, strokeDasharray: '4 4' }}
                     content={({ active, payload, label }: any) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 text-xs z-[100] relative">
-                            <p className="font-bold mb-2 text-slate-400">{label}</p>
+                          <div className="bg-white dark:bg-[var(--app-surface)] text-slate-800 dark:text-slate-200 p-3 sm:p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-[var(--app-border)] text-xs z-[100] relative">
+                            <p className="font-bold mb-1 sm:mb-2 text-slate-400">{label}</p>
                             <div className="flex items-center gap-2">
-                              <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-black text-sm`}>{(payload[0] && payload[0].value !== undefined && payload[0].value !== null) ? payload[0].value.toLocaleString() : '۰'} بازدید</span>
+                              <span className={`text-${brandColor}-600 dark:text-${brandColor}-400 font-black text-xs sm:text-sm`}>{(payload[0] && payload[0].value !== undefined && payload[0].value !== null) ? payload[0].value.toLocaleString() : '۰'} بازدید</span>
                             </div>
                           </div>
                         );
@@ -561,36 +662,36 @@ const Dashboard: React.FC<DashboardProps> = ({
                     }}
                     wrapperStyle={{ zIndex: 1000 }} 
                  />
-                 <Area type="monotone" dataKey="revenue" stroke={chartHexColor} strokeWidth={3.5} fillOpacity={1} fill="url(#colorRev)" />
+                 <Area type="monotone" dataKey="revenue" stroke={chartHexColor} strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
                </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* MOST POPULAR DISHES */}
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
-          <h2 className="text-base font-black text-slate-850 dark:text-slate-100 mb-6">محبوب‌ترین محصولات</h2>
-          <div className="space-y-6">
+        <div className="bg-white dark:bg-[var(--app-surface)] p-4 sm:p-6 md:p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-[var(--app-border)] transition-colors">
+          <h2 className="text-sm sm:text-base font-black text-slate-850 dark:text-slate-100 mb-6">محبوب‌ترین محصولات</h2>
+          <div className="space-y-4 sm:space-y-6">
             {popularProducts.map((prod, i) => (
-              <div key={i} className="flex items-center justify-between group p-1 rounded-xl">
-                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-800">
+              <div key={i} className="flex items-center justify-between gap-3 group p-1 rounded-xl min-w-0">
+                 <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-800">
                        {prod.image ? (
                          <img src={prod.image} alt={prod.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" referrerPolicy="no-referrer" />
                        ) : (
-                         <ShoppingBag className="w-5 h-5 text-slate-400" />
+                         <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                        )}
                     </div>
-                    <div>
-                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{prod.name}</h4>
-                       <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">{prod.category}</span>
+                    <div className="min-w-0">
+                       <h4 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{prod.name}</h4>
+                       <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate block">{prod.category}</span>
                     </div>
                  </div>
-                 <div className="text-left">
-                    <p className="text-sm font-black text-slate-700 dark:text-slate-300 font-mono">
+                 <div className="text-left shrink-0">
+                    <p className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 font-mono">
                       {prod.price !== undefined && prod.price !== null ? prod.price.toLocaleString() : '۰'} تومان
                     </p>
-                    <span className={`text-[10px] text-${brandColor}-500 font-bold`}>{30 + (i * 12)} بازدید</span>
+                    <span className={`text-[9px] sm:text-[10px] text-${brandColor}-500 font-bold`}>{30 + (i * 12)} بازدید</span>
                  </div>
               </div>
             ))}
@@ -601,7 +702,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           {onNavigateCatalog && products.length > 0 && (
             <button 
                onClick={onNavigateCatalog}
-               className="w-full mt-8 py-3 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors"
+               className="w-full mt-8 py-3 bg-slate-50 dark:bg-[var(--app-surface-elevated)] text-slate-500 dark:text-slate-400 text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] transition-colors"
             >
                مدیریت محصولات <ChevronLeft className="w-4 h-4" />
             </button>
@@ -623,7 +724,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               initial={{ opacity: 0, scale: 0.95, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2.5rem] shadow-2xl relative z-10 p-8 text-center border border-slate-100 dark:border-slate-800"
+              className="bg-white dark:bg-[var(--app-surface)] w-full max-w-sm rounded-[2.5rem] shadow-2xl relative z-10 p-8 text-center border border-slate-100 dark:border-[var(--app-border)]"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-black text-base text-slate-800 dark:text-slate-200">کد QR منوی دیجیتال</h3>
@@ -656,6 +757,37 @@ const Dashboard: React.FC<DashboardProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {selectedStatId && selectedStat && (
+            <motion.div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+              <motion.button
+                aria-label="بستن پنجره"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 h-full w-full bg-slate-950/60 backdrop-blur-md cursor-pointer outline-none border-none pointer-events-auto"
+                onClick={() => setSelectedStatId(null)}
+              />
+              <div className="relative z-10 flex min-h-full items-center justify-center p-4 w-full max-w-sm pointer-events-none">
+                <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  className="bg-white dark:bg-[var(--app-surface)] w-full rounded-[1.5rem] shadow-2xl relative overflow-hidden border border-slate-100 dark:border-[var(--app-border)] flex flex-col pointer-events-auto"
+                >
+                  <ExpandedCardContent stat={selectedStat} onClose={() => setSelectedStatId(null)} />
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
     </div>
   );

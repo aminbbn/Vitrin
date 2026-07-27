@@ -5,7 +5,6 @@ import {
   Trash, 
   ToggleLeft, 
   ToggleRight, 
-  Sparkles,
   ShoppingBag,
   Circle
 } from '@phosphor-icons/react';
@@ -433,15 +432,9 @@ export const ProductManagementModule: React.FC<ProductManagementModuleProps> = (
                 </div>
               )}
 
-              {/* Pricing & Checkout interaction bar */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100 dark:border-[#101412]">
-                <button 
-                  disabled={!isAvailable}
-                  className="px-4 py-2.5 bg-[#10b981] hover:bg-emerald-500 disabled:opacity-50 text-white rounded-xl text-xs font-black shadow-sm flex items-center gap-1 border-0 cursor-pointer focus:outline-none"
-                >
-                  <span>سفارش آنلاین</span>
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
+              {/* Pricing display bar */}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100 dark:border-[#101412] text-right">
+                <span className="text-xs text-slate-400 dark:text-slate-500 font-bold">قیمت آیتم منو</span>
 
                 <div className="text-left">
                   {useDiscount ? (

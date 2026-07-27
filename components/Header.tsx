@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Power, Eye, Sparkles, CheckCircle2, Bell,
-  Trash2, Sun, Moon, Menu, Check
+  Trash2, Sun, Moon, Menu, Check, X
 } from 'lucide-react';
 import { Notification } from '../types';
 
@@ -47,6 +47,7 @@ const Header: React.FC<HeaderProps> = ({
   onMenuToggle
 }) => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMobileSearchExpanded, setIsMobileSearchExpanded] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
@@ -65,6 +66,7 @@ const Header: React.FC<HeaderProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsNotificationsOpen(false);
+        setIsMobileSearchExpanded(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -75,21 +77,66 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="h-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-8 z-40 relative font-['Vazirmatn'] shrink-0 transition-colors duration-300">
+      <header className="h-20 bg-white/80 dark:bg-[var(--app-bg)]/80 backdrop-blur-md border-b border-slate-200 dark:border-[var(--app-border)] flex items-center justify-between px-4 sm:px-8 z-40 relative font-['Vazirmatn'] shrink-0 transition-colors duration-300">
         
+        {/* Mobile Expandable Search Bar Overlay */}
+        <AnimatePresence>
+          {isMobileSearchExpanded && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="absolute inset-x-0 inset-y-0 bg-white dark:bg-[var(--app-bg)] px-4 flex items-center gap-3 z-50 font-['Vazirmatn']"
+            >
+              <button 
+                onClick={() => {
+                  setIsMobileSearchExpanded(false);
+                  setSearchQuery('');
+                }}
+                className="p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] rounded-xl transition-all"
+                aria-label="بازگشت"
+              >
+                <X className="w-5.5 h-5.5" />
+              </button>
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input 
+                  type="text"
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="جستجو در پنل مدیریت..."
+                  className="bg-slate-100 dark:bg-[var(--app-surface-elevated)] dark:text-slate-200 rounded-2xl pr-11 pl-4 py-2.5 w-full text-sm outline-none border border-transparent focus:border-[var(--app-accent)]/30 focus:bg-white dark:focus:bg-[var(--app-surface)]"
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Rightmost in RTL: Hamburger & Search Section */}
-        <div className="flex items-center gap-3 flex-1 max-w-xs sm:max-w-md">
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xs sm:max-w-md">
           {onMenuToggle && (
             <button 
               onClick={onMenuToggle}
-              className="p-2 -mr-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 md:hidden block shrink-0 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
+              className="p-2 -mr-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 md:hidden block shrink-0 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] rounded-xl transition-all"
               title="منوی اصلی"
+              aria-label="باز کردن منو"
             >
               <Menu className="w-5.5 h-5.5" />
             </button>
           )}
 
-          {/* Search Section */}
+          {/* Compact Search Trigger Button for Mobile */}
+          <button 
+            onClick={() => setIsMobileSearchExpanded(true)}
+            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] sm:hidden block shrink-0 transition-colors"
+            title="جستجو"
+            aria-label="جستجو"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+
+          {/* Search Section (desktop and tablet) */}
           <div className="hidden sm:flex items-center flex-1" ref={searchRef}>
             <div className="relative w-full group">
               <Search className={`w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${isSearchFocused ? `text-${brandColor}-500` : 'text-slate-400'}`} />
@@ -99,43 +146,69 @@ const Header: React.FC<HeaderProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 placeholder="جستجو در پنل مدیریت..." 
-                className={`bg-slate-100/50 dark:bg-slate-800/40 border border-transparent dark:text-slate-200 rounded-2xl pr-11 pl-4 py-2.5 w-full text-sm outline-none transition-all ${isSearchFocused ? `bg-white dark:bg-slate-900 border-${brandColor}-500/30 ring-4 ring-${brandColor}-500/5 shadow-sm` : 'hover:bg-slate-100 dark:hover:bg-slate-800/60'}`}
+                className={`bg-slate-100/50 dark:bg-[var(--app-surface-elevated)]/40 border border-transparent dark:text-slate-200 rounded-2xl pr-11 pl-4 py-2.5 w-full text-sm outline-none transition-all ${isSearchFocused ? `bg-white dark:bg-[var(--app-surface)] border-${brandColor}-500/30 ring-4 ring-${brandColor}-500/5 shadow-sm` : 'hover:bg-slate-100 dark:hover:bg-[var(--app-hover)]'}`}
               />
             </div>
           </div>
         </div>
 
         {/* Left: Actions & Profile */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           
-          {/* Action Group 1: Status & Preview */}
-          <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-slate-800/30 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-800 mr-1 sm:mr-2">
+          {/* Action Group 1 (Desktop and Tablet): Status & Preview */}
+          <div className="hidden sm:flex items-center gap-1 bg-slate-100/50 dark:bg-[var(--app-surface-elevated)]/30 p-1 rounded-2xl border border-slate-200/50 dark:border-[var(--app-border)] mr-1 sm:mr-2 shrink-0">
             <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5">
                <div className={`w-2 h-2 rounded-full ${isRestaurantOpen ? `bg-${brandColor}-500` : 'bg-rose-500'} animate-pulse`} />
-               <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 hidden sm:inline">رستوران {isRestaurantOpen ? 'باز' : 'بسته'}</span>
+               <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">رستوران {isRestaurantOpen ? 'باز' : 'بسته'}</span>
                <button 
                  onClick={() => setIsRestaurantOpen(!isRestaurantOpen)}
-                 className={`p-1 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm rounded-lg transition-all text-slate-400 hover:text-${brandColor}-600`}
+                 className={`p-1 hover:bg-white dark:hover:bg-[var(--app-hover)] hover:shadow-sm rounded-lg transition-all text-slate-400 hover:text-${brandColor}-600`}
+                 title={isRestaurantOpen ? "بستن رستوران" : "باز کردن رستوران"}
+                 aria-label="تغییر وضعیت رستوران"
                >
                  <Power className="w-3.5 h-3.5" />
                </button>
             </div>
-            <div className="w-px h-4 bg-slate-200 dark:bg-slate-800 mx-1" />
+            <div className="w-px h-4 bg-slate-200 dark:bg-[var(--app-border)] mx-1" />
             <button 
               onClick={onPreviewShop}
-              className={`p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-${brandColor}-600 hover:bg-white dark:hover:bg-slate-800 transition-all group`}
+              className={`p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-${brandColor}-600 hover:bg-white dark:hover:bg-[var(--app-hover)] transition-all group`}
               title="مشاهده سایت"
+              aria-label="پیش‌نمایش فروشگاه"
             >
               <Eye className="w-4 h-4 group-hover:scale-110" />
             </button>
           </div>
 
+          {/* Action Group 1 (Mobile only): Highly Compact Status & Preview */}
+          <div className="flex sm:hidden items-center gap-0.5 shrink-0">
+            <button 
+              onClick={() => setIsRestaurantOpen(!isRestaurantOpen)}
+              className={`p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] transition-all relative shrink-0 text-slate-500 hover:text-${brandColor}-600`}
+              title={isRestaurantOpen ? "رستوران باز است (کلیک برای بستن)" : "رستوران بسته است (کلیک برای باز کردن)"}
+              aria-label="وضعیت رستوران"
+            >
+              <Power className="w-5 h-5" />
+              <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ${isRestaurantOpen ? 'bg-emerald-500' : 'bg-rose-500'} animate-pulse`} />
+            </button>
+
+            <button 
+              onClick={onPreviewShop}
+              className={`p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-${brandColor}-600 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] transition-all shrink-0`}
+              title="مشاهده سایت"
+              aria-label="پیش‌نمایش فروشگاه"
+            >
+              <Eye className="w-5 h-5" />
+            </button>
+          </div>
+
           {/* Publish Button */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button 
               onClick={onPublish} 
               disabled={isPublishing} 
-              className={`px-3 sm:px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all ${isPublishing ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : `bg-${brandColor}-600 text-white hover:bg-${brandColor}-700 shadow-lg shadow-${brandColor}-600/20 active:scale-95`}`}
+              className={`px-3 sm:px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all ${isPublishing ? 'bg-slate-100 dark:bg-[var(--app-surface-elevated)] text-slate-400 cursor-not-allowed' : `bg-${brandColor}-600 text-white hover:bg-${brandColor}-700 shadow-lg shadow-${brandColor}-600/20 active:scale-95`}`}
+              aria-label="انتشار تغییرات"
             >
               {isPublishing ? (
                 <div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
@@ -151,7 +224,7 @@ const Header: React.FC<HeaderProps> = ({
                   initial={{ opacity: 0, y: 15 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   exit={{ opacity: 0, scale: 0.9 }} 
-                  className="absolute top-full mt-3 left-0 bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-2xl z-50 whitespace-nowrap"
+                  className="absolute top-full mt-3 left-0 sm:left-auto sm:right-0 bg-slate-900 dark:bg-[var(--app-surface-elevated)] text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-2xl z-50 whitespace-nowrap"
                 >
                   <CheckCircle2 className={`w-4 h-4 text-${brandColor}-400`} />
                   <span className="text-[11px] font-bold">تغییرات با موفقیت اعمال شد</span>
@@ -160,14 +233,15 @@ const Header: React.FC<HeaderProps> = ({
             </AnimatePresence>
           </div>
 
-          <div className="w-[1px] h-8 bg-slate-200 dark:bg-slate-800 mx-1 sm:mx-2" />
+          <div className="w-[1px] h-8 bg-slate-200 dark:bg-[var(--app-border)] mx-1 sm:mx-2 shrink-0" />
 
           {/* Dark Mode Toggle */}
           {toggleTheme && (
             <button 
                onClick={toggleTheme} 
-               className="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shrink-0"
+               className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] transition-all shrink-0"
                title={theme === 'dark' ? "پوسته روشن" : "پوسته تاریک"}
+               aria-label={theme === 'dark' ? "پوسته روشن" : "پوسته تاریک"}
             >
               {theme === 'dark' ? (
                 <Sun className="w-5 h-5 text-amber-500 hover:scale-110 transition-transform" />
@@ -178,14 +252,15 @@ const Header: React.FC<HeaderProps> = ({
           )}
 
           {/* Notification Bell */}
-          <div className="relative" ref={notifRef}>
+          <div className="relative shrink-0" ref={notifRef}>
             <button 
                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} 
-               className={`p-2.5 rounded-xl relative transition-all ${isNotificationsOpen ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 shadow-inner` : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+               className={`p-2 rounded-xl relative transition-all ${isNotificationsOpen ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/30 text-${brandColor}-600 shadow-inner` : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)]'}`}
+               aria-label="اعلان‌ها"
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-2 right-2 w-4 h-4 bg-rose-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-[8px] font-black text-white shadow-sm">
+                <span className="absolute top-2 right-2 w-4 h-4 bg-rose-500 rounded-full border-2 border-white dark:border-[var(--app-surface)] flex items-center justify-center text-[8px] font-black text-white shadow-sm">
                   {unreadCount}
                 </span>
               )}
@@ -197,15 +272,15 @@ const Header: React.FC<HeaderProps> = ({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute top-full left-0 mt-4 w-80 bg-white dark:bg-slate-900 rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-200 dark:border-slate-800 z-[60] overflow-hidden origin-top-left"
+                  className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-20 sm:top-full left-4 sm:left-0 mt-2 sm:mt-4 w-auto sm:w-80 bg-white dark:bg-[var(--app-surface)] rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-[var(--app-border)] z-[60] overflow-hidden origin-top-left max-h-[calc(100dvh-100px)] sm:max-h-none flex flex-col"
                 >
-                   <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                   <div className="p-4 border-b border-slate-100 dark:border-[var(--app-border)] flex justify-between items-center shrink-0">
                       <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm">اعلان‌های سیستم</h3>
                       <span className={`text-[10px] bg-${brandColor}-100 dark:bg-${brandColor}-950/50 text-${brandColor}-700 dark:text-${brandColor}-400 px-2.5 py-1 rounded-lg font-bold`}>
                         {unreadCount} مورد جدید
                       </span>
                    </div>
-                   <div className="max-h-[320px] overflow-y-auto">
+                   <div className="flex-1 overflow-y-auto max-h-[320px] sm:max-h-[400px]">
                       {notifications.length === 0 ? (
                         <div className="p-10 text-center text-slate-400 dark:text-slate-500 text-xs">پیامی برای نمایش وجود ندارد</div>
                       ) : (
@@ -216,7 +291,7 @@ const Header: React.FC<HeaderProps> = ({
                               onNotificationClick(n);
                               setIsNotificationsOpen(false);
                             }}
-                            className={`p-4 border-b border-slate-50 dark:border-slate-800/40 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer text-right flex items-start gap-3 relative group ${!n.read ? `bg-${brandColor}-50/10 dark:bg-${brandColor}-950/10` : ''}`}
+                            className={`p-4 border-b border-slate-50 dark:border-[var(--app-border)]/40 last:border-0 hover:bg-slate-50 dark:hover:bg-[var(--app-hover)] transition-colors cursor-pointer text-right flex items-start gap-3 relative group ${!n.read ? `bg-${brandColor}-50/10 dark:bg-${brandColor}-950/10` : ''}`}
                           >
                              <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-center mb-1">
@@ -235,6 +310,7 @@ const Header: React.FC<HeaderProps> = ({
                                       }}
                                       className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg transition-colors"
                                       title="علامت‌گذاری به عنوان خوانده شده"
+                                      aria-label="علامت خوانده شده"
                                    >
                                       <Check className="w-3.5 h-3.5" />
                                    </button>
@@ -247,6 +323,7 @@ const Header: React.FC<HeaderProps> = ({
                                       }}
                                       className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg transition-colors"
                                       title="حذف"
+                                      aria-label="حذف اعلان"
                                    >
                                       <Trash2 className="w-3.5 h-3.5" />
                                    </button>
@@ -258,7 +335,7 @@ const Header: React.FC<HeaderProps> = ({
                    </div>
                    <button 
                     onClick={() => { onViewAllNotifications(); setIsNotificationsOpen(false); }}
-                    className={`w-full p-4 bg-slate-50 dark:bg-slate-800/50 text-[11px] font-black text-${brandColor}-600 dark:text-${brandColor}-400 hover:text-${brandColor}-700 dark:hover:text-${brandColor}-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border-t border-slate-100 dark:border-slate-800`}
+                    className={`w-full p-4 bg-slate-50 dark:bg-[var(--app-surface-elevated)] text-[11px] font-black text-${brandColor}-600 dark:text-${brandColor}-400 hover:text-${brandColor}-700 dark:hover:text-${brandColor}-300 hover:bg-slate-100 dark:hover:bg-[var(--app-hover)] transition-colors border-t border-slate-100 dark:border-[var(--app-border)] shrink-0`}
                    >
                       مشاهده تمام اعلان‌ها
                    </button>

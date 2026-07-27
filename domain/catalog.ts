@@ -45,6 +45,10 @@ export interface BranchProduct {
   branchDiscountPriceIRR?: number;
   availability: 'AVAILABLE' | 'UNAVAILABLE';
   isVisible: boolean;
+  // Pending price fields (client-side tracking before publish)
+  pendingPriceIRR?: number;
+  pendingDiscountPriceIRR?: number;
+  hasPendingPublishPrice?: boolean;
 }
 
 export interface MenuItemView {

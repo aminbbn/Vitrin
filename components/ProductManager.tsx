@@ -158,10 +158,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
       id: `bp-${productId}-${activeBranch.id}`,
       branchId: activeBranch.id,
       productId,
-      branchPriceRial: 150000, // Default price: 15,000 Tomans
-      isAvailable: true,
+      branchPriceIRR: 150000, // Default price: 15,000 Tomans
       availability: 'AVAILABLE',
-      orderingEnabled: true,
       isVisible: true
     };
     await catalogRepository.saveBranchProduct(defaultBp);
@@ -214,16 +212,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     // 1. Map edited fields back to the clean Domain Product model
     const updatedDomainProduct: DomainProduct = {
       id: editingProduct.id,
+      restaurantId: domainProducts.find(p => p.id === editingProduct.id)?.restaurantId || '',
       categoryId: editingProduct.categoryId,
       name: editingProduct.name,
-      internalName: editingProduct.internalName || editingProduct.name,
+      displayName: editingProduct.internalName || editingProduct.name,
       description: editingProduct.description || '',
       imageUrl: editingProduct.image || '',
-      estimatedTime: editingProduct.estimatedTime || '15 دقیقه',
-      rating: editingProduct.rating || 5,
+      isActive: editingProduct.isAvailable !== false,
       tags: editingProduct.tags || [],
-      state: editingProduct.state || 'active',
-      createdAt: new Date().toISOString(),
       modifierGroups: editingProduct.modifiers.map(g => ({
         id: g.id,
         name: g.name,
@@ -231,7 +227,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
         options: g.options.map(opt => ({
           id: opt.id,
           name: opt.name,
-          priceRial: opt.price * 10 // UI Tomans to Domain Rial
+          priceAdjustmentIRR: opt.price * 10 // UI Tomans to Domain IRR
         }))
       }))
     };
@@ -239,24 +235,24 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     // 2. Map and save BranchProduct fields
     if (activeBranch && catalogRepository) {
       const currentBp = branchProducts[editingProduct.id];
-      const formPriceRial = editingProduct.price * 10;
-      const formDiscountRial = editingProduct.discountPrice !== undefined ? editingProduct.discountPrice * 10 : undefined;
+      const formPriceIRR = editingProduct.price * 10;
+      const formDiscountIRR = editingProduct.discountPrice !== undefined ? editingProduct.discountPrice * 10 : undefined;
 
       if (currentBp) {
         // Evaluate if pricing changed relative to published pricing
         let hasPendingChange = currentBp.hasPendingPublishPrice || false;
-        let pendingPrice = currentBp.pendingPriceRial;
-        let pendingDiscount = currentBp.pendingDiscountPriceRial;
+        let pendingPrice = currentBp.pendingPriceIRR;
+        let pendingDiscount = currentBp.pendingDiscountPriceIRR;
 
-        if (formPriceRial !== currentBp.branchPriceRial) {
-          pendingPrice = formPriceRial;
+        if (formPriceIRR !== currentBp.branchPriceIRR) {
+          pendingPrice = formPriceIRR;
           hasPendingChange = true;
         } else {
           pendingPrice = undefined;
         }
 
-        if (formDiscountRial !== currentBp.branchDiscountPriceRial) {
-          pendingDiscount = formDiscountRial;
+        if (formDiscountIRR !== currentBp.branchDiscountPriceIRR) {
+          pendingDiscount = formDiscountIRR;
           hasPendingChange = true;
         } else {
           pendingDiscount = undefined;
@@ -264,10 +260,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
 
         const updatedBp: BranchProduct = {
           ...currentBp,
-          pendingPriceRial: pendingPrice,
-          pendingDiscountPriceRial: pendingDiscount,
+          pendingPriceIRR: pendingPrice,
+          pendingDiscountPriceIRR: pendingDiscount,
           hasPendingPublishPrice: hasPendingChange,
-          isAvailable: editingProduct.isAvailable !== false,
           availability: editingProduct.isAvailable !== false ? 'AVAILABLE' : 'UNAVAILABLE'
         };
         await catalogRepository.saveBranchProduct(updatedBp);
@@ -277,11 +272,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
           id: `bp-${editingProduct.id}-${activeBranch.id}`,
           branchId: activeBranch.id,
           productId: editingProduct.id,
-          branchPriceRial: formPriceRial,
-          branchDiscountPriceRial: formDiscountRial,
-          isAvailable: editingProduct.isAvailable !== false,
+          branchPriceIRR: formPriceIRR,
+          branchDiscountPriceIRR: formDiscountIRR,
           availability: editingProduct.isAvailable !== false ? 'AVAILABLE' : 'UNAVAILABLE',
-          orderingEnabled: true,
           isVisible: true
         };
         await catalogRepository.saveBranchProduct(newBp);
@@ -310,7 +303,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
         // Soft archive instead of hard delete
         const updatedProd: DomainProduct = {
           ...prod,
-          state: 'archived'
+          isActive: false
         };
         const otherProducts = domainProducts.filter(p => p.id !== productToDelete);
         await saveProducts([...otherProducts, updatedProd]);
@@ -446,9 +439,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
     <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-950 font-['Vazirmatn'] relative transition-colors" dir="rtl">
       
       {/* HEADER */}
-      <div className="min-h-20 py-4 sm:py-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-8 gap-4 shrink-0 z-10 transition-colors">
+      <div className="py-4 md:py-5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between px-4 sm:px-6 lg:px-8 gap-4 shrink-0 z-10 transition-colors">
          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 flex flex-wrap items-center gap-2">
                مدیریت محصولات
                {activeBranch && (
                   <span className={`text-[10px] font-bold bg-${brandColor}-50 dark:bg-${brandColor}-950 text-${brandColor}-600 dark:text-${brandColor}-400 px-2 py-0.5 rounded-md border border-${brandColor}-100 dark:border-${brandColor}-900`}>
@@ -461,14 +454,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
             </p>
          </div>
          
-         <div className="flex items-center gap-3">
+         <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-end">
             {/* Active Branch Switcher dropdown right in header */}
             {view === 'list' && branches.length > 1 && (
-               <div className="relative">
+               <div className="relative w-full sm:w-auto">
                   <select
                      value={activeBranch?.id || ''}
                      onChange={(e) => setActiveBranch(e.target.value)}
-                     className={`p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold outline-none cursor-pointer`}
+                     className={`w-full sm:w-auto p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold outline-none cursor-pointer`}
                   >
                      {branches.map(b => (
                         <option key={b.id} value={b.id}>{b.name}</option>
@@ -480,7 +473,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
             {view !== 'list' && (
                <button 
                   onClick={() => setView('list')}
-                  className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-550 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-550 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                >
                   انصراف
                </button>
@@ -489,14 +482,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
             {view === 'list' ? (
               <button 
                 onClick={handleCreate}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 bg-${brandColor}-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-[1.03] active:scale-[0.97]`}
+                className={`flex-1 sm:flex-none justify-center px-4 sm:px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-[1.03] active:scale-[0.97]`}
               >
                 <Plus className="w-4 h-4" /> افزودن محصول جدید
               </button>
             ) : (
               <button 
                 onClick={handleSave}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 bg-${brandColor}-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-[1.03] active:scale-[0.97]`}
+                className={`flex-1 sm:flex-none justify-center px-4 sm:px-6 py-2.5 bg-${brandColor}-600 text-white rounded-xl text-xs sm:text-sm font-bold shadow-lg shadow-${brandColor}-200 dark:shadow-none hover:bg-${brandColor}-700 transition-all flex items-center gap-2 hover:scale-[1.03] active:scale-[0.97]`}
               >
                 <Check className="w-4 h-4" /> ذخیره محصول
               </button>
@@ -515,10 +508,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full flex flex-col p-4 sm:p-8 overflow-hidden"
+              className="h-full flex flex-col p-4 sm:p-6 lg:p-8 overflow-hidden"
             >
               {/* Subtle price publish warning banner if any item has unpublished pending changes */}
-              {Object.values(branchProducts).some(bp => bp.hasPendingPublishPrice) && (
+              {Object.values(branchProducts).some((bp: BranchProduct) => bp.hasPendingPublishPrice) && (
                  <motion.div 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -606,7 +599,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20 pr-2"
+                className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20 pr-2"
               >
                 <AnimatePresence>
                   {filteredProducts.map(product => {
@@ -624,10 +617,43 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                       >
                         <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-950 relative overflow-hidden">
                            <img src={product.image || undefined} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2.5 backdrop-blur-[2px]">
-                              <button onClick={() => handleEdit(product)} className={`p-2.5 bg-white dark:bg-slate-800 rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/40 shadow-lg transform hover:scale-110 transition-all`} title="ویرایش شناسنامه و شعب"><Edit3 className="w-4 h-4" /></button>
-                              <button onClick={() => initiateDelete(product.id)} className="p-2.5 bg-white dark:bg-slate-800 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 shadow-lg transform hover:scale-110 transition-all" title="بایگانی محصول"><Trash2 className="w-4 h-4" /></button>
+                           
+                           {/* Desktop Hover Overlay */}
+                           <div className="hidden md:flex absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center gap-2.5 backdrop-blur-[2px]">
+                              <button 
+                                 onClick={(e) => { e.stopPropagation(); handleEdit(product); }} 
+                                 className={`p-2.5 bg-white dark:bg-slate-800 rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/40 shadow-lg transform hover:scale-110 transition-all`} 
+                                 title="ویرایش شناسنامه و شعب"
+                              >
+                                 <Edit3 className="w-4 h-4" />
+                              </button>
+                              <button 
+                                 onClick={(e) => { e.stopPropagation(); initiateDelete(product.id); }} 
+                                 className="p-2.5 bg-white dark:bg-slate-800 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 shadow-lg transform hover:scale-110 transition-all" 
+                                 title="بایگانی محصول"
+                              >
+                                 <Trash2 className="w-4 h-4" />
+                              </button>
                            </div>
+
+                           {/* Mobile Touch-Friendly Action Row (Persistent on smaller screens) */}
+                           <div className="absolute bottom-2.5 right-2.5 flex md:hidden gap-2 z-10">
+                              <button 
+                                 onClick={(e) => { e.stopPropagation(); handleEdit(product); }} 
+                                 className={`w-11 h-11 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 shadow-md border border-slate-200/50 dark:border-slate-800 flex items-center justify-center active:scale-90 transition-transform`}
+                                 title="ویرایش"
+                              >
+                                 <Edit3 className="w-4 h-4" />
+                              </button>
+                              <button 
+                                 onClick={(e) => { e.stopPropagation(); initiateDelete(product.id); }} 
+                                 className="w-11 h-11 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-xl text-red-500 shadow-md border border-slate-200/50 dark:border-slate-800 flex items-center justify-center active:scale-90 transition-transform"
+                                 title="بایگانی"
+                              >
+                                 <Trash2 className="w-4 h-4" />
+                              </button>
+                           </div>
+
                            <div className="absolute top-3 right-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-black text-slate-650 dark:text-slate-350 shadow-sm border border-slate-200/50 dark:border-slate-800">
                               {product.category}
                            </div>
@@ -730,7 +756,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 15 }}
-              className="h-full overflow-y-auto p-4 sm:p-8"
+              className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8"
             >
               <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 pb-20">
                 
@@ -1044,8 +1070,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                                            if (bp) {
                                               setEditingProduct({
                                                  ...editingProduct,
-                                                 price: bp.branchPriceRial / 10,
-                                                 discountPrice: bp.branchDiscountPriceRial ? bp.branchDiscountPriceRial / 10 : undefined,
+                                                 price: bp.branchPriceIRR / 10,
+                                                 discountPrice: bp.branchDiscountPriceIRR ? bp.branchDiscountPriceIRR / 10 : undefined,
                                                  hasPendingPublishPrice: false
                                               });
                                            }

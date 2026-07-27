@@ -193,7 +193,11 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
           <div className="lg:col-span-7 flex flex-col items-stretch">
             
             {/* Viewport & Controls Bar */}
-            <div className="flex items-center justify-between bg-slate-900 text-white px-5 py-3 rounded-2xl mb-4 shadow-sm text-xs font-black">
+            <div className={`flex items-center justify-between ${
+              theme === 'light' 
+                ? 'bg-white text-slate-800 border border-slate-200/80 shadow-sm' 
+                : 'bg-slate-900 text-white'
+            } px-5 py-3 rounded-2xl mb-4 text-xs font-black transition-colors`}>
               
               {/* Responsive Size Selectors */}
               <div className="flex items-center gap-1">
@@ -209,7 +213,11 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
                       key={item.key}
                       onClick={() => setViewportSize(item.key as any)}
                       className={`p-2 rounded-lg transition-all border-0 flex items-center gap-1 text-[10px] cursor-pointer ${
-                        isActive ? 'bg-[#10b981] text-white shadow-sm' : 'text-slate-400 hover:text-white bg-transparent'
+                        isActive 
+                          ? 'bg-[#10b981] text-white shadow-sm' 
+                          : theme === 'light'
+                            ? 'text-slate-500 hover:text-slate-850 bg-transparent hover:bg-slate-100'
+                            : 'text-slate-400 hover:text-white bg-transparent hover:bg-white/5'
                       }`}
                       title={item.label}
                     >
@@ -221,28 +229,28 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
               </div>
 
               {/* Title label */}
-              <span className="text-[11px] text-slate-300 font-black">پیش‌نمایش زنده استودیو</span>
+              <span className={`text-[11px] ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} font-black`}>پیش‌نمایش زنده استودیو</span>
 
               {/* Zoom & Reset Controllers */}
               <div className="flex items-center gap-1">
                 <button 
                   onClick={() => setZoomScale(p => Math.min(p + 0.1, 1.2))} 
-                  className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer"
+                  className={`p-1.5 ${theme === 'light' ? 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white'} rounded-lg transition-all cursor-pointer border-0`}
                   title="بزرگ‌نمایی"
                 >
                   <MagnifyingGlassPlus className="w-4 h-4" />
                 </button>
-                <span className="font-mono text-[10px] text-slate-400 w-8 text-center select-none">{Math.round(zoomScale * 100)}%</span>
+                <span className={`font-mono text-[10px] ${theme === 'light' ? 'text-slate-600' : 'text-slate-400'} w-8 text-center select-none`}>{Math.round(zoomScale * 100)}%</span>
                 <button 
                   onClick={() => setZoomScale(p => Math.max(p - 0.1, 0.8))} 
-                  className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer"
+                  className={`p-1.5 ${theme === 'light' ? 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white'} rounded-lg transition-all cursor-pointer border-0`}
                   title="کوچک‌نمایی"
                 >
                   <MagnifyingGlassMinus className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => setZoomScale(1)} 
-                  className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer"
+                  className={`p-1.5 ${theme === 'light' ? 'bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white'} rounded-lg transition-all cursor-pointer border-0`}
                   title="بازنشانی زوم"
                 >
                   <ArrowClockwise className="w-4 h-4" />
@@ -266,8 +274,12 @@ export const DesignStudioModule: React.FC<DesignStudioModuleProps> = ({ theme })
               >
                 
                 {/* Simulated Header inside canvas */}
-                <div className="bg-slate-900 text-white px-4 py-3.5 flex items-center justify-between border-b border-white/5">
-                  <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center">
+                <div className={`${
+                  theme === 'light'
+                    ? 'bg-slate-50 text-slate-800 border-b border-slate-200/80'
+                    : 'bg-slate-900 text-white border-b border-white/5'
+                } px-4 py-3.5 flex items-center justify-between`}>
+                  <div className={`w-6 h-6 ${theme === 'light' ? 'bg-slate-200/60' : 'bg-white/10'} rounded-full flex items-center justify-center`}>
                     <ShoppingBag className="w-3.5 h-3.5 text-[#10b981]" weight="fill" />
                   </div>
                   <span className="font-black text-[10px]">کافه رستوران قصر رویایی</span>

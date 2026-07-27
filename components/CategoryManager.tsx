@@ -154,22 +154,22 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
   }
 
   return (
-    <div className={`p-4 md:p-8 max-w-5xl mx-auto h-full font-['Vazirmatn'] ${view === 'list' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto pb-32'}`} dir="rtl">
+    <div className={`p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto h-full font-['Vazirmatn'] ${view === 'list' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto pb-32'}`} dir="rtl">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 shrink-0">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-center gap-3">
-            <Layers className={`w-8 h-8 text-${brandColor}-600 dark:text-${brandColor}-400`} />
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-center gap-3">
+            <Layers className={`w-7 h-7 sm:w-8 sm:h-8 text-${brandColor}-600 dark:text-${brandColor}-400`} />
             مدیریت دسته‌بندی‌ها
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium text-xs">دسته‌بندی‌های منو را تعریف و مرتب‌سازی کنید</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium text-xs">دسته‌بندی‌های منو را تعریف و مرتب‌سازی کنید</p>
         </div>
 
         {view === 'list' && (
           <button 
             onClick={handleCreate}
-            className={`bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-600/20 dark:shadow-none transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]`}
+            className={`w-full sm:w-auto justify-center bg-${brandColor}-600 hover:bg-${brandColor}-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-${brandColor}-600/20 dark:shadow-none transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]`}
           >
             <Plus className="w-5 h-5" />
             دسته‌بندی جدید
@@ -223,19 +223,19 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="flex flex-col gap-1 mr-2 bg-slate-100 dark:bg-slate-950 rounded-lg p-1 border border-slate-200/50 dark:border-slate-800">
+                    <div className="flex items-center gap-1.5 md:gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex flex-col gap-1 mr-1 bg-slate-100 dark:bg-slate-950 rounded-xl p-0.5 sm:p-1 border border-slate-200/50 dark:border-slate-800">
                         <button 
                           onClick={() => handleMove(index, 'up')}
                           disabled={index === 0}
-                          className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded transition-colors"
+                          className="p-1 sm:p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors"
                         >
                           <ChevronUp className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => handleMove(index, 'down')}
                           disabled={index === activeCategoriesOnly.length - 1}
-                          className="p-1 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded transition-colors"
+                          className="p-1 sm:p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors"
                         >
                           <ChevronDown className="w-4 h-4" />
                         </button>
@@ -243,14 +243,14 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
 
                       <button 
                         onClick={() => handleEdit(category)}
-                        className={`p-2 bg-slate-50 dark:bg-slate-850 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950 text-slate-500 dark:text-slate-400 hover:text-${brandColor}-600 dark:hover:text-${brandColor}-400 rounded-xl transition-colors`}
+                        className={`w-11 h-11 md:w-9 md:h-9 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950 text-slate-550 dark:text-slate-400 hover:text-${brandColor}-600 dark:hover:text-${brandColor}-400 rounded-xl transition-all active:scale-95`}
                         title="ویرایش"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => setCategoryToDelete(category.id)}
-                        className="p-2 bg-slate-50 dark:bg-slate-850 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-450 rounded-xl transition-colors"
+                        className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center bg-slate-50 dark:bg-slate-850 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-slate-550 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-450 rounded-xl transition-all active:scale-95"
                         title="حذف"
                       >
                         <Trash2 className="w-4 h-4" />
