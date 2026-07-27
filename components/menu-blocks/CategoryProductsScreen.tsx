@@ -190,15 +190,15 @@ export const CategoryProductsScreen: React.FC<CategoryProductsScreenProps> = ({
                         {hasDiscount ? (
                           <>
                             <span className="text-[9px] text-slate-400 dark:text-slate-500 line-through leading-none mb-0.5" dir="ltr">
-                              {product.price.toLocaleString()}
+                              {(product.price || 0).toLocaleString()}
                             </span>
                             <span className={`text-xs font-black text-${brandColor}-600 dark:text-${brandColor}-400`}>
-                              {product.discountPrice!.toLocaleString()} تومان
+                              {(product.discountPrice || 0).toLocaleString()} تومان
                             </span>
                           </>
                         ) : (
                           <span className="text-xs font-black text-slate-900 dark:text-slate-100">
-                            {product.price.toLocaleString()} تومان
+                            {(product.price || 0).toLocaleString()} تومان
                           </span>
                         )}
                       </div>
@@ -265,15 +265,15 @@ export const CategoryProductsScreen: React.FC<CategoryProductsScreenProps> = ({
                         {hasDiscount ? (
                           <div className="flex items-baseline gap-1.5">
                             <span className="text-[9px] text-slate-400 dark:text-slate-500 line-through" dir="ltr">
-                              {product.price.toLocaleString()}
+                              {(product.price || 0).toLocaleString()}
                             </span>
                             <span className={`text-xs font-black text-${brandColor}-600 dark:text-${brandColor}-400`}>
-                              {product.discountPrice!.toLocaleString()} تومان
+                              {(product.discountPrice || 0).toLocaleString()} تومان
                             </span>
                           </div>
                         ) : (
                           <span className="text-xs font-black text-slate-900 dark:text-slate-100">
-                            {product.price.toLocaleString()}{' '}
+                            {(product.price || 0).toLocaleString()}{' '}
                             <span className="text-[9px] font-normal text-slate-400 dark:text-slate-500">
                               تومان
                             </span>

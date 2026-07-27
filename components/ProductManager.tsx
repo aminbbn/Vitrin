@@ -44,6 +44,172 @@ const itemVariants = {
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } }
 };
 
+// Premium, content-driven vertical ProductCard sub-component
+interface ProductCardProps {
+  product: Product;
+  brandColor: string;
+  isProductAvailable: boolean;
+  hasPending: boolean;
+  onEdit: (product: Product) => void;
+  onDelete: (id: string) => void;
+  onToggleAvailable: () => Promise<void>;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  brandColor,
+  isProductAvailable,
+  hasPending,
+  onEdit,
+  onDelete,
+  onToggleAvailable
+}) => {
+  const [imageError, setImageError] = useState(false);
+
+  // Calculate discount percentage if present
+  const discountPercent = (product.price && product.discountPrice)
+    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
+    : 0;
+
+  return (
+    <motion.div 
+      layout
+      variants={itemVariants}
+      whileHover={{ y: -6 }}
+      className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-[0_12px_24px_-15px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)] dark:hover:shadow-none hover:border-slate-200 dark:hover:border-slate-750 transition-all duration-300 flex flex-col h-full relative overflow-hidden group text-right"
+      dir="rtl"
+    >
+      {/* 4:3 Aspect Image area */}
+      <div className="aspect-[4/3] bg-slate-50 dark:bg-slate-950 relative overflow-hidden shrink-0">
+        {!product.image || imageError ? (
+          <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-700 relative bg-slate-50 dark:bg-slate-950/40">
+            <ImageIcon className="w-8 h-8 stroke-[1.5] text-slate-300 dark:text-slate-650" />
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-505 mt-2">تصویر یافت نشد</span>
+          </div>
+        ) : (
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            referrerPolicy="no-referrer"
+            onError={() => setImageError(true)}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+          />
+        )}
+
+        {/* Top-Left Discount Percentage Badge */}
+        {discountPercent > 0 && (
+          <div className="absolute top-3 left-3 bg-red-500 text-white font-black text-[10px] px-2 py-0.5 rounded-lg shadow-sm z-10 font-mono">
+            {discountPercent}٪-
+          </div>
+        )}
+
+        {/* Top-Right Category Badge */}
+        <div className="absolute top-3 right-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-2 py-0.5 rounded-lg text-[9px] font-black text-slate-600 dark:text-slate-350 shadow-sm border border-slate-200/50 dark:border-slate-800/50">
+          {product.category}
+        </div>
+
+        {/* Desktop Hover Action Overlay */}
+        <div className="hidden md:flex absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center gap-2.5 backdrop-blur-[2px]">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onEdit(product); }} 
+            className={`p-2.5 bg-white dark:bg-slate-800 rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/40 shadow-lg transform hover:scale-110 transition-all cursor-pointer`} 
+            title="ویرایش شناسنامه و شعب"
+          >
+            <Edit3 className="w-4 h-4" />
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); onDelete(product.id); }} 
+            className="p-2.5 bg-white dark:bg-slate-800 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 shadow-lg transform hover:scale-110 transition-all cursor-pointer" 
+            title="بایگانی محصول"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Mobile Touch-Friendly Action Row (Persistent on smaller screens) */}
+        <div className="absolute bottom-2.5 right-2.5 flex md:hidden gap-2 z-10">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onEdit(product); }} 
+            className={`w-10 h-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 shadow-md border border-slate-200/50 dark:border-slate-800 flex items-center justify-center active:scale-90 transition-transform`}
+            title="ویرایش"
+          >
+            <Edit3 className="w-4 h-4" />
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); onDelete(product.id); }} 
+            className="w-10 h-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-xl text-red-500 shadow-md border border-slate-200/50 dark:border-slate-800 flex items-center justify-center active:scale-90 transition-transform"
+            title="بایگانی"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Availability State Overlays */}
+        {!isProductAvailable && (
+          <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center pointer-events-none z-10 animate-fade">
+            <span className="bg-rose-600 text-white text-[9px] font-black px-3 py-1 rounded-full border border-rose-500 shadow-md">ناموجود در این شعبه</span>
+          </div>
+        )}
+      </div>
+
+      {/* Card Body */}
+      <div className="p-5 flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex items-start justify-between gap-1.5">
+            <h3 className="font-black text-slate-800 dark:text-slate-100 text-sm tracking-tight leading-snug line-clamp-1">{product.name}</h3>
+            {hasPending && (
+              <span className="bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded text-[8px] font-black border border-amber-200 dark:border-amber-900/40 shrink-0">اصلاح قیمت</span>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5 leading-relaxed line-clamp-2 min-h-[32px]">{product.description}</p>
+        </div>
+
+        {/* Card Footer */}
+        <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 pt-3.5 mt-4">
+          <div className="flex flex-col text-right">
+            {product.discountPrice !== undefined && product.discountPrice !== null ? (
+              <div className="flex flex-col">
+                <span className="text-[10px] text-slate-400 dark:text-slate-505 line-through leading-none font-mono">
+                  {(product.price || 0).toLocaleString()}
+                </span>
+                <span className={`font-black text-rose-600 dark:text-rose-450 text-sm font-mono mt-0.5`}>
+                  {(product.discountPrice || 0).toLocaleString()}{' '}
+                  <span className="text-[9px] font-normal text-slate-400">تومان</span>
+                </span>
+              </div>
+            ) : (
+              <span className={`font-black text-${brandColor}-600 dark:text-${brandColor}-400 text-sm font-mono`}>
+                {(product.price || 0).toLocaleString()}{' '}
+                <span className="text-[9px] font-normal text-slate-400">تومان</span>
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">عرضه:</span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleAvailable();
+              }}
+              className={`relative inline-flex h-4.5 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                isProductAvailable ? `bg-${brandColor}-500` : 'bg-slate-200 dark:bg-slate-850'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                  isProductAvailable ? 'translate-x-0' : 'translate-x-3.5'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 interface ProductManagerProps {
   brandColor: string;
   highlightedItemId?: string | null;
@@ -599,7 +765,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-20 pr-2"
+                className="flex-1 overflow-y-auto grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 sm:gap-6 pb-20 pr-2"
               >
                 <AnimatePresence>
                   {filteredProducts.map(product => {
@@ -608,127 +774,30 @@ const ProductManager: React.FC<ProductManagerProps> = ({ brandColor, highlighted
                     const hasPending = bp?.hasPendingPublishPrice;
 
                     return (
-                      <motion.div 
-                        key={product.id} 
-                        layout
-                        variants={itemVariants}
-                        whileHover={{ y: -4 }}
-                        className={`bg-white dark:bg-slate-900 rounded-2xl shadow-xs transition-all duration-300 group relative overflow-hidden flex flex-col border border-slate-100 dark:border-slate-800 hover:shadow-lg hover:border-${brandColor}-250 dark:hover:border-slate-700`}
-                      >
-                        <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-950 relative overflow-hidden">
-                           <img src={product.image || undefined} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                           
-                           {/* Desktop Hover Overlay */}
-                           <div className="hidden md:flex absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center gap-2.5 backdrop-blur-[2px]">
-                              <button 
-                                 onClick={(e) => { e.stopPropagation(); handleEdit(product); }} 
-                                 className={`p-2.5 bg-white dark:bg-slate-800 rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 hover:bg-${brandColor}-50 dark:hover:bg-${brandColor}-950/40 shadow-lg transform hover:scale-110 transition-all`} 
-                                 title="ویرایش شناسنامه و شعب"
-                              >
-                                 <Edit3 className="w-4 h-4" />
-                              </button>
-                              <button 
-                                 onClick={(e) => { e.stopPropagation(); initiateDelete(product.id); }} 
-                                 className="p-2.5 bg-white dark:bg-slate-800 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 shadow-lg transform hover:scale-110 transition-all" 
-                                 title="بایگانی محصول"
-                              >
-                                 <Trash2 className="w-4 h-4" />
-                              </button>
-                           </div>
-
-                           {/* Mobile Touch-Friendly Action Row (Persistent on smaller screens) */}
-                           <div className="absolute bottom-2.5 right-2.5 flex md:hidden gap-2 z-10">
-                              <button 
-                                 onClick={(e) => { e.stopPropagation(); handleEdit(product); }} 
-                                 className={`w-11 h-11 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-xl text-${brandColor}-600 dark:text-${brandColor}-400 shadow-md border border-slate-200/50 dark:border-slate-800 flex items-center justify-center active:scale-90 transition-transform`}
-                                 title="ویرایش"
-                              >
-                                 <Edit3 className="w-4 h-4" />
-                              </button>
-                              <button 
-                                 onClick={(e) => { e.stopPropagation(); initiateDelete(product.id); }} 
-                                 className="w-11 h-11 bg-white/95 dark:bg-slate-900/95 backdrop-blur rounded-xl text-red-500 shadow-md border border-slate-200/50 dark:border-slate-800 flex items-center justify-center active:scale-90 transition-transform"
-                                 title="بایگانی"
-                              >
-                                 <Trash2 className="w-4 h-4" />
-                              </button>
-                           </div>
-
-                           <div className="absolute top-3 right-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-black text-slate-650 dark:text-slate-350 shadow-sm border border-slate-200/50 dark:border-slate-800">
-                              {product.category}
-                           </div>
-                           
-                           {/* Availability State Overlays */}
-                           {!isProductAvailable && (
-                              <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center pointer-events-none">
-                                 <span className="bg-rose-600 text-white text-[9px] font-black px-3 py-1 rounded-full border border-rose-500 shadow-md">ناموجود در این شعبه</span>
-                              </div>
-                           )}
-                        </div>
-
-                        <div className="p-4 flex-1 flex flex-col justify-between">
-                           <div>
-                              <div className="flex items-start justify-between gap-1.5">
-                                 <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm line-clamp-1">{product.name}</h3>
-                                 {hasPending && (
-                                    <span className="bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded text-[8px] font-black border border-amber-200 dark:border-amber-900/40 shrink-0">اصلاح قیمت</span>
-                                 )}
-                              </div>
-                              <p className="text-xs text-slate-400 dark:text-slate-500 line-clamp-2 mt-1 leading-relaxed">{product.description}</p>
-                           </div>
-                           
-                           <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 pt-3 mt-4">
-                              <div className="flex flex-col">
-                                 {product.discountPrice !== undefined ? (
-                                    <div className="flex flex-col">
-                                       <span className="text-[9px] text-slate-455 line-through leading-none">{product.price.toLocaleString()}</span>
-                                       <span className={`font-black text-rose-600 dark:text-rose-450 text-xs font-mono`}>
-                                          {product.discountPrice.toLocaleString()}{' '}
-                                          <span className="text-[9px] font-normal text-slate-400">تومان</span>
-                                       </span>
-                                    </div>
-                                 ) : (
-                                    <span className={`font-black text-${brandColor}-600 dark:text-${brandColor}-400 text-xs font-mono`}>
-                                       {product.price.toLocaleString()}{' '}
-                                       <span className="text-[9px] font-normal text-slate-400">تومان</span>
-                                    </span>
-                                 )}
-                              </div>
-
-                              <div className="flex items-center gap-1.5">
-                                 <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold">عرضه:</span>
-                                 <button
-                                    type="button"
-                                    onClick={async (e) => {
-                                       e.stopPropagation();
-                                       if (!activeBranch || !catalogRepository) return;
-                                       const currentBp = branchProducts[product.id];
-                                       if (currentBp) {
-                                          const updatedBp = {
-                                             ...currentBp,
-                                             isAvailable: !currentBp.isAvailable,
-                                             availability: !currentBp.isAvailable ? 'AVAILABLE' as const : 'UNAVAILABLE' as const
-                                          };
-                                          await catalogRepository.saveBranchProduct(updatedBp);
-                                          await loadBranchProducts();
-                                       } else {
-                                          await handleAddToBranch(product.id);
-                                       }
-                                    }}
-                                    className={`relative inline-flex h-4.5 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                       isProductAvailable ? `bg-${brandColor}-500` : 'bg-slate-200 dark:bg-slate-750'
-                                    }`}
-                                 >
-                                    <span
-                                       className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                                          isProductAvailable ? 'translate-x-0' : 'translate-x-3.5'
-                                       }`}
-                                    />
-                                 </button>
-                              </div>
-                           </div>
-                        </div>
-                      </motion.div>
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        brandColor={brandColor}
+                        isProductAvailable={isProductAvailable}
+                        hasPending={!!hasPending}
+                        onEdit={handleEdit}
+                        onDelete={initiateDelete}
+                        onToggleAvailable={async () => {
+                          if (!activeBranch || !catalogRepository) return;
+                          const currentBp = branchProducts[product.id];
+                          if (currentBp) {
+                            const updatedBp = {
+                              ...currentBp,
+                              isAvailable: !currentBp.isAvailable,
+                              availability: !currentBp.isAvailable ? 'AVAILABLE' as const : 'UNAVAILABLE' as const
+                            };
+                            await catalogRepository.saveBranchProduct(updatedBp);
+                            await loadBranchProducts();
+                          } else {
+                            await handleAddToBranch(product.id);
+                          }
+                        }}
+                      />
                     );
                   })}
                 </AnimatePresence>

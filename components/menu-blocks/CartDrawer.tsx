@@ -57,18 +57,22 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   }, [isOpen]);
 
   const getProductBasePrice = (p: Product) => {
-    if (p.discountPrice !== undefined && p.discountPrice > 0 && p.discountPrice < p.price) {
+    if (!p) return 0;
+    const price = p.price || 0;
+    if (p.discountPrice !== undefined && p.discountPrice !== null && p.discountPrice > 0 && p.discountPrice < price) {
       return p.discountPrice;
     }
-    return p.price;
+    return price;
   };
 
-  const cartTotal = cart.reduce((acc, item) => {
+  const cartTotal = (cart || []).reduce((acc, item) => {
     if (item.product) {
-      return acc + (item.singlePrice || getProductBasePrice(item.product)) * item.qty;
+      const singlePrice = item.singlePrice || getProductBasePrice(item.product) || 0;
+      return acc + singlePrice * (item.qty || 0);
     }
-    const p = products.find((prod) => prod.id === item.id);
-    return acc + (p ? getProductBasePrice(p) * item.qty : 0);
+    const p = products && Array.isArray(products) ? products.find((prod) => prod.id === item.id) : null;
+    const basePrice = p ? getProductBasePrice(p) : 0;
+    return acc + basePrice * (item.qty || 0);
   }, 0);
 
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);

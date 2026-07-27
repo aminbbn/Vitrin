@@ -133,19 +133,19 @@ export const FeaturedBlock: React.FC<FeaturedBlockProps> = ({
           <div className="flex items-center justify-between bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10 w-full max-w-sm">
             <div className="flex flex-col text-right">
               <span className="text-[10px] text-white/60">قیمت</span>
-              {featuredProduct.discountPrice !== undefined && featuredProduct.discountPrice > 0 && featuredProduct.discountPrice < featuredProduct.price ? (
+              {featuredProduct.discountPrice !== undefined && featuredProduct.discountPrice !== null && featuredProduct.discountPrice > 0 && featuredProduct.discountPrice < (featuredProduct.price || 0) ? (
                 <div className="flex items-baseline gap-2">
                   <span className="text-lg font-black text-white">
-                    {featuredProduct.discountPrice.toLocaleString()} تومان
+                    {(featuredProduct.discountPrice || 0).toLocaleString()} تومان
                   </span>
                   <span className="text-xs text-white/50 line-through">
-                    {featuredProduct.price.toLocaleString()}
+                    {(featuredProduct.price || 0).toLocaleString()}
                   </span>
                 </div>
               ) : (
                 <div className="flex items-baseline gap-2">
                   <span className="text-lg font-black text-white">
-                    {featuredProduct.price.toLocaleString()} تومان
+                    {(featuredProduct.price || 0).toLocaleString()} تومان
                   </span>
                 </div>
               )}

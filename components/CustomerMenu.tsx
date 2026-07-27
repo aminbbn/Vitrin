@@ -161,8 +161,16 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
       const prodsList = repoProducts && repoProducts.length > 0 ? repoProducts : INITIAL_PRODUCTS;
       const mapped = prodsList.map(p => {
         const bp = liveBranchProducts.find(x => x.productId === p.id);
-        const price = bp ? (bp.pendingPriceRial !== undefined && bp.hasPendingPublishPrice ? bp.pendingPriceRial : bp.branchPriceRial) : 0;
-        const discountPrice = bp ? (bp.pendingDiscountPriceRial !== undefined && bp.hasPendingPublishPrice ? bp.pendingDiscountPriceRial : bp.branchDiscountPriceRial) : undefined;
+        const priceVal = bp 
+          ? (bp.pendingPriceIRR !== undefined && bp.hasPendingPublishPrice ? bp.pendingPriceIRR : bp.branchPriceIRR) 
+          : null;
+        const price = priceVal !== null ? priceVal / 10 : (p.price || 0);
+
+        const discountVal = bp 
+          ? (bp.pendingDiscountPriceIRR !== undefined && bp.hasPendingPublishPrice ? bp.pendingDiscountPriceIRR : bp.branchDiscountPriceIRR) 
+          : null;
+        const discountPrice = discountVal !== null && discountVal !== undefined ? discountVal / 10 : p.discountPrice;
+
         const isAvailable = bp ? bp.isAvailable : true;
         const isVisible = bp ? bp.isVisible : true;
         const orderingEnabled = bp ? bp.orderingEnabled : true;
@@ -200,8 +208,10 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
       const mapped = prodsList.map((p: any) => {
         // Pricing comes strictly from snapshot branch products list
         const snapBp = activePub.snapshot.branchProducts.find(x => x.productId === p.id);
-        const price = snapBp ? snapBp.branchPriceRial : 0;
-        const discountPrice = snapBp ? snapBp.branchDiscountPriceRial : undefined;
+        const price = snapBp ? (snapBp.branchPriceIRR / 10) : (p.price || 0);
+        const discountPrice = snapBp && snapBp.branchDiscountPriceIRR !== undefined && snapBp.branchDiscountPriceIRR !== null
+          ? (snapBp.branchDiscountPriceIRR / 10) 
+          : p.discountPrice;
 
         // Availability and visibility come live!
         const liveBp = liveBranchProducts.find(x => x.productId === p.id);
@@ -454,16 +464,16 @@ const CustomerMenu: React.FC<CustomerMenuProps> = ({
                               {hasDiscount ? (
                                 <>
                                   <span className="text-[9px] text-slate-400 line-through leading-none mb-0.5">
-                                    {product.price.toLocaleString()}
+                                    {(product.price || 0).toLocaleString()}
                                   </span>
                                   <span className="text-xs font-black text-rose-600 leading-none font-sans">
-                                    {product.discountPrice!.toLocaleString()}{' '}
+                                    {(product.discountPrice || 0).toLocaleString()}{' '}
                                     <span className="text-[9px] font-normal text-slate-400">تومان</span>
                                   </span>
                                 </>
                               ) : (
                                 <span className="text-xs font-black text-slate-900 leading-none">
-                                  {product.price.toLocaleString()}{' '}
+                                  {(product.price || 0).toLocaleString()}{' '}
                                   <span className="text-[9px] font-normal text-slate-400">تومان</span>
                                 </span>
                               )}

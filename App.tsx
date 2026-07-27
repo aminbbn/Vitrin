@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { CheckCircle2, Sparkles, X, ChevronLeft, ChevronDown, User, Eye, Store, Sun, Moon } from 'lucide-react';
+import { CheckCircle2, Sparkles, X, ChevronLeft, ChevronDown, User, Eye, Store, Sun, Moon, LayoutDashboard, Palette, Package, Layers, Menu } from 'lucide-react';
 import { ViewState, Notification, ComponentItem } from './types';
 import { SIDEBAR_LINKS, SEARCH_ITEMS } from './constants';
 import Dashboard from './components/Dashboard';
@@ -523,8 +523,9 @@ const App: React.FC = () => {
           theme={theme}
           toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
           onMenuToggle={() => setIsMobileSidebarOpen(true)}
+          activeView={activeView}
         />
-        <div className="flex-1 overflow-hidden relative">
+        <div className="flex-1 overflow-hidden relative pb-[calc(env(safe-area-inset-bottom,12px)+64px)] md:pb-0">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeView}
@@ -539,6 +540,55 @@ const App: React.FC = () => {
           </AnimatePresence>
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation Tab Bar */}
+      {isAuthenticated && memberships.length > 0 && activeView !== 'customer-menu' && (
+        <div className="md:hidden fixed bottom-0 inset-x-0 bg-white/80 dark:bg-[var(--app-sidebar)]/85 backdrop-blur-lg border-t border-slate-200/60 dark:border-[var(--app-border)]/60 py-2 pb-[calc(env(safe-area-inset-bottom,12px)+6px)] px-2 flex justify-around items-center z-[48] shadow-[0_-4px_24px_rgba(0,0,0,0.03)] dark:shadow-[0_-4px_24px_rgba(0,0,0,0.15)] select-none">
+          {[
+            { id: 'dashboard', label: 'داشبورد', icon: <LayoutDashboard className="w-5 h-5" /> },
+            { id: 'designer', label: 'طراحی', icon: <Palette className="w-5 h-5" /> },
+            { id: 'products', label: 'محصولات', icon: <Package className="w-5 h-5" /> },
+            { id: 'categories', label: 'دسته‌ها', icon: <Layers className="w-5 h-5" /> },
+            { id: 'more', label: 'بیشتر', icon: <Menu className="w-5 h-5" />, isMoreButton: true },
+          ].map((tab) => {
+            const isActive = tab.isMoreButton ? isMobileSidebarOpen : activeView === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  if (tab.isMoreButton) {
+                    setIsMobileSidebarOpen(true);
+                  } else {
+                    setPreviousView(activeView);
+                    setActiveView(tab.id as ViewState);
+                  }
+                }}
+                className={`flex flex-col items-center justify-center py-1 flex-1 relative min-h-[48px] transition-all ${
+                  isActive 
+                    ? `text-${brandColor}-600 dark:text-${brandColor}-400 font-black` 
+                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                }`}
+              >
+                <motion.div 
+                  whileTap={{ scale: 0.88 }} 
+                  className="flex flex-col items-center gap-1"
+                >
+                  <div className={`p-1 rounded-full transition-all ${isActive ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 scale-110` : ''}`}>
+                    {tab.icon}
+                  </div>
+                  <span className="text-[10px] tracking-tight">{tab.label}</span>
+                </motion.div>
+                {isActive && !tab.isMoreButton && (
+                  <motion.div 
+                    layoutId="activeTabIndicator" 
+                    className={`absolute -top-2 w-10 h-0.5 bg-${brandColor}-500 dark:bg-${brandColor}-400 rounded-full`}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

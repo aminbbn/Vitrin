@@ -154,7 +154,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ brandColor }) => {
   }
 
   return (
-    <div className={`p-4 sm:p-6 lg:p-8 w-full max-w-[1440px] mx-auto h-full font-['Vazirmatn'] ${view === 'list' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto pb-32'}`} dir="rtl">
+    <div className={`p-4 sm:p-6 lg:p-8 w-full max-w-4xl mx-auto h-full font-['Vazirmatn'] ${view === 'list' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto pb-32'}`} dir="rtl">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 shrink-0">

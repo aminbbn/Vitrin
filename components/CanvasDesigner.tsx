@@ -577,94 +577,132 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
 
   const renderInspectorContent = () => (
     <div className="space-y-6 text-right" dir="rtl">
-      {/* Sub-tab switcher inside sheet or sidebar */}
-      <div className="flex border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 rounded-xl p-1 mb-2">
+      {/* Primary Stacked Mode Selector */}
+      <div className="flex flex-col gap-2.5">
         <button 
           onClick={() => setInspectorTab('home')}
-          className={`flex-1 py-2 text-xs font-black rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-            inspectorTab === 'home' ? `bg-white dark:bg-slate-800 text-${brandColor}-600 dark:text-${brandColor}-400 shadow-xs` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
-          }`}
+          className={`w-full h-12 min-h-[48px] px-4 rounded-xl text-xs font-black transition-all flex items-center gap-3 border ${
+            inspectorTab === 'home' 
+              ? `border-${brandColor}-500 bg-${brandColor}-50/30 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400` 
+              : 'border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'
+          } focus:ring-1 focus:ring-${brandColor}-500 focus:outline-none`}
         >
-          <Layers className="w-3.5 h-3.5" />
-          تنظیمات بلوک‌ها
+          <Layers className="w-4 h-4" />
+          <span>بلوک‌های صفحه اصلی</span>
         </button>
         <button 
           onClick={() => setInspectorTab('categories')}
-          className={`flex-1 py-2 text-xs font-black rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-            inspectorTab === 'categories' ? `bg-white dark:bg-slate-800 text-${brandColor}-600 dark:text-${brandColor}-400 shadow-xs` : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
-          }`}
+          className={`w-full h-12 min-h-[48px] px-4 rounded-xl text-xs font-black transition-all flex items-center gap-3 border ${
+            inspectorTab === 'categories' 
+              ? `border-${brandColor}-500 bg-${brandColor}-50/30 dark:bg-${brandColor}-950/20 text-${brandColor}-600 dark:text-${brandColor}-400` 
+              : 'border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'
+          } focus:ring-1 focus:ring-${brandColor}-500 focus:outline-none`}
         >
-          <LayoutGrid className="w-3.5 h-3.5" />
-          صفحه دسته‌بندی‌ها
+          <LayoutGrid className="w-4 h-4" />
+          <span>صفحه دسته‌بندی‌ها</span>
         </button>
+      </div>
+
+      <div className="border-t border-slate-100 dark:border-slate-850 my-2" />
+
+      {/* Contextual Title */}
+      <div className="mb-2">
+        <h3 className="font-black text-slate-800 dark:text-slate-100 text-xs flex items-center gap-2">
+          {inspectorTab === 'home' ? (
+            <>
+              <Layers className={`w-3.5 h-3.5 text-${brandColor}-600`} />
+              <span>تنظیمات بلوک‌ها</span>
+            </>
+          ) : (
+            <>
+              <LayoutGrid className={`w-3.5 h-3.5 text-${brandColor}-600`} />
+              <span>تنظیمات صفحه دسته‌بندی‌ها</span>
+            </>
+          )}
+        </h3>
       </div>
 
       <AnimatePresence mode="wait">
         {inspectorTab === 'categories' ? (
-          <motion.div
-            key="categories-screen-settings"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="space-y-6"
-          >
-            <div className="p-4 bg-slate-50 dark:bg-slate-950/40 rounded-2xl border border-slate-100 dark:border-slate-800/50">
-              <h4 className="font-black text-slate-800 dark:text-slate-100 text-xs mb-1.5 flex items-center gap-1.5">
-                <LayoutGrid className={`w-3.5 h-3.5 text-${brandColor}-600`} />
-                تنظیمات صفحه دسته‌بندی محصولات
-              </h4>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-relaxed">این تنظیمات نحوه نمایش محصولات را هنگامی که مشتری یکی از دسته‌ها را باز می‌کند به صورت سراسری کنترل می‌کنند.</p>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">چیدمان نمایش محصولات (Layout Style)</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button 
-                  onClick={() => setCategoryPageLayout('grid')}
-                  className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                    categoryPageLayout === 'grid' 
-                      ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
-                  }`}
-                >
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  نمای شبکه‌ای
-                </button>
-                <button 
-                  onClick={() => setCategoryPageLayout('list')}
-                  className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                    categoryPageLayout === 'list' 
-                      ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
-                  }`}
-                >
-                  <List className="w-3.5 h-3.5" />
-                  نمای لیستی
-                </button>
+          previewCategoryId ? (
+            <motion.div
+              key="categories-screen-settings"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-6"
+            >
+              <div className="p-4 bg-slate-50 dark:bg-slate-950/40 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+                <h4 className="font-black text-slate-800 dark:text-slate-100 text-xs mb-1.5 flex items-center gap-1.5">
+                  <LayoutGrid className={`w-3.5 h-3.5 text-${brandColor}-600`} />
+                  تنظیمات صفحه دسته‌بندی محصولات
+                </h4>
+                <p className="text-[10px] text-slate-505 dark:text-slate-400 font-bold leading-relaxed">این تنظیمات نحوه نمایش محصولات را هنگامی که مشتری یکی از دسته‌ها را باز می‌کند به صورت سراسری کنترل می‌کنند.</p>
               </div>
-            </div>
 
-            {categoryPageLayout === 'grid' && (
               <div className="space-y-3">
-                <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">تعداد ستون‌ها در نمای شبکه‌ای</label>
-                <div className="flex gap-2">
-                  {[2, 3, 4].map(num => (
-                    <button 
-                      key={num}
-                      onClick={() => setCategoryPageColumns(num)}
-                      className={`flex-1 py-2 border rounded-xl text-xs font-bold transition-all ${
-                        categoryPageColumns === num 
-                          ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
-                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
-                      }`}
-                    >
-                      {num} ستونه
-                    </button>
-                  ))}
+                <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">چیدمان نمایش محصولات (Layout Style)</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button 
+                    onClick={() => setCategoryPageLayout('grid')}
+                    className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                      categoryPageLayout === 'grid' 
+                        ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                    }`}
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    نمای شبکه‌ای
+                  </button>
+                  <button 
+                    onClick={() => setCategoryPageLayout('list')}
+                    className={`py-2 px-3 border rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                      categoryPageLayout === 'list' 
+                        ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                    }`}
+                  >
+                    <List className="w-3.5 h-3.5" />
+                    نمای لیستی
+                  </button>
                 </div>
               </div>
-            )}
-          </motion.div>
+
+              {categoryPageLayout === 'grid' && (
+                <div className="space-y-3">
+                  <label className="text-xs font-black text-slate-700 dark:text-slate-300 block">تعداد ستون‌ها در نمای شبکه‌ای</label>
+                  <div className="flex gap-2">
+                    {[2, 3, 4].map(num => (
+                      <button 
+                        key={num}
+                        onClick={() => setCategoryPageColumns(num)}
+                        className={`flex-1 py-2 border rounded-xl text-xs font-bold transition-all ${
+                          categoryPageColumns === num 
+                            ? `bg-${brandColor}-50 dark:bg-${brandColor}-950/40 border-${brandColor}-200 dark:border-${brandColor}-800 text-${brandColor}-700 dark:text-${brandColor}-300 shadow-sm` 
+                            : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850'
+                        }`}
+                      >
+                        {num} ستونه
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="categories-empty-state"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex flex-col items-center justify-center text-center py-12 px-4"
+            >
+              <Smartphone className="w-10 h-10 mb-3 text-slate-300 dark:text-slate-600 animate-pulse" />
+              <p className="text-xs font-black text-slate-600 dark:text-slate-300 leading-relaxed max-w-[240px]">
+                برای ویرایش صفحه دسته‌بندی‌ها، یکی از بخش‌های پیش‌نمایش را انتخاب کنید.
+              </p>
+            </motion.div>
+          )
         ) : selectedElement ? (
           <motion.div
             key={selectedElement.id}
@@ -1311,29 +1349,7 @@ const CanvasDesigner: React.FC<CanvasDesignerProps> = ({ elements: canvasElement
       </div>
 
       {/* 4. Left Sidebar (Desktop only): Property Inspector */}
-      <div className="hidden lg:flex w-80 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-850 flex-col shadow-xs h-full overflow-hidden">
-        {/* Tab switcher at the top of Left Property Inspector */}
-        <div className="flex border-b border-slate-100 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
-          <button 
-            onClick={() => setInspectorTab('home')}
-            className={`flex-1 py-3 text-xs font-black transition-all border-b-2 flex items-center justify-center gap-1.5 ${
-              inspectorTab === 'home' ? `border-${brandColor}-500 text-${brandColor}-600 dark:text-${brandColor}-400 bg-white dark:bg-slate-900` : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            بلوک‌های صفحه اصلی
-          </button>
-          <button 
-            onClick={() => setInspectorTab('categories')}
-            className={`flex-1 py-3 text-xs font-black transition-all border-b-2 flex items-center justify-center gap-1.5 ${
-              inspectorTab === 'categories' ? `border-${brandColor}-500 text-${brandColor}-600 dark:text-${brandColor}-400 bg-white dark:bg-slate-900` : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
-            }`}
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            صفحه دسته‌بندی‌ها
-          </button>
-        </div>
-        
+      <div className="hidden lg:flex w-80 shrink-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-850 flex-col shadow-xs h-full overflow-hidden" dir="rtl">
         <div className="flex-grow overflow-y-auto p-5">
           {renderInspectorContent()}
         </div>

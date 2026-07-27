@@ -100,9 +100,11 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
   const hasModifiers = product.modifiers && product.modifiers.length > 0;
   const mockBreadPrice = !hasModifiers && selectedModifiers['mock-bread'] === 'mock-1' ? 15000 : 0;
 
-  const basePrice = (product.discountPrice !== undefined && product.discountPrice > 0 && product.discountPrice < product.price)
-    ? product.discountPrice
-    : product.price;
+  const priceVal = product.price || 0;
+  const discountPriceVal = product.discountPrice;
+  const basePrice = (discountPriceVal !== undefined && discountPriceVal !== null && discountPriceVal > 0 && discountPriceVal < priceVal)
+    ? discountPriceVal
+    : priceVal;
 
   const singlePrice = basePrice + extraCost + mockBreadPrice;
   const totalPrice = singlePrice * qty;
@@ -187,14 +189,14 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
               </div>
 
               <div className="flex items-baseline gap-2 mb-4">
-                {product.discountPrice !== undefined && product.discountPrice > 0 && product.discountPrice < product.price ? (
+                {product.discountPrice !== undefined && product.discountPrice !== null && product.discountPrice > 0 && product.discountPrice < (product.price || 0) ? (
                   <>
                     <span className="text-2xl font-black text-slate-950 dark:text-slate-100">
-                      {product.discountPrice.toLocaleString()}
+                      {(product.discountPrice || 0).toLocaleString()}
                     </span>
                     <span className="text-xs font-normal text-slate-400 dark:text-slate-500">تومان</span>
                     <span className="text-xs text-slate-400 dark:text-slate-500 line-through mr-1 font-bold">
-                      {product.price.toLocaleString()} تومان
+                      {(product.price || 0).toLocaleString()} تومان
                     </span>
                     <span className={`text-[10px] font-black bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-md border border-red-100 dark:border-red-900/30 mr-1`}>
                       تخفیف ویژه
@@ -203,7 +205,7 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
                 ) : (
                   <>
                     <span className="text-2xl font-black text-slate-950 dark:text-slate-100">
-                      {product.price.toLocaleString()}
+                      {(product.price || 0).toLocaleString()}
                     </span>
                     <span className="text-xs font-normal text-slate-400 dark:text-slate-500">تومان</span>
                   </>
@@ -312,7 +314,7 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
                               >
                                 {opt.name}{' '}
                                 {opt.price > 0
-                                  ? `(+${opt.price.toLocaleString()})`
+                                  ? `(+${(opt.price || 0).toLocaleString()})`
                                   : ''}
                               </button>
                             );
@@ -353,7 +355,7 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
                             >
                               {opt.name}{' '}
                               {opt.price > 0
-                                ? `(+${opt.price.toLocaleString()})`
+                                ? `(+${(opt.price || 0).toLocaleString()})`
                                 : ''}
                             </button>
                           );
@@ -449,7 +451,7 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
                         قیمت محصول
                       </span>
                       <span className="text-lg font-black text-slate-950 dark:text-slate-100 font-sans">
-                        {singlePrice.toLocaleString()}{' '}
+                        {(singlePrice || 0).toLocaleString()}{' '}
                         <span className="text-xs font-normal text-slate-400 dark:text-slate-500 font-sans">
                           تومان
                         </span>
@@ -502,7 +504,7 @@ export const ProductDetailSheet: React.FC<ProductDetailSheetProps> = ({
                         مبلغ کل
                       </span>
                       <span className="text-lg font-black text-slate-950 dark:text-slate-100">
-                        {totalPrice.toLocaleString()}{' '}
+                        {(totalPrice || 0).toLocaleString()}{' '}
                         <span className="text-xs font-normal text-slate-400 dark:text-slate-500 font-sans">
                           تومان
                         </span>

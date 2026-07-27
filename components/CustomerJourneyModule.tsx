@@ -489,7 +489,7 @@ export const CustomerJourneyModule: React.FC<CustomerJourneyModuleProps> = ({ th
                                   )}
                                   <div className="flex justify-between items-center pt-2 border-t border-slate-200/30 dark:border-white/5 mt-1 font-black">
                                     <span className="text-[7.5px] text-slate-400">مالیات بر ارزش افزوده: رایگان</span>
-                                    <span className="font-mono text-[8px]">{item.price.toLocaleString()} تومان</span>
+                                    <span className="font-mono text-[8px]">{(item.price || 0).toLocaleString()} تومان</span>
                                   </div>
                                 </div>
                               ))
